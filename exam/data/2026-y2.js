@@ -757,7 +757,7 @@ window.__PAPER__ = {
         },
         {
           "key": "F",
-          "text": "When it comes to restoration, we have to start with an awareness of whose interests to serve."
+          "text": "When it comes to restoration, we have to stay with an awareness of whose interests to serve."
         },
         {
           "key": "G",
