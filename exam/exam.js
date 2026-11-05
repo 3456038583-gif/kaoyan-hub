@@ -145,17 +145,30 @@
         <div class="qcol sticky">${(s.questions || []).map((q) => qHtml(q)).join('')}</div>
       </div>`;
     } else if (s.kind === 'writing') {
+      const ES = (window.__ESSAYS__ || {})[P.id] || {};
       body = (s.parts || [])
         .map((p) => {
           const isBig = /Part\s*B|大作文/.test(p.label || '');
           const fig = isBig
             ? `<div class="wfig-wrap"><img class="wfig" src="/exam/figs/writing/${esc(P.id)}.png" alt="${esc(P.title)} 作文配图" loading="lazy" onerror="this.parentNode.remove()"></div>`
             : '';
+          const model = ES[isBig ? 'big' : 'small'] || '';
+          const nWords = model ? model.trim().split(/\s+/).length : 0;
+          const modelBlock = model
+            ? `<div class="w-model">
+            <button class="w-model-btn" type="button" aria-expanded="false">参考范文<span>约 ${nWords} 词</span></button>
+            <div class="w-model-body" hidden>${model
+              .split(/\n{2,}/)
+              .map((para) => `<p>${esc(para).replace(/\n/g, '<br>')}</p>`)
+              .join('')}</div>
+          </div>`
+            : '';
           return `<div class="wcard">
           <h3>${esc(p.label)} <span class="pts">${p.points || ''} 分</span></h3>
           ${p.topic ? `<p class="w-topic"><b>主题</b>${esc(p.topic)}</p>` : ''}
           ${(p.direction || []).map((d) => `<p class="${/^[A-Za-z]/.test(d) ? 'en' : ''}">${esc(d)}</p>`).join('')}
           ${fig}
+          ${modelBlock}
         </div>`;
         })
         .join('');
@@ -396,6 +409,16 @@
   }
 
   root.addEventListener('click', (e) => {
+    const modelBtn = e.target.closest('.w-model-btn');
+    if (modelBtn) {
+      const box = modelBtn.closest('.w-model');
+      const bodyEl = box.querySelector('.w-model-body');
+      const open = bodyEl.hidden;
+      bodyEl.hidden = !open;
+      modelBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      modelBtn.classList.toggle('on', open);
+      return;
+    }
     const trBtn = e.target.closest('[data-tr]');
     if (trBtn) {
       const sec = trBtn.closest('.sec');

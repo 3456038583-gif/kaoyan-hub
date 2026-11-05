@@ -516,6 +516,33 @@ body.show-score .scorebar { display: flex; }
 }
 .w-topic { font-size: 13.5px !important; margin: 0 0 10px !important; }
 
+/* 参考范文 */
+.w-model { margin: 16px 0 0; }
+.w-model-btn {
+  appearance: none; cursor: pointer;
+  display: inline-flex; align-items: baseline; gap: 8px;
+  padding: 7px 13px; border-radius: 4px;
+  border: 1px solid var(--accent); background: var(--accent-soft); color: var(--accent);
+  font-size: 13px; font-family: inherit;
+  transition: filter .15s, color .15s, background .15s;
+}
+.w-model-btn span { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.w-model-btn:hover { filter: brightness(.97); }
+.w-model-btn.on { background: var(--accent); color: #fff; }
+.w-model-btn.on span { color: rgba(255,255,255,.78); }
+@media (prefers-color-scheme: dark) { .w-model-btn.on { color: #0e1411; } }
+.w-model-body {
+  margin-top: 12px; padding: 16px 18px 14px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-left: 3px solid var(--accent); border-radius: 4px;
+}
+.w-model-body[hidden] { display: none; }
+.w-model-body p {
+  margin: 0 0 11px !important;
+  font-family: var(--en); font-size: 15px; line-height: 1.78; color: var(--ink);
+}
+.w-model-body p:last-child { margin-bottom: 0 !important; }
+
 /* 统计面板 */
 .stat-mask {
   position: fixed; inset: 0; z-index: 60;
