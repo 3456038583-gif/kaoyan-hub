@@ -66,7 +66,7 @@
   function renderSection(s) {
     let body = '';
     if (s.kind === 'cloze') {
-      body = `<div class="duo">
+      body = `<div class="duo cloze">
         <div class="passage">${parasHtml(s.paras)}</div>
         <div class="qcol cloze-grid">${(s.questions || []).map((q) => qHtml(q)).join('')}</div>
       </div>`;
@@ -79,7 +79,7 @@
       const items = (s.items || [])
         .map((it) => `<div class="item" data-k="${esc(it.key)}"><span class="k">[${esc(it.key)}]</span>${esc(it.text)}</div>`)
         .join('');
-      body = `<div class="duo">
+      body = `<div class="duo newtype">
         <div class="passage">${parasHtml(s.paras)}</div>
         <div class="qcol">
           ${(s.questions || []).map((q) => qHtml(q)).join('')}
