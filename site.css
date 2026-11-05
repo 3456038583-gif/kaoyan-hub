@@ -48,7 +48,7 @@
   font-weight: 600;
 }
 @media (max-width: 520px) {
-  .sitebar { gap: 8px; }
-  .sb-links { gap: 12px; font-size: 12.5px; }
+  .sitebar { gap: 8px; padding-left: 15px; padding-right: 15px; }
+  .sb-links { gap: 10px; font-size: 12px; }
   .sb-brand { font-size: 13px; letter-spacing: 0; }
 }

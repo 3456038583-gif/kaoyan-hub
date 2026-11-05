@@ -113,6 +113,40 @@
 
   const navItems = P.sections.map((s) => `<a href="#sec-${esc(s.id)}" data-sec="${esc(s.id)}">${esc(s.nav || s.title)}</a>`).join('');
 
+  /* ---------- 试卷切换器 ---------- */
+  const PAPERS = window.__PAPERS__ || [];
+  const curSet = (/-(y[12])$/.exec(P.id) || [, 'y1'])[1];
+
+  function switchHtml() {
+    const sets = ['y1', 'y2'].filter((s) => PAPERS.some((p) => p.s === s));
+    if (!sets.length) return '';
+    const tabs = sets
+      .map(
+        (s) =>
+          `<button class="ps-tab${s === curSet ? ' on' : ''}" type="button" data-set="${s}">${
+            s === 'y2' ? '英语（二）' : '英语（一）'
+          }</button>`
+      )
+      .join('');
+    const groups = sets
+      .map((s) => {
+        const chips = PAPERS.filter((p) => p.s === s)
+          .map((p) => `<a class="ps-yr${p.id === P.id ? ' on' : ''}" href="/exam/${esc(p.id)}">${p.y}</a>`)
+          .join('');
+        return `<div class="ps-years" data-set="${s}"${s === curSet ? '' : ' hidden'}>${chips}</div>`;
+      })
+      .join('');
+    return `<span class="ps-wrap">
+          <a class="btn" href="/exam/">← 全部试卷</a>
+          <button class="btn ps-toggle" type="button" id="psToggle" aria-expanded="false" aria-haspopup="true">切换试卷 ▾</button>
+          <div class="ps-menu" id="psMenu" hidden>
+            <div class="ps-tabs">${tabs}</div>
+            ${groups}
+          </div>
+        </span>
+        <span class="ph-sep"></span>`;
+  }
+
   const root = $('#paper');
   root.innerHTML = `
     <div class="paper-head">
@@ -127,6 +161,7 @@
         </div>
       </div>
       <div class="ph-actions" style="margin-top:10px">
+        ${switchHtml()}
         <button class="btn" id="btnZh">显示译文</button>
         <button class="btn" id="btnAns">显示答案</button>
         <button class="btn" id="btnClear">清空作答</button>
@@ -140,6 +175,33 @@
 
   /* ---------- 交互 ---------- */
   const btnZh = $('#btnZh'), btnAns = $('#btnAns'), btnClear = $('#btnClear');
+  const psToggle = $('#psToggle'), psMenu = $('#psMenu');
+  if (psToggle && psMenu) {
+    const closePs = () => {
+      psMenu.hidden = true;
+      psToggle.setAttribute('aria-expanded', 'false');
+    };
+    psToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = psMenu.hidden;
+      psMenu.hidden = !open;
+      psToggle.setAttribute('aria-expanded', String(open));
+    });
+    psMenu.addEventListener('click', (e) => {
+      const tab = e.target.closest('.ps-tab');
+      if (tab) {
+        $$('.ps-tab', psMenu).forEach((t) => t.classList.toggle('on', t === tab));
+        $$('.ps-years', psMenu).forEach((g) => {
+          g.hidden = g.dataset.set !== tab.dataset.set;
+        });
+        e.stopPropagation();
+        return;
+      }
+      if (e.target.closest('.ps-yr')) closePs();
+    });
+    document.addEventListener('click', () => { if (!psMenu.hidden) closePs(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePs(); });
+  }
   btnZh.addEventListener('click', () => {
     const on = document.body.classList.toggle('show-zh');
     btnZh.classList.toggle('on', on);
