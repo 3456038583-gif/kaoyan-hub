@@ -40,6 +40,29 @@
 .essay-body p:last-child { margin-bottom: 0; }
 .essay-body p:first-child { text-indent: 0; }
 
+/* 分析题参考答案（折叠，默认收起） */
+.essay-ans {
+  margin-top: 12px; border-top: 1px dashed var(--line);
+  padding-top: 10px;
+}
+.essay-ans summary {
+  cursor: pointer; list-style: none; width: max-content;
+  font-size: 12.5px; color: var(--gold);
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--line));
+  border-radius: 3px; padding: 2px 10px;
+  font-family: var(--mono); letter-spacing: .02em;
+}
+.essay-ans summary::-webkit-details-marker { display: none; }
+.essay-ans summary::before { content: '＋ '; }
+.essay-ans[open] summary::before { content: '－ '; }
+.essay-ans summary:hover { background: color-mix(in srgb, var(--gold) 10%, transparent); }
+.ea-body { margin-top: 10px; }
+.ea-body p {
+  margin: 0 0 9px; font-size: 14px; line-height: 1.8; color: var(--muted);
+  text-indent: 1.5em;
+}
+.ea-body p:last-child { margin-bottom: 0; }
+
 /* 统计面板补充 */
 .stat-wrong {
   margin: 12px 0 0; font-size: 12.5px; color: var(--muted);

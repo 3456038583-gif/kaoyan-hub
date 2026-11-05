@@ -72,9 +72,14 @@
 
   function essayHtml(q) {
     const paras = (q.paras || [q.stem || '']).map((p) => `<p>${esc(p)}</p>`).join('');
+    const ans = (q.ans || []).map((p) => `<p>${esc(p)}</p>`).join('');
+    const ansHtml = ans
+      ? `<details class="essay-ans"><summary>参考答案</summary><div class="ea-body">${ans}</div></details>`
+      : '';
     return `<div class="q q-essay" id="q-${q.n}" data-n="${q.n}">
       <div class="q-top"><span class="q-num">${q.n}</span><span class="q-tag">分析题 · 10 分</span></div>
       <div class="essay-body">${paras}</div>
+      ${ansHtml}
     </div>`;
   }
 
