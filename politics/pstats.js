@@ -18,7 +18,7 @@
   }
   if (!rows.length) {
     host.innerHTML = '<div class="ms-head"><h2>我的练习记录</h2></div>'
-      + '<p class="ms-empty">还没有作答记录。打开任意一年试卷，选几个选项就会自动记在这里。</p>';
+      + '<p class="ms-empty">还没有作答记录。打开任意一年试卷，提交几道题就会自动记在这里。</p>';
     host.hidden = false;
     return;
   }
@@ -61,7 +61,7 @@
       <div><span>最高分</span><b>${fmt(best)}<i> / 50</i></b></div>
     </div>
     <table class="ms-table">
-      <thead><tr><th>试卷</th><th>客观题</th><th>正确率</th><th>已答/总题</th><th>最近作答</th><th></th></tr></thead>
+      <thead><tr><th>试卷</th><th>客观题</th><th>正确率</th><th>已提交/总题</th><th>最近作答</th><th></th></tr></thead>
       <tbody>${body}</tbody>
     </table>`;
   host.hidden = false;

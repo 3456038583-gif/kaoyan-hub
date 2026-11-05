@@ -11,8 +11,10 @@
   try { store = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { store = {}; }
   /** @type {Record<string,string>} */
   let picks = store.picks || {};
+  /** 已提交的题型：{secId: true} —— 提交后才判对错、才计分 */
+  let submittedSec = store.submittedSec || {};
   const save = () => {
-    try { localStorage.setItem(KEY, JSON.stringify({ picks, t: Date.now() })); } catch (e) {}
+    try { localStorage.setItem(KEY, JSON.stringify({ picks, submittedSec, t: Date.now() })); } catch (e) {}
   };
 
   const allQ = [];
@@ -55,8 +57,9 @@
       const m = qMeta[q.n];
       const pick = picks[q.n];
       if (!m) return;
-      if (pick) { done++; bySec[m.sec].done++; if (m.obj) objDone++; }
-      if (m.obj && pick && pick === m.answer) {
+      const sub = !!submittedSec[m.sec];      // 只统计已提交的题型
+      if (pick && sub) { done++; bySec[m.sec].done++; if (m.obj) objDone++; }
+      if (m.obj && sub && pick && pick === m.answer) {
         right++; score += m.per;
         bySec[m.sec].right++;
         bySec[m.sec].score += m.per;
@@ -89,7 +92,7 @@
     const ansBtn = hasAns ? `<button class="q-ans" type="button" data-n="${q.n}">答案</button>` : '';
     const ansVal = q.answer ? `<span class="q-ansval">答案 <b>${esc(q.answer)}</b></span>` : '';
     return `<div class="q${extra || ''}" id="q-${q.n}" data-n="${q.n}">
-      <div class="q-top"><span class="q-num">${q.n}</span>${diffBadge(q)}${ansVal}${rateBadge(q)}<span class="q-tools">${ansBtn}${solLink(q)}</span></div>
+      <div class="q-top"><span class="q-num">${q.n}</span>${diffBadge(q)}${ansVal}${rateBadge(q)}<span class="q-verdict"></span><span class="q-tools">${ansBtn}${solLink(q)}</span></div>
       ${q.stem ? `<p class="q-stem">${esc(q.stem)}</p>` : ''}
       ${optsHtml(q)}
       ${q.ref ? `<div class="q-ref"><b>参考译文</b>${esc(q.ref)}</div>` : ''}
@@ -105,12 +108,48 @@
       .join('');
   }
 
+  /* 翻译：把要译的句子在原文里划出来（和试卷一样），不再重复列句子 */
+  const normEn = (t) => String(t || '').replace(/[’‘]/g, "'").replace(/[“”]/g, '"').replace(/\s+/g, ' ').trim();
+  function markSentences(paras, qs) {
+    const list = qs.map((q) => ({ n: q.n, s: String(q.stem || '').trim() })).filter((x) => x.s.length > 20);
+    const rxOf = (s) => new RegExp(s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+'), 'i');
+    return (paras || [])
+      .map((p) => {
+        // {{46}} 占位符在划线方案下不需要，先去干净；再用哨兵标记命中句，最后统一转义成 <u>
+        let raw = String(p.en || '').replace(/\{\{\d+\}\}/g, '').replace(/\s{2,}/g, ' ');
+        list.forEach(({ n, s }) => {
+          if (raw.indexOf(`\u0000${n}\u0000`) >= 0) return;
+          const m = raw.match(rxOf(s));
+          if (m) raw = raw.slice(0, m.index) + `\u0000${n}\u0000` + m[0] + '\u0001' + raw.slice(m.index + m[0].length);
+        });
+        let html = esc(raw)
+          .replace(/\u0000(\d+)\u0000/g, '<u class="tr-u" data-n="$1">')
+          .replace(/\u0001/g, '</u>')
+          .replace(/(<u class="tr-u" data-n="(\d+)">)([\s\S]*?)<\/u>/g, (_, a, n, body) => `${a}${body}<sup>${n}</sup></u>`);
+        return `<p>${html}</p>${p.zh ? `<div class="zh">${esc(p.zh)}</div>` : ''}`;
+      })
+      .join('');
+  }
+
+  function trHtml(q) {
+    return `<div class="q q-tr" id="q-${q.n}" data-n="${q.n}">
+      <div class="q-top">
+        <span class="q-num">${q.n}</span>
+        <span class="tr-hint">划线句翻译</span>
+        <span class="q-tools">${q.ref ? `<button class="q-ans" type="button" data-n="${q.n}">参考译文</button>` : ''}</span>
+      </div>
+      ${q.ref ? `<div class="q-ref"><b>参考译文</b>${esc(q.ref)}</div>` : ''}
+    </div>`;
+  }
+
   function secHead(s) {
     const hasZh = s.kind === 'translation' && (s.paras || []).some((p) => p.zh);
+    const isObj = OBJ_KINDS.indexOf(s.kind) >= 0 && (s.questions || []).length > 0;
     return `<div class="sec-head">
       <span class="lbl">${esc(s.label || '')}</span>
       <h2>${esc(s.title)}</h2>
       ${hasZh ? '<button class="sec-btn" type="button" data-tr="1">全文译文</button>' : ''}
+      ${isObj ? `<button class="sec-btn sec-submit" type="button" data-sec="${esc(s.id)}" disabled>提交本部分</button>` : ''}
       ${s.points ? `<span class="pts">${s.points} 分</span>` : ''}
     </div>
     ${s.topic ? `<p class="sec-topic"><b>主题</b>${esc(s.topic)}</p>` : ''}`;
@@ -130,19 +169,28 @@
       </div>`;
     } else if (s.kind === 'newtype') {
       const items = (s.items || [])
-        .map((it) => `<div class="item" data-k="${esc(it.key)}"><span class="k">[${esc(it.key)}]</span>${esc(it.text)}</div>`)
+        .map((it) => `<div class="item" data-k="${esc(it.key)}"><b class="k">${esc(it.key)}</b>${esc(it.text)}</div>`)
         .join('');
-      body = `<div class="duo newtype">
-        <div class="passage">${parasHtml(s.paras)}</div>
-        <div class="qcol">
-          ${(s.questions || []).map((q) => qHtml(q)).join('')}
-          <div class="items">${items}</div>
-        </div>
+      body = `<div class="nt">
+        <div class="passage nt-passage">${parasHtml(s.paras)}</div>
+        ${items ? `<div class="nt-opts"><h3>选项</h3>${items}</div>` : ''}
+        <div class="nt-answers">${(s.questions || []).map((q) => qHtml(q, ' q-nt')).join('')}</div>
       </div>`;
     } else if (s.kind === 'translation') {
-      body = `<div class="duo">
-        <div class="passage">${parasHtml(s.paras)}</div>
-        <div class="qcol sticky">${(s.questions || []).map((q) => qHtml(q)).join('')}</div>
+      const qs = s.questions || [];
+      const multi = qs.filter((q) => q.stem && q.stem.length > 20).length > 1;
+      body = `<div class="tr">
+        <div class="passage tr-passage">
+          ${s.source ? `<p class="src">${esc(s.source)}</p>` : ''}
+          ${multi ? markSentences(s.paras, qs) : parasHtml(s.paras)}
+        </div>
+        <div class="tr-qs">
+          ${multi ? qs.map(trHtml).join('') : qs.map((q) => `<div class="q q-tr" id="q-${q.n}" data-n="${q.n}">
+              <div class="q-top"><span class="q-num">${q.n}</span><span class="tr-hint">整段翻译</span>
+              <span class="q-tools">${q.ref ? `<button class="q-ans" type="button" data-n="${q.n}">参考译文</button>` : ''}</span></div>
+              ${q.ref ? `<div class="q-ref"><b>参考译文</b>${esc(q.ref)}</div>` : ''}
+            </div>`).join('')}
+        </div>
       </div>`;
     } else if (s.kind === 'writing') {
       const ES = (window.__ESSAYS__ || {})[P.id] || {};
@@ -212,7 +260,7 @@
     <nav class="sec-nav" id="secNav">${navItems}</nav>
     <div class="paper-body">${P.sections.map(renderSection).join('')}</div>
     <div class="scorebar" id="scorebar">
-      <span>已答 <b id="scDone">0</b>/<span id="scAll">0</span></span>
+      <span>已提交 <b id="scDone">0</b>/<span id="scAll">0</span></span>
       <span class="sb-score">客观题 <b id="scScore">0</b>/<span id="scFull">${fmtScore(objFull)}</span> 分</span>
       <span id="scPct" class="sb-pct"></span>
     </div>
@@ -272,6 +320,7 @@
     if (!Object.keys(picks).length) return;
     if (!confirm('清空本卷的作答记录？')) return;
     picks = {};
+    submittedSec = {};
     save();
     paint();
   });
@@ -290,10 +339,12 @@
       const n = el.dataset.n;
       const q = allQ.find((x) => String(x.n) === n);
       if (!q) return;
-      const revealed = allRevealed || el.classList.contains('revealed');
+      const m = qMeta[n];
+      const sub = !!(m && submittedSec[m.sec]);
+      const revealed = allRevealed || sub || el.classList.contains('revealed');
       syncAnsText(el);
       const pick = picks[n];
-      if (pick) done++;
+      if (pick && sub) done++;
       $$('.opt', el).forEach((o) => {
         const k = o.dataset.k;
         o.classList.toggle('pick', !revealed && pick === k);
@@ -302,10 +353,34 @@
       });
       if (revealed && pick && pick === q.answer) right++;
       el.classList.toggle('ok', revealed && pick === q.answer);
+      el.classList.toggle('submitted', sub);
+      const vd = $('.q-verdict', el);
+      if (vd) {
+        vd.className = 'q-verdict' + (sub && q.answer ? (pick === q.answer ? ' ok' : ' bad') : '');
+        vd.textContent = sub && q.answer && pick ? (pick === q.answer ? '正确' : '答错') : '';
+      }
+    });
+    /* 题型级提交按钮状态 */
+    $$('.sec-submit').forEach((b) => {
+      const secId = b.dataset.sec;
+      const qs = allQ.filter((q) => qMeta[q.n] && qMeta[q.n].sec === secId && qMeta[q.n].obj);
+      if (!qs.length) { b.hidden = true; return; }
+      const isSub = !!submittedSec[secId];
+      const ready = qs.filter((q) => picks[q.n]).length;
+      const got = qs.reduce((a, q) => a + (picks[q.n] === qMeta[q.n].answer ? qMeta[q.n].per : 0), 0);
+      const full = qs.reduce((a, q) => a + qMeta[q.n].per, 0);
+      b.classList.toggle('done', isSub);
+      b.disabled = !isSub && !ready;
+      b.textContent = isSub
+        ? `已提交 · ${fmtScore(got)} / ${fmtScore(full)} 分 · 点此重做`
+        : (ready ? `提交本部分（已答 ${ready}/${qs.length}）` : '提交本部分');
     });
     $$('.blank').forEach((b) => {
       const p = picks[b.dataset.n];
-      b.classList.toggle('done', !!p);
+      const m = qMeta[b.dataset.n];
+      const sub = !!(m && submittedSec[m.sec]);
+      b.classList.toggle('done', !!p && !(sub && p !== m.answer));
+      b.classList.toggle('mark', !!(sub && p && p !== m.answer));
       b.textContent = p || b.dataset.n;
     });
     const st = scoreStat();
@@ -358,10 +433,10 @@
         <div><span>正确率</span><b class="${pct >= 60 ? 'good' : 'bad'}">${st.objDone ? pct + '%' : '—'}</b></div>
       </div>
       <table class="stat-table">
-        <thead><tr><th>题型</th><th>题数</th><th>已答</th><th>正确</th><th>得分</th><th>正确率</th></tr></thead>
+        <thead><tr><th>题型</th><th>题数</th><th>已提交</th><th>正确</th><th>得分</th><th>正确率</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
-      <p class="stat-tip">客观题（完形、阅读、新题型）自动计分；翻译与写作属主观题，需自行估分。作答记录保存在本机浏览器。</p>`;
+      <p class="stat-tip">完形、阅读、新题型做完后点各部分的「提交本部分」，才会判对错并计分；翻译与写作属主观题，需自行估分。作答记录保存在本机浏览器。</p>`;
   }
   const btnStat = $('#btnStat');
   if (btnStat) {
@@ -402,9 +477,28 @@
       paint();
       return;
     }
+    const secBtn = e.target.closest('.sec-submit');
+    if (secBtn) {
+      const secId = secBtn.dataset.sec;
+      if (submittedSec[secId]) {
+        if (!confirm('重做本部分？这一部分已选的答案会清空。')) return;
+        allQ.forEach((q) => {
+          const m = qMeta[q.n];
+          if (m && m.sec === secId) delete picks[q.n];
+        });
+        delete submittedSec[secId];
+      } else {
+        submittedSec[secId] = true;
+      }
+      save();
+      paint();
+      return;
+    }
     const opt = e.target.closest('.opt');
     if (opt && !document.body.classList.contains('show-ans') && !opt.closest('.q').classList.contains('revealed')) {
       const n = opt.dataset.n;
+      const m = qMeta[n];
+      if (m && submittedSec[m.sec]) return;   // 已提交的题型锁定，先点「重做」
       if (picks[n] === opt.dataset.k) delete picks[n];
       else picks[n] = opt.dataset.k;
       save();

@@ -10,9 +10,11 @@
   let store = {};
   try { store = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { store = {}; }
   let picks = store.picks || {};
+  let submitted = store.submitted || {};   // 已点「提交」的题号 → 才判对错、才计分
   const save = () => {
-    try { localStorage.setItem(KEY, JSON.stringify({ picks, t: Date.now() })); } catch (e) {}
+    try { localStorage.setItem(KEY, JSON.stringify({ picks, submitted, t: Date.now() })); } catch (e) {}
   };
+  const isSub = (n) => !!submitted[n];
 
   /* ---------- 计分规则：单选 1 分/题，多选 2 分/题（全对才得分） ---------- */
   const PER = { single: 1, multi: 2 };
@@ -41,7 +43,7 @@
     objQ.forEach((q) => {
       const m = qMeta[q.n];
       const pick = picks[q.n];
-      if (!pick) return;
+      if (!pick || !submitted[q.n]) return;      // 只统计已提交的题
       done++; objDone++; bySec[m.sec].done++;
       if (pick === m.answer) {
         right++; score += m.per; bySec[m.sec].right++; bySec[m.sec].score += m.per;
@@ -67,6 +69,11 @@
       </div>
       ${q.stem ? `<p class="q-stem">${esc(q.stem)}</p>` : ''}
       <div class="opts">${opts}</div>
+      <div class="q-foot">
+        <button class="q-submit" type="button" data-n="${q.n}" disabled>提交</button>
+        <button class="q-redo" type="button" data-n="${q.n}" hidden>重做</button>
+        <span class="q-verdict"></span>
+      </div>
     </div>`;
   }
 
@@ -95,8 +102,10 @@
     const body = s.kind === 'essay'
       ? `<div class="q-list essay-list">${(s.questions || []).map(essayHtml).join('')}</div>`
       : `<div class="q-list">${(s.questions || []).map((q) => qHtml(q, s.kind)).join('')}</div>`;
+    const secSubmit = s.kind === 'essay' ? ''
+      : `<button class="sec-submit" type="button" data-sec="${esc(s.id)}" disabled>提交本部分</button>`;
     return `<section class="sec" id="sec-${esc(s.id)}">
-      ${secHead(s)}
+      ${secHead(s)}${secSubmit}
       ${s.direction ? `<div class="direction">${esc(s.direction)}</div>` : ''}
       ${body}
     </section>`;
@@ -124,12 +133,12 @@
         <button class="btn" id="btnStat">统计</button>
         <button class="btn" id="btnClear">清空作答</button>
       </div>
-      <p class="paper-note">单选 1 分、多选 2 分（多选少选错选均不得分），客观题共 50 分；分析题为主观题，需自行对照解析估分。</p>
+      <p class="paper-note">单选 1 分、多选 2 分（多选少选错选均不得分），客观题共 50 分。选好答案后点「提交」，才会判对错并计分；分析题的参考答案在题目下方点开。</p>
     </div>
     <nav class="sec-nav" id="secNav">${navItems}</nav>
     <div class="paper-body">${P.sections.map(renderSection).join('')}</div>
     <div class="scorebar" id="scorebar">
-      <span>已答 <b id="scDone">0</b>/<span id="scAll">0</span></span>
+      <span>已提交 <b id="scDone">0</b>/<span id="scAll">0</span></span>
       <span class="sb-score">客观题 <b id="scScore">0</b>/<span id="scFull">${fmt(objFull)}</span> 分</span>
       <span id="scPct" class="sb-pct"></span>
     </div>
@@ -169,6 +178,7 @@
     if (!Object.keys(picks).length) return;
     if (!confirm('清空本卷的作答记录？')) return;
     picks = {};
+    submitted = {};
     save();
     paint();
   });
@@ -186,7 +196,8 @@
       const n = el.dataset.n;
       const m = qMeta[n];
       if (!m || !m.per) return;
-      const revealed = allRevealed || el.classList.contains('revealed');
+      const sub = !!submitted[n];
+      const revealed = allRevealed || el.classList.contains('revealed') || sub;
       syncAnsText(el);
       const pick = picks[n] || '';
       $$('.opt', el).forEach((o) => {
@@ -199,6 +210,32 @@
       });
       el.classList.toggle('ok', revealed && pick && pick === m.answer);
       el.classList.toggle('has-pick', !!pick);
+      el.classList.toggle('submitted', sub);
+      const sb = $('.q-submit', el);
+      if (sb) { sb.hidden = sub || !pick; sb.disabled = !pick || sub; }
+      const rb = $('.q-redo', el);
+      if (rb) rb.hidden = !sub;
+      const vd = $('.q-verdict', el);
+      if (vd) {
+        vd.className = 'q-verdict' + (sub ? (pick === m.answer ? ' ok' : ' bad') : '');
+        vd.textContent = sub
+          ? (pick === m.answer ? `回答正确 +${m.per} 分` : `回答错误 · 正确答案 ${m.answer}`)
+          : (pick ? '已选，点「提交」判分' : '');
+      }
+    });
+    /* 各部分的「提交本部分」状态 */
+    $$('.sec-submit').forEach((b) => {
+      const sec = b.dataset.sec;
+      const qs = objQ.filter((q) => qMeta[q.n].sec === sec);
+      if (!qs.length) { b.hidden = true; return; }
+      const sub = qs.filter((q) => submitted[q.n]).length;
+      const ready = qs.filter((q) => picks[q.n] && !submitted[q.n]).length;
+      const all = sub === qs.length;
+      const got = qs.reduce((a, q) => a + (picks[q.n] === qMeta[q.n].answer ? qMeta[q.n].per : 0), 0);
+      const full = qs.reduce((a, q) => a + qMeta[q.n].per, 0);
+      b.classList.toggle('done', all);
+      b.disabled = !ready;
+      b.textContent = all ? `本部分已提交 · ${fmt(got)} / ${fmt(full)} 分` : (ready ? `提交本部分（${ready} 题待判）` : '提交本部分');
     });
     const st = stat();
     $('#scDone').textContent = String(st.done);
@@ -267,11 +304,38 @@
       paint();
       return;
     }
+    const subBtn = e.target.closest('.q-submit');
+    if (subBtn) {
+      const n = subBtn.dataset.n;
+      if (!picks[n]) return;
+      submitted[n] = 1;
+      save();
+      paint();
+      return;
+    }
+    const redoBtn = e.target.closest('.q-redo');
+    if (redoBtn) {
+      const n = redoBtn.dataset.n;
+      delete submitted[n];
+      delete picks[n];
+      save();
+      paint();
+      return;
+    }
+    const secBtn = e.target.closest('.sec-submit');
+    if (secBtn) {
+      const sec = secBtn.dataset.sec;
+      objQ.forEach((q) => { if (qMeta[q.n].sec === sec && picks[q.n]) submitted[q.n] = 1; });
+      save();
+      paint();
+      return;
+    }
     const opt = e.target.closest('.opt');
     if (!opt) return;
     const q = opt.closest('.q');
     if (document.body.classList.contains('show-ans') || q.classList.contains('revealed')) return;
     const n = opt.dataset.n, k = opt.dataset.k;
+    if (submitted[n]) return;                 // 已提交的题锁定，点「重做」才能改
     if (qMeta[n] && qMeta[n].kind === 'multi') {
       const cur = picks[n] || '';
       const next = cur.indexOf(k) >= 0 ? cur.replace(k, '') : sortPick(cur + k);
