@@ -18,7 +18,12 @@
   } catch (e) {
     return;
   }
-  if (!rows.length) return;
+  if (!rows.length) {
+    host.innerHTML = '<div class="ms-head"><h2>我的练习记录</h2></div>'
+      + '<p class="ms-empty">还没有作答记录。打开任意一年试卷，选几个选项就会自动记在这里。</p>';
+    host.hidden = false;
+    return;
+  }
 
   rows.sort((a, b) => (b.t || 0) - (a.t || 0));
 

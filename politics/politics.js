@@ -100,18 +100,6 @@
   const navItems = P.sections.map((s) => `<a href="#sec-${esc(s.id)}" data-sec="${esc(s.id)}">${esc(s.nav || s.title)}</a>`).join('');
   const PAPERS = window.__PAPERS__ || [];
 
-  function switchHtml() {
-    if (!PAPERS.length) return '';
-    const chips = PAPERS
-      .map((p) => `<a class="ps-yr${String(p.y) === String(P.year) ? ' on' : ''}" href="/politics/${esc(p.id)}">${p.y}</a>`)
-      .join('');
-    return `<span class="ps-wrap">
-          <a class="btn" href="/politics/">← 全部试卷</a>
-          <button class="btn ps-toggle" type="button" id="psToggle" aria-expanded="false" aria-haspopup="true">切换年份 ▾</button>
-          <div class="ps-menu" id="psMenu" hidden><div class="ps-years">${chips}</div></div>
-        </span>`;
-  }
-
   const root = $('#paper');
   root.innerHTML = `
     <div class="paper-head">
@@ -127,7 +115,6 @@
         </div>
       </div>
       <div class="ph-actions" style="margin-top:10px">
-        ${switchHtml()}
         <button class="btn" id="btnAns">显示答案</button>
         <button class="btn" id="btnStat">统计</button>
         <button class="btn" id="btnClear">清空作答</button>

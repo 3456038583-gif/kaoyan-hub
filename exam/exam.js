@@ -188,36 +188,6 @@
   const PAPERS = window.__PAPERS__ || [];
   const curSet = (/-(y[12])$/.exec(P.id) || [, 'y1'])[1];
 
-  function switchHtml() {
-    const sets = ['y1', 'y2'].filter((s) => PAPERS.some((p) => p.s === s));
-    if (!sets.length) return '';
-    const tabs = sets
-      .map(
-        (s) =>
-          `<button class="ps-tab${s === curSet ? ' on' : ''}" type="button" data-set="${s}">${
-            s === 'y2' ? '英语（二）' : '英语（一）'
-          }</button>`
-      )
-      .join('');
-    const groups = sets
-      .map((s) => {
-        const chips = PAPERS.filter((p) => p.s === s)
-          .map((p) => `<a class="ps-yr${p.id === P.id ? ' on' : ''}" href="/exam/${esc(p.id)}">${p.y}</a>`)
-          .join('');
-        return `<div class="ps-years" data-set="${s}"${s === curSet ? '' : ' hidden'}>${chips}</div>`;
-      })
-      .join('');
-    return `<span class="ps-wrap">
-          <a class="btn" href="/exam/">← 全部试卷</a>
-          <button class="btn ps-toggle" type="button" id="psToggle" aria-expanded="false" aria-haspopup="true">切换试卷 ▾</button>
-          <div class="ps-menu" id="psMenu" hidden>
-            <div class="ps-tabs">${tabs}</div>
-            ${groups}
-          </div>
-        </span>
-        <span class="ph-sep"></span>`;
-  }
-
   const root = $('#paper');
   root.innerHTML = `
     <div class="paper-head">
@@ -232,7 +202,6 @@
         </div>
       </div>
       <div class="ph-actions" style="margin-top:10px">
-        ${switchHtml()}
         <button class="btn" id="btnZh">显示译文</button>
         <button class="btn" id="btnAns">显示答案</button>
         <button class="btn" id="btnStat">统计</button>

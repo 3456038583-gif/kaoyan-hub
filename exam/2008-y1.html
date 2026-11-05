@@ -12,7 +12,6 @@
 <link rel="stylesheet" href="/exam/exam.css">
 </head>
 <body>
-
 <nav class="sitebar" aria-label="站点导航">
   <a class="sb-brand" href="/">考研资料总库</a>
   <div class="sb-links">
@@ -23,9 +22,28 @@
     <a href="/library/">知识库</a>
   </div>
 </nav>
+<div class="ex-bar">
+  <div class="ex-bar-in">
+    <div class="eb-tabs"><a class="eb-tab on" href="/exam/2008-y1" aria-current="page">英语（一）</a><a class="eb-tab" href="/exam/2026-y2">英语（二）</a></div>
+    <div class="eb-years" aria-label="年份"><a class="eb-yr" href="/exam/2026-y1" data-id="2026-y1" title="2026 年英语（一）">2026</a><a class="eb-yr" href="/exam/2025-y1" data-id="2025-y1" title="2025 年英语（一）">2025</a><a class="eb-yr" href="/exam/2024-y1" data-id="2024-y1" title="2024 年英语（一）">2024</a><a class="eb-yr" href="/exam/2023-y1" data-id="2023-y1" title="2023 年英语（一）">2023</a><a class="eb-yr" href="/exam/2022-y1" data-id="2022-y1" title="2022 年英语（一）">2022</a><a class="eb-yr" href="/exam/2021-y1" data-id="2021-y1" title="2021 年英语（一）">2021</a><a class="eb-yr" href="/exam/2020-y1" data-id="2020-y1" title="2020 年英语（一）">2020</a><a class="eb-yr" href="/exam/2019-y1" data-id="2019-y1" title="2019 年英语（一）">2019</a><a class="eb-yr" href="/exam/2018-y1" data-id="2018-y1" title="2018 年英语（一）">2018</a><a class="eb-yr" href="/exam/2017-y1" data-id="2017-y1" title="2017 年英语（一）">2017</a><a class="eb-yr" href="/exam/2016-y1" data-id="2016-y1" title="2016 年英语（一）">2016</a><a class="eb-yr" href="/exam/2015-y1" data-id="2015-y1" title="2015 年英语（一）">2015</a><a class="eb-yr" href="/exam/2014-y1" data-id="2014-y1" title="2014 年英语（一）">2014</a><a class="eb-yr" href="/exam/2013-y1" data-id="2013-y1" title="2013 年英语（一）">2013</a><a class="eb-yr" href="/exam/2012-y1" data-id="2012-y1" title="2012 年英语（一）">2012</a><a class="eb-yr" href="/exam/2011-y1" data-id="2011-y1" title="2011 年英语（一）">2011</a><a class="eb-yr" href="/exam/2010-y1" data-id="2010-y1" title="2010 年英语（一）">2010</a><a class="eb-yr" href="/exam/2009-y1" data-id="2009-y1" title="2009 年英语（一）">2009</a><a class="eb-yr on" href="/exam/2008-y1" aria-current="page" data-id="2008-y1" title="2008 年英语（一）">2008</a><a class="eb-yr" href="/exam/2007-y1" data-id="2007-y1" title="2007 年英语（一）">2007</a><a class="eb-yr" href="/exam/2006-y1" data-id="2006-y1" title="2006 年英语（一）">2006</a></div>
+    <div class="eb-side"><a class="eb-link" href="/exam/records.html">练习记录</a></div>
+  </div>
+</div>
 
 <div id="paper"></div>
 
+<script>
+/* 已作答的卷子在年份上点一个小标 */
+(function () {
+  [].forEach.call(document.querySelectorAll('.eb-yr[data-id]'), function (a) {
+    try {
+      var s = JSON.parse(localStorage.getItem('kaoyan-exam:' + a.dataset.id) || '{}');
+      var n = Object.keys(s.picks || {}).length;
+      if (n) { a.classList.add('has'); a.title = a.title + ' · 已答 ' + n + ' 题'; }
+    } catch (e) {}
+  });
+})();
+</script>
 <script>window.__PAPERS__=[{"id":"2026-y1","y":2026,"s":"y1"},{"id":"2025-y1","y":2025,"s":"y1"},{"id":"2024-y1","y":2024,"s":"y1"},{"id":"2023-y1","y":2023,"s":"y1"},{"id":"2022-y1","y":2022,"s":"y1"},{"id":"2021-y1","y":2021,"s":"y1"},{"id":"2020-y1","y":2020,"s":"y1"},{"id":"2019-y1","y":2019,"s":"y1"},{"id":"2018-y1","y":2018,"s":"y1"},{"id":"2017-y1","y":2017,"s":"y1"},{"id":"2016-y1","y":2016,"s":"y1"},{"id":"2015-y1","y":2015,"s":"y1"},{"id":"2014-y1","y":2014,"s":"y1"},{"id":"2013-y1","y":2013,"s":"y1"},{"id":"2012-y1","y":2012,"s":"y1"},{"id":"2011-y1","y":2011,"s":"y1"},{"id":"2010-y1","y":2010,"s":"y1"},{"id":"2009-y1","y":2009,"s":"y1"},{"id":"2008-y1","y":2008,"s":"y1"},{"id":"2007-y1","y":2007,"s":"y1"},{"id":"2006-y1","y":2006,"s":"y1"},{"id":"2026-y2","y":2026,"s":"y2"},{"id":"2025-y2","y":2025,"s":"y2"},{"id":"2024-y2","y":2024,"s":"y2"},{"id":"2023-y2","y":2023,"s":"y2"},{"id":"2022-y2","y":2022,"s":"y2"},{"id":"2021-y2","y":2021,"s":"y2"},{"id":"2020-y2","y":2020,"s":"y2"},{"id":"2019-y2","y":2019,"s":"y2"},{"id":"2018-y2","y":2018,"s":"y2"},{"id":"2017-y2","y":2017,"s":"y2"},{"id":"2016-y2","y":2016,"s":"y2"},{"id":"2015-y2","y":2015,"s":"y2"},{"id":"2014-y2","y":2014,"s":"y2"},{"id":"2013-y2","y":2013,"s":"y2"},{"id":"2012-y2","y":2012,"s":"y2"},{"id":"2011-y2","y":2011,"s":"y2"},{"id":"2010-y2","y":2010,"s":"y2"}];</script>
 <script src="/exam/data/2008-y1.js"></script>
 <script src="/exam/topics.js"></script>
