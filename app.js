@@ -158,6 +158,27 @@
   };
 
   const state = { view: 'm1', year: 2010, level: 'all', keyOnly: false, statsSubject: 1, mockSubject: 1 };
+  const POSITION_KEY = 'kaoyanMath.position.v1';
+  const VALID_VIEWS = ['m1', 'm2', 'm3', 'key', 'supp', 'wrong', 'stats', 'mock'];
+  // 从英语/政治等板块切回数学时，恢复上次使用的科目与年份。
+  function savePosition() {
+    try {
+      localStorage.setItem(POSITION_KEY, JSON.stringify({
+        view: state.view,
+        year: state.year,
+        statsSubject: state.statsSubject,
+        mockSubject: state.mockSubject
+      }));
+    } catch (e) { /* 禁用存储时仅本次会话有效 */ }
+  }
+  function loadPosition() {
+    try {
+      const p = JSON.parse(localStorage.getItem(POSITION_KEY) || 'null');
+      return p && typeof p === 'object' ? p : null;
+    } catch (e) {
+      return null;
+    }
+  }
   // 已渲染页面的 DOM 缓存（按视图 + 年份）；成绩改动后由 saveScores 统一清空
   const VIEW_CACHE = new Map();
   const VIEW_CACHE_MAX = 5;
@@ -1809,6 +1830,7 @@
       if (state.view === 'mock') qs.set('subj', String(state.mockSubject));
       history.replaceState(null, '', `?${qs}`);
     } catch (e) { /* file:// 下部分浏览器不允许改写地址 */ }
+    savePosition();
 
     reconcileLoadedScores();
     const cacheKey = cacheKeyOf();
@@ -2396,18 +2418,27 @@
     if (e.key === 'Escape' && !sheetEl.hidden) closePdf();
   });
 
-  /* ── 启动 ── */
+  /* ── 启动：显式网址参数优先，其次恢复上次位置 ── */
   const params = new URLSearchParams(location.search);
+  const previous = loadPosition();
   const pv = params.get('view');
-  if (pv && ['m1', 'm2', 'm3', 'key', 'supp', 'wrong', 'stats', 'mock'].includes(pv)) state.view = pv;
+  if (pv && VALID_VIEWS.includes(pv)) state.view = pv;
+  else if (previous && VALID_VIEWS.includes(previous.view)) state.view = previous.view;
   const ps = Number(params.get('subj'));
   if (ps >= 1 && ps <= 3) {
     state.statsSubject = ps;
     state.mockSubject = ps;
+  } else if (previous) {
+    const prevStats = Number(previous.statsSubject);
+    const prevMock = Number(previous.mockSubject);
+    if (prevStats >= 1 && prevStats <= 3) state.statsSubject = prevStats;
+    if (prevMock >= 1 && prevMock <= 3) state.mockSubject = prevMock;
   }
   const py = Number(params.get('year'));
+  const previousYear = previous ? Number(previous.year) : 0;
   const live = liveYears();
   if (live.includes(py)) state.year = py;
+  else if (!params.has('year') && live.includes(previousYear)) state.year = previousYear;
   else if (live.length && !live.includes(state.year)) state.year = live[0];
   const hash = location.hash.match(/^#q-(\d{4})-(\d)-(\d+)$/);
   renderYears();
