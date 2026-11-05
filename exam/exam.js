@@ -17,6 +17,11 @@
     try { localStorage.setItem(KEY, JSON.stringify({ picks, submittedSec, t: Date.now() })); } catch (e) {}
   };
 
+  /* 记住上次打开的卷子：从数学/政治等板块切回来时直接回到这套卷 */
+  try {
+    localStorage.setItem('kaoyanExam.position.v1', JSON.stringify({ id: P.id, t: Date.now() }));
+  } catch (e) { /* 禁用存储时仅本次会话有效 */ }
+
   const allQ = [];
   /* 合并主题表：完形取 cloze，写作按 Part A / Part B 分配 */
   const TP = (window.__TOPICS__ || {})[P.id] || {};
@@ -102,8 +107,11 @@
   function parasHtml(paras) {
     return (paras || [])
       .map((p) => {
-        const en = esc(p.en).replace(/\{\{(\d+)\}\}/g, (_, n) => `<span class="blank" data-n="${n}">${n}</span>`);
-        return `<p>${en}</p>`;
+        const raw = String(p.en || '');
+        // 段落排序题的空位独占一行（整段就是 {{41}}），标成 slot-line 便于放大居中
+        const solo = /^\s*\{\{\d+\}\}\s*$/.test(raw);
+        const en = esc(raw).replace(/\{\{(\d+)\}\}/g, (_, n) => `<span class="blank" data-n="${n}">${n}</span>`);
+        return `<p${solo ? ' class="slot-line"' : ''}>${en}</p>`;
       })
       .join('');
   }
@@ -164,12 +172,10 @@
   function secHead(s) {
     // 翻译板块本身就有逐句参考译文，不再重复挂「全文译文」
     const hasZh = s.kind !== 'translation' && (s.paras || []).some((p) => p && p.zh);
-    const isObj = OBJ_KINDS.indexOf(s.kind) >= 0 && (s.questions || []).length > 0;
     return `<div class="sec-head">
       <span class="lbl">${esc(s.label || '')}</span>
       <h2>${esc(s.title)}</h2>
       ${hasZh ? '<button class="sec-btn sec-tr" type="button" data-tr="1" aria-expanded="false">全文译文</button>' : ''}
-      ${isObj ? `<button class="sec-btn sec-submit" type="button" data-sec="${esc(s.id)}" disabled>提交本部分</button>` : ''}
       ${s.points ? `<span class="pts">${s.points} 分</span>` : ''}
     </div>
     ${s.topic ? `<p class="sec-topic"><b>主题</b>${esc(s.topic)}</p>` : ''}`;
@@ -191,8 +197,13 @@
       const items = (s.items || [])
         .map((it) => `<div class="item" data-k="${esc(it.key)}"><b class="k">${esc(it.key)}</b>${esc(it.text)}</div>`)
         .join('');
+      // 按题型给容器加类：排序 / 小标题 / 七选五 的答题框大小分别适配
+      const t = s.title || '';
+      const ntCls = /排序/.test(t) ? ' nt-order'
+        : /小标题/.test(t) ? ' nt-head'
+        : /七选五/.test(t) ? ' nt-insert' : ' nt-match';
       // 左文右栏：右边是作答卡 + 选项库，随页面滚动固定在视口内，文章再长也能对照
-      body = `<div class="nt">
+      body = `<div class="nt${ntCls}">
         <div class="nt-main">
           <div class="passage nt-passage">${parasHtml(s.paras)}</div>
         </div>
@@ -253,11 +264,17 @@
     } else if (s.kind === 'text') {
       body = `<div class="wcard">${(s.paras || []).map((p) => `<p>${esc(p.en)}</p>`).join('')}</div>`;
     }
+    // 「提交本部分」放板块底部居中（和政治的提交按钮一致），标题旁不再放
+    const isObj = OBJ_KINDS.indexOf(s.kind) >= 0 && (s.questions || []).length > 0;
+    const secSubmit = isObj
+      ? `<div class="sec-foot"><button class="sec-submit" type="button" data-sec="${esc(s.id)}" disabled>提交本部分</button></div>`
+      : '';
     return `<section class="sec" id="sec-${esc(s.id)}">
       ${secHead(s)}
       ${s.direction ? `<div class="direction">${esc(s.direction)}</div>` : ''}
       ${body}
       ${zhBlock(s)}
+      ${secSubmit}
     </section>`;
   }
 

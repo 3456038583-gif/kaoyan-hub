@@ -14,6 +14,11 @@
   const save = () => {
     try { localStorage.setItem(KEY, JSON.stringify({ picks, submitted, t: Date.now() })); } catch (e) {}
   };
+
+  /* 记住上次打开的年份：从数学/英语等板块切回来时直接回到这一年 */
+  try {
+    localStorage.setItem('kaoyanPolitics.position.v1', JSON.stringify({ y: Number(P.id) || Number(P.year) }));
+  } catch (e) { /* 禁用存储时仅本次会话有效 */ }
   const isSub = (n) => !!submitted[n];
 
   /* ---------- 计分规则：单选 1 分/题，多选 2 分/题（全对才得分） ---------- */

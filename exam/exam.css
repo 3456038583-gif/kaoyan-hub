@@ -507,6 +507,22 @@ body.show-score .scorebar { display: flex; }
 .sec-btn.on { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
 .sec-btn:disabled { cursor: default; opacity: .55; }
 .sec-btn:disabled:hover { color: var(--muted); border-color: var(--line); }
+
+/* 「提交本部分」：板块底部居中，和政治的提交按钮一样大而醒目 */
+.sec-foot { display: flex; justify-content: center; margin: 22px 0 2px; }
+.sec-submit {
+  appearance: none; cursor: pointer;
+  font-family: var(--sans); font-size: 15px; font-weight: 600; line-height: 1.5;
+  min-width: 144px; min-height: 44px; padding: 9px 28px; border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, var(--line));
+  color: var(--accent); background: var(--accent-soft);
+  transition: background .14s, color .14s, border-color .14s, transform .14s;
+}
+.sec-submit:active:not(:disabled) { transform: translateY(1px); }
+.sec-submit:hover:not(:disabled) { background: var(--accent); color: #fff; }
+@media (prefers-color-scheme: dark) { .sec-submit:hover:not(:disabled) { color: #0e1411; } }
+.sec-submit:disabled { color: var(--muted); border-color: var(--line); cursor: default; }
+.sec-submit.done { color: var(--green); border-color: var(--green); background: transparent; }
 .sec-btn.sec-submit { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
 .sec-btn.sec-submit.done { color: var(--green); border-color: var(--green); background: var(--green-soft); }
 
@@ -762,12 +778,26 @@ body.show-score .scorebar { display: flex; }
 }
 .nt .nt-passage p { margin: 0 0 13px; text-indent: 1.6em; }
 .nt .nt-passage p:last-child { margin-bottom: 0; }
+/* 新题型答题框：按题型分别放大（排序最大，小标题次之，七选五/匹配适中），宽度不必相同 */
 .nt .nt-passage .blank {
-  display: inline-block; min-width: 3em; text-align: center;
-  font-family: var(--mono); font-size: 12.5px;
-  border-bottom: 2px solid var(--accent); color: var(--accent);
-  padding: 0 5px; margin: 0 3px;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 3.3em; height: 1.95em; vertical-align: .22em;
+  font-family: var(--mono); font-size: 13.5px; font-weight: 600;
+  color: var(--accent); background: var(--accent-soft);
+  border: 1.5px solid color-mix(in srgb, var(--accent) 55%, var(--line));
+  border-radius: 5px; padding: 0 .35em; margin: 0 .18em;
 }
+.nt-order .nt-passage .blank {
+  min-width: 5em; height: 2.55em; font-size: 18px;
+  border-width: 2px; border-radius: 7px;
+}
+.nt .nt-passage p.slot-line {
+  text-indent: 0; text-align: center; margin: 13px 0;
+}
+.nt .nt-passage p.slot-line .blank { min-width: 5.8em; height: 2.8em; font-size: 19px; }
+.nt-head .nt-passage .blank { min-width: 4em; height: 2.15em; font-size: 15px; }
+.nt-insert .nt-passage .blank,
+.nt-match .nt-passage .blank { min-width: 3.5em; height: 2em; font-size: 14px; }
 .nt-side {
   position: sticky; top: 58px;
   max-height: calc(100vh - 74px); overflow-y: auto; overscroll-behavior: contain;
@@ -784,8 +814,9 @@ body.show-score .scorebar { display: flex; }
 .nt-answers .q { padding: 8px 10px 7px; }
 .nt-answers .q-top { margin-bottom: 5px; gap: 6px; }
 .nt-answers .q-stem { display: none; }
-.nt-answers .opts.letter-opts { gap: 3px; }
-.nt-answers .opts.letter-opts .opt { padding: 1px 6px; font-size: 13px; }
+.nt-answers .opts.letter-opts { gap: 4px; }
+.nt-answers .opts.letter-opts .opt { padding: 3px 9px; font-size: 13.5px; }
+.nt-order .nt-answers .opts.letter-opts .opt { padding: 5px 13px; font-size: 15px; }
 .nt-opts {
   order: 2;
   background: var(--surface); border: 1px solid var(--line); border-radius: 4px;
@@ -795,6 +826,7 @@ body.show-score .scorebar { display: flex; }
   font-size: 14px; line-height: 1.7; padding: 8px 0;
   background: none; border: 0; border-top: 1px dashed var(--line); border-radius: 0;
 }
+.nt-order .nt-opts .item { font-size: 15px; line-height: 1.78; padding: 11px 0; }
 .nt-opts .item:first-of-type { border-top: 0; padding-top: 1px; }
 .nt-opts .item .k {
   display: inline-block; width: 1.7em; font-family: var(--mono);

@@ -10,7 +10,15 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="/site.css">
 <link rel="stylesheet" href="/exam/exam.css">
-</head>
+<script>
+(function(){try{
+  var p=JSON.parse(localStorage.getItem('kaoyanExam.position.v1')||'null');
+  var id=p&&p.id;
+  if(typeof id==='string'&&/^20\d\d-y[12]$/.test(id)&&id!=='2026-y1'){
+    location.replace('/exam/'+id);
+  }
+}catch(e){}})();
+</script></head>
 <body>
 <nav class="sitebar" aria-label="站点导航">
   <a class="sb-brand" href="/">考研资料总库</a>

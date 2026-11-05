@@ -11,6 +11,15 @@
 <link rel="stylesheet" href="/site.css">
 <link rel="stylesheet" href="/exam/exam.css">
 <link rel="stylesheet" href="/politics/politics.css">
+<script>
+(function(){try{
+  var p=JSON.parse(localStorage.getItem('kaoyanPolitics.position.v1')||'null');
+  var y=p&&p.y;
+  if(typeof y==='number'&&y>=2010&&y<=2026&&y!==2026){
+    location.replace('/politics/'+y);
+  }
+}catch(e){}})();
+</script>
 </head>
 <body>
 <nav class="sitebar" aria-label="站点导航">
