@@ -264,17 +264,17 @@
     } else if (s.kind === 'text') {
       body = `<div class="wcard">${(s.paras || []).map((p) => `<p>${esc(p.en)}</p>`).join('')}</div>`;
     }
-    // 「提交本部分」放板块底部居中（和政治的提交按钮一致），标题旁不再放
+    // 「提交本部分」紧跟在板块标题下方（和政治的提交按钮一致），板块再长也第一眼能看到
     const isObj = OBJ_KINDS.indexOf(s.kind) >= 0 && (s.questions || []).length > 0;
     const secSubmit = isObj
-      ? `<div class="sec-foot"><button class="sec-submit" type="button" data-sec="${esc(s.id)}" disabled>提交本部分</button></div>`
+      ? `<button class="sec-submit" type="button" data-sec="${esc(s.id)}" disabled>提交本部分</button>`
       : '';
     return `<section class="sec" id="sec-${esc(s.id)}">
       ${secHead(s)}
+      ${secSubmit}
       ${s.direction ? `<div class="direction">${esc(s.direction)}</div>` : ''}
       ${body}
       ${zhBlock(s)}
-      ${secSubmit}
     </section>`;
   }
 
