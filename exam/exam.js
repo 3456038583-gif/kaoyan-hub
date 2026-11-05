@@ -191,26 +191,36 @@
       const items = (s.items || [])
         .map((it) => `<div class="item" data-k="${esc(it.key)}"><b class="k">${esc(it.key)}</b>${esc(it.text)}</div>`)
         .join('');
+      // 左文右栏：右边是作答卡 + 选项库，随页面滚动固定在视口内，文章再长也能对照
       body = `<div class="nt">
-        <div class="passage nt-passage">${parasHtml(s.paras)}</div>
-        ${items ? `<div class="nt-opts"><h3>选项</h3>${items}</div>` : ''}
-        <div class="nt-answers">${(s.questions || []).map((q) => qHtml(q, ' q-nt')).join('')}</div>
+        <div class="nt-main">
+          <div class="passage nt-passage">${parasHtml(s.paras)}</div>
+        </div>
+        <aside class="nt-side">
+          <div class="nt-answers">${(s.questions || []).map((q) => qHtml(q, ' q-nt')).join('')}</div>
+          ${items ? `<div class="nt-opts"><h3>选项 A–${esc((s.items || []).slice(-1)[0].key || 'G')}</h3>${items}</div>` : ''}
+        </aside>
       </div>`;
     } else if (s.kind === 'translation') {
       const qs = s.questions || [];
       const multi = qs.filter((q) => q.stem && q.stem.length > 20).length > 1;
-      body = `<div class="tr">
-        <div class="passage tr-passage">
-          ${s.source ? `<p class="src">${esc(s.source)}</p>` : ''}
-          ${multi ? markSentences(s.paras, qs) : parasHtml(s.paras)}
+      // 整段翻译（英语二）只有一张作答卡，右侧栏会空着，退回单栏更像试卷
+      body = `<div class="tr${multi ? '' : ' tr-solo'}">
+        <div class="tr-main">
+          <div class="passage tr-passage">
+            ${s.source ? `<p class="src">${esc(s.source)}</p>` : ''}
+            ${multi ? markSentences(s.paras, qs) : parasHtml(s.paras)}
+          </div>
         </div>
-        <div class="tr-qs">
-          ${multi ? qs.map(trHtml).join('') : qs.map((q) => `<div class="q q-tr" id="q-${q.n}" data-n="${q.n}">
-              <div class="q-top"><span class="q-num">${q.n}</span><span class="tr-hint">整段翻译</span>
-              <span class="q-tools">${q.ref ? `<button class="q-ans" type="button" data-n="${q.n}">参考译文</button>` : ''}</span></div>
-              ${q.ref ? `<div class="q-ref"><b>参考译文</b>${esc(q.ref)}</div>` : ''}
-            </div>`).join('')}
-        </div>
+        <aside class="tr-side">
+          <div class="tr-qs">
+            ${multi ? qs.map(trHtml).join('') : qs.map((q) => `<div class="q q-tr" id="q-${q.n}" data-n="${q.n}">
+                <div class="q-top"><span class="q-num">${q.n}</span><span class="tr-hint">整段翻译</span>
+                <span class="q-tools">${q.ref ? `<button class="q-ans" type="button" data-n="${q.n}">参考译文</button>` : ''}</span></div>
+                ${q.ref ? `<div class="q-ref"><b>参考译文</b>${esc(q.ref)}</div>` : ''}
+              </div>`).join('')}
+          </div>
+        </aside>
       </div>`;
     } else if (s.kind === 'writing') {
       const ES = (window.__ESSAYS__ || {})[P.id] || {};
@@ -474,6 +484,23 @@
   }
 
   root.addEventListener('click', (e) => {
+    /* 点原文里的划线句 → 高亮并展开右侧对应的作答卡 */
+    const trU = e.target.closest('.tr-u');
+    if (trU) {
+      const card = document.getElementById(`q-${trU.dataset.n}`);
+      if (!card) return;
+      $$('.tr-u.on').forEach((x) => x.classList.remove('on'));
+      $$('.q-tr.focus').forEach((x) => x.classList.remove('focus'));
+      trU.classList.add('on');
+      card.classList.add('focus', 'revealed');
+      const side = card.closest('.tr-side');
+      if (side && side.scrollHeight > side.clientHeight) {
+        side.scrollTo({ top: Math.max(0, card.offsetTop - 8), behavior: 'smooth' });
+      } else {
+        card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+      return;
+    }
     const modelBtn = e.target.closest('.w-model-btn');
     if (modelBtn) {
       const box = modelBtn.closest('.w-model');
