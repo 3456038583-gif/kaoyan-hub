@@ -25,6 +25,10 @@
       <a href="/library/">数学/英语知识库</a>
       <button type="button" class="side-toggle" id="sideToggle" aria-expanded="false">目录</button>
     </div>
+    <div class="side-search">
+      <input id="sideQ" type="search" placeholder="搜索笔记…" autocomplete="off" aria-label="搜索笔记">
+      <div class="side-results" id="sideResults" hidden></div>
+    </div>
     <div class="side-tree" id="sideTree"></div>
   </aside>
   <main class="note-main">
@@ -190,5 +194,6 @@ M1001 80h400000v40h-400000z"/></svg></span></span></span><span class="vlist-s">�
   <aside class="note-toc" aria-label="本篇目录"><div class="toc-title">本篇目录</div><div id="toc"></div></aside>
 </div>
 <script src="/library/note.js"></script>
+<script src="/library/note-search.js" defer></script>
 </body>
 </html>

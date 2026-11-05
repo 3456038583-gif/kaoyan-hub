@@ -25,6 +25,10 @@
       <a href="/library/">数学/英语知识库</a>
       <button type="button" class="side-toggle" id="sideToggle" aria-expanded="false">目录</button>
     </div>
+    <div class="side-search">
+      <input id="sideQ" type="search" placeholder="搜索笔记…" autocomplete="off" aria-label="搜索笔记">
+      <div class="side-results" id="sideResults" hidden></div>
+    </div>
     <div class="side-tree" id="sideTree"></div>
   </aside>
   <main class="note-main">
@@ -88,5 +92,6 @@ k_1\alpha_1+k_2\alpha_2+\cdots+k_s\alpha_s-l_1\beta_1-l_2\beta_2-\cdots-l_t\beta
   <aside class="note-toc" aria-label="本篇目录"><div class="toc-title">本篇目录</div><div id="toc"></div></aside>
 </div>
 <script src="/library/note.js"></script>
+<script src="/library/note-search.js" defer></script>
 </body>
 </html>
