@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>线性无关组个数不超过表示组个数 · 数学/英语知识库</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/vendor/katex/katex.min.css">
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/library/note.css">
+</head>
+<body class="note-page">
+
+<nav class="sitebar" aria-label="站点导航">
+  <a class="sb-brand" href="/">考研资料总库</a>
+  <div class="sb-links">
+    <a href="/math/">数学真题</a>
+    <a href="/library/" class="on">知识库</a>
+    <a href="/exam/">英语真题</a>
+    <a href="/english/">英语速查</a>
+  </div>
+</nav>
+<div class="lib-layout">
+  <aside class="lib-side" id="libSide" aria-label="知识库目录">
+    <div class="side-head">
+      <a href="/library/">数学/英语知识库</a>
+      <button type="button" class="side-toggle" id="sideToggle" aria-expanded="false">目录</button>
+    </div>
+    <div class="side-tree" id="sideTree"></div>
+  </aside>
+  <main class="note-main">
+    <nav class="crumbs"><a href="/library/">知识库</a> <span class="sep">/</span> <span>数一</span> <span class="sep">/</span> <span>2 线代</span> <span class="sep">/</span> <span>3 向量组</span></nav>
+    <article class="note-article">
+      <header class="note-head">
+        <span class="badge">补充</span>
+        <h1>线性无关组个数不超过表示组个数</h1>
+        <div class="note-meta"><span class="tag">#线代</span> <span class="tag">#向量组</span> <span class="tag">#证明</span> <span class="aliases">别名：若一个线性无关的向量组可由另一个向量组线性表示，则前者的向量个数不多于后者的向量个数</span></div>
+      </header>
+      <div class="prose" id="prose"><blockquote>
+<p>定理：
+若向量组 (I) 线性无关，且可由向量组 (II) 线性表示，
+则 (I) 的向量个数不多于 (II) 的向量个数。</p>
+</blockquote>
+<h2 id="直观理解">直观理解</h2><p>如果一组向量能由另一组“搭建”出来，而前一组本身又彼此独立，
+那么后一组至少要提供足够多的“基本材料”。</p>
+<h2 id="证明方法一：反证法">证明方法一：反证法</h2><p>若设前者个数 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mo>&gt;</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">m&gt;n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span></span></span></span>，把 (I) 中每个向量用 (II) 线性表示后，
+可构造出一个含 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span></span></span></span> 个方程、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi></mrow><annotation encoding="application/x-tex">m</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">m</span></span></span></span> 个未知数的齐次线性方程组。</p>
+<p>由于 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mo>&gt;</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">m&gt;n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span></span></span></span>，该齐次方程组必有非零解，从而可推出 (I) 线性相关，
+与题设矛盾。</p>
+<p>因此</p>
+<div class="math-display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>m</mi><mo>≤</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">
+m\le n
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7719em;vertical-align:-0.136em;"></span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span></span></span></span></span></div>
+<h2 id="证明方法二：矩阵秩">证明方法二：矩阵秩</h2><p>将两组向量分别按列组成矩阵 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo separator="true">,</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">A,B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">A</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.0502em;">B</span></span></span></span>，则“(I) 可由 (II) 表示”可写成</p>
+<div class="math-display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>A</mi><mo>=</mo><mi>B</mi><mi>K</mi></mrow><annotation encoding="application/x-tex">
+A=BK
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0502em;">B</span><span class="mord mathnormal" style="margin-right:0.0715em;">K</span></span></span></span></span></div>
+<p>其中 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0715em;">K</span></span></span></span> 为某个矩阵。</p>
+<p>又因 (I) 线性无关，所以</p>
+<div class="math-display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>r</mi><mo stretchy="false">(</mo><mi>A</mi><mo stretchy="false">)</mo><mo>=</mo><mi>m</mi></mrow><annotation encoding="application/x-tex">
+r(A)=m
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.0278em;">r</span><span class="mopen">(</span><span class="mord mathnormal">A</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">m</span></span></span></span></span></div>
+<p>同时</p>
+<div class="math-display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>r</mi><mo stretchy="false">(</mo><mi>A</mi><mo stretchy="false">)</mo><mo>≤</mo><mi>r</mi><mo stretchy="false">(</mo><mi>B</mi><mo stretchy="false">)</mo><mo>≤</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">
+r(A)\le r(B)\le n
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.0278em;">r</span><span class="mopen">(</span><span class="mord mathnormal">A</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.0278em;">r</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.0502em;">B</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span></span></span></span></span></div>
+<p>故 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mo>≤</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">m\le n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7719em;vertical-align:-0.136em;"></span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span></span></span></span>。</p>
+</div>
+      
+      <nav class="pager">
+    <a class="pg prev" href="/library/%E6%95%B0%E4%B8%80/2-%E7%BA%BF%E4%BB%A3/3-%E5%90%91%E9%87%8F%E7%BB%84/%E7%BA%BF%E6%80%A7%E8%A1%A8%E7%A4%BA%E7%9A%84%E7%A7%A9%E5%85%B3%E7%B3%BB%E8%AF%81%E6%98%8E"><span>上一篇</span>线性表示的秩关系证明</a>
+    <a class="pg next" href="/library/%E6%95%B0%E4%B8%80/2-%E7%BA%BF%E4%BB%A3/3-%E5%90%91%E9%87%8F%E7%BB%84/%E5%90%91%E9%87%8F%E7%9A%84%E5%86%85%E7%A7%AF%E4%B8%8E%E6%AD%A3%E4%BA%A4"><span>下一篇</span>向量的内积与正交</a>
+  </nav>
+    </article>
+  </main>
+  <aside class="note-toc" aria-label="本篇目录"><div class="toc-title">本篇目录</div><div id="toc"></div></aside>
+</div>
+<script src="/library/note.js"></script>
+</body>
+</html>

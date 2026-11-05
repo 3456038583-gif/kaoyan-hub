@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>考研资料总库</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="考研数学真题速查、数学/英语知识库、英语一答案速查的统一下载与查阅入口。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet"></noscript>
+<script>
+/* 旧书签（/?year=2024&subj=1、/#q-2024-1-3 等）直接转到数学站 */
+(function () {
+  var q = location.search, h = location.hash;
+  if (/[?&](year|view|subj|dif)=/.test(q) || /^#q-/.test(h)) {
+    location.replace('/math/' + q + h);
+  }
+})();
+</script>
+<style>
+:root {
+  --paper: #f5f4ee;
+  --surface: #fffdf8;
+  --ink: #1b211d;
+  --muted: #6d746c;
+  --line: #e0dfd4;
+  --line-soft: #eceae1;
+  --accent: #2f5d8a;
+  --accent-soft: #e6edf4;
+  --gold: #b5842f;
+  --red: #a33a2c;
+  --serif: "Noto Serif SC", "Songti SC", "STSong", serif;
+  --sans: "Noto Sans SC", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --max: 1000px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #161916;
+    --surface: #1d211d;
+    --ink: #e9e8e1;
+    --muted: #9aa197;
+    --line: #2e332e;
+    --line-soft: #262b26;
+    --accent: #8fb4d6;
+    --accent-soft: #22303b;
+    --gold: #d2a453;
+    --red: #d98a7c;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px 72px; }
+
+/* 顶栏 */
+.topbar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 0 14px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.brand {
+  font-family: var(--serif);
+  font-weight: 700;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+.brand::before {
+  content: "";
+  display: inline-block;
+  width: 6px; height: 6px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  vertical-align: 2px;
+}
+.topbar nav { display: flex; gap: 18px; color: var(--muted); flex-wrap: wrap; }
+.topbar nav a:hover { color: var(--ink); }
+
+/* 刊头 */
+.masthead {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 54px 0 40px;
+}
+.seal {
+  flex: none;
+  width: 62px; height: 62px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--red);
+  border-radius: 10px;
+  color: var(--red);
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 4px var(--red);
+  opacity: .9;
+}
+.kicker {
+  margin: 0 0 6px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: .16em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(30px, 5vw, 44px);
+  font-weight: 700;
+  letter-spacing: .04em;
+  line-height: 1.2;
+}
+.sub {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+
+/* 入口卡片 */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
+  gap: 16px;
+  margin-bottom: 54px;
+}
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px 22px 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  transition: border-color .18s, transform .18s, box-shadow .18s;
+}
+.card::after {
+  content: "→";
+  position: absolute;
+  right: 20px; bottom: 18px;
+  color: var(--accent);
+  font-size: 17px;
+  opacity: .45;
+  transition: opacity .18s, transform .18s;
+}
+.card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -18px rgba(20, 30, 25, .5);
+}
+.card:hover::after { opacity: 1; transform: translateX(3px); }
+.card .tag {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+.card h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 21px;
+  letter-spacing: .03em;
+}
+.card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+.card .meta {
+  margin-top: auto;
+  padding-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.meta span {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 3px;
+  padding: 2px 7px;
+  white-space: nowrap;
+}
+.meta b { font-weight: 600; }
+
+/* 知识库目录 */
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.section-head h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 19px;
+  letter-spacing: .06em;
+}
+.section-head a { font-size: 12.5px; color: var(--muted); }
+.section-head a:hover { color: var(--accent); }
+
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px 34px;
+}
+.col { break-inside: avoid; padding-bottom: 4px; }
+.col h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: .03em;
+}
+.col h3 small {
+  margin-left: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  letter-spacing: 0;
+}
+.col ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.col li a { border-bottom: 1px solid transparent; }
+.col li a:hover { color: var(--accent); border-bottom-color: currentColor; }
+
+footer {
+  margin-top: 56px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  font-size: 12.5px;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  justify-content: space-between;
+}
+footer a:hover { color: var(--accent); }
+footer .fl { display: flex; flex-wrap: wrap; gap: 16px; }
+
+@media (max-width: 760px) {
+  .cards { grid-template-columns: 1fr; }
+  .cols { grid-template-columns: 1fr; }
+  .masthead { padding: 40px 0 30px; gap: 16px; }
+  .seal { width: 52px; height: 52px; font-size: 25px; }
+  .wrap { padding: 0 18px 56px; }
+}
+@media (max-width: 480px) {
+  .topbar { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .topbar nav { gap: 14px; font-size: 12.5px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <a class="brand" href="/">考研资料总库</a>
+    <nav aria-label="站内导航">
+      <a href="/math/">数学真题</a>
+      <a href="/library/">数学/英语知识库</a>
+      <a href="/english/">英语一速查</a>
+    </nav>
+  </header>
+
+  <header class="masthead">
+    <div class="seal" aria-hidden="true">研</div>
+    <div>
+      <p class="kicker">Postgraduate Entrance Exam · Archive</p>
+      <h1>考研资料总库</h1>
+      <p class="sub">数学真题 · 数学/英语知识库 · 英语真题逐题练习 · 英语一答案速查</p>
+    </div>
+  </header>
+
+  <main>
+    <div class="cards">
+      <a class="card" href="/math/">
+        <span class="tag">Mathematics</span>
+        <h2>数学真题速查</h2>
+        <p>2010—2026 年数一 / 数二 / 数三原卷与解析，逐题 LaTeX 还原，按年份、题型、难度筛选，PDF 在线翻阅。</p>
+        <div class="meta"><span>17 年</span><span>121 份 PDF</span><span>逐题还原</span></div>
+      </a>
+      <a class="card" href="/library/">
+        <span class="tag">Knowledge Base</span>
+        <h2>数学/英语知识库</h2>
+        <p>高数、线代、概率论的知识框架与解题方法，旁及英语作文模板，支持全文搜索与按类型筛选。</p>
+        <div class="meta"><span><b data-stat="notes">258</b> 篇笔记</span><span>全文搜索</span><span>双向链接</span></div>
+      </a>
+      <a class="card" href="/exam/">
+        <span class="tag">English · Past Papers</span>
+        <h2>英语真题逐题练习</h2>
+        <p>英语一 2006—2026、英语二 2010—2026 真题逐题还原，每题标注难度，文章配全文精翻，附原卷解析 PDF。</p>
+        <div class="meta"><span>38 套</span><span>逐题还原</span><span>全文精翻</span></div>
+      </a>
+      <a class="card" href="/english/">
+        <span class="tag">English I</span>
+        <h2>英语一答案速查</h2>
+        <p>一刷 2006—2026、二刷 2007—2025 的阅读答案与成绩记录，可在页面上直接记分并查看汇总。</p>
+        <div class="meta"><span>一刷 / 二刷</span><span>成绩记录</span></div>
+      </a>
+    </div>
+
+    <div class="section-head">
+      <h2>知识库目录</h2>
+      <a href="/library/">进入知识库 →</a>
+    </div>
+
+    <div class="cols">
+      <section class="col">
+        <h3>高等数学 <small><span data-stat="gaoshu">141</span> 篇</small></h3>
+        <ul>
+          <li><a href="/library/#gaoshu">1 函数 极限与连续</a></li>
+          <li><a href="/library/#gaoshu">2 一元函数微分学</a></li>
+          <li><a href="/library/#gaoshu">3 微分中值定理</a></li>
+          <li><a href="/library/#gaoshu">4 一元函数积分学</a></li>
+          <li><a href="/library/#gaoshu">5 空间解析几何与场论</a></li>
+          <li><a href="/library/#gaoshu">6 多元函数微分学</a></li>
+          <li><a href="/library/#gaoshu">7 二重积分</a></li>
+          <li><a href="/library/#gaoshu">8 微分方程</a></li>
+          <li><a href="/library/#gaoshu">9 无穷级数</a></li>
+          <li><a href="/library/#gaoshu">10 线面积分</a></li>
+        </ul>
+      </section>
+
+      <section class="col">
+        <h3>线性代数 <small><span data-stat="xiandai">72</span> 篇</small></h3>
+        <ul>
+          <li><a href="/library/#xiandai">1 行列式</a></li>
+          <li><a href="/library/#xiandai">2 矩阵</a></li>
+          <li><a href="/library/#xiandai">3 向量组</a></li>
+          <li><a href="/library/#xiandai">4 线性方程组</a></li>
+          <li><a href="/library/#xiandai">5 特征值与特征向量</a></li>
+          <li><a href="/library/#xiandai">6 二次型</a></li>
+        </ul>
+      </section>
+
+      <section class="col">
+        <h3>概率论与数理统计 <small><span data-stat="gailv">37</span> 篇</small></h3>
+        <ul>
+          <li><a href="/library/#gailv">1 随机事件与概率</a></li>
+          <li><a href="/library/#gailv">2 一维随机变量</a></li>
+          <li><a href="/library/#gailv">3 二维随机变量</a></li>
+          <li><a href="/library/#gailv">4 数字特征</a></li>
+          <li><a href="/library/#gailv">5 大数定律与中心极限定理</a></li>
+          <li><a href="/library/#gailv">6 数理统计的基本概念</a></li>
+          <li><a href="/library/#gailv">7 参数估计</a></li>
+          <li><a href="/library/#gailv">8 假设检验</a></li>
+        </ul>
+      </section>
+
+      <section class="col">
+        <h3>英语一 · 模板与说明 <small><span data-stat="yingyi">3</span> + <span data-stat="moban">5</span> 篇</small></h3>
+        <ul>
+          <li><a href="/library/#yingyi">大小作文模板</a></li>
+          <li><a href="/library/#yingyi">2026 作文预测</a></li>
+          <li><a href="/library/#moban">基础知识模板</a></li>
+          <li><a href="/library/#moban">方法模板</a></li>
+          <li><a href="/library/#moban">错题模板</a></li>
+          <li><a href="/library/#moban">同类题目汇总模板</a></li>
+        </ul>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <span>内容为个人复习整理，仅供学习参考。</span>
+    <span class="fl">
+      <a href="https://github.com/3456038583-gif/kaoyan-hub">GitHub 仓库</a>
+      <a href="https://github.com/3456038583-gif/kaoyan-math-site-hd">高清原卷</a>
+      <a href="https://github.com/3456038583-gif/kaoyan-math-site-hd/releases/latest">打包下载</a>
+    </span>
+  </footer>
+
+</div>
+</body>
+</html>

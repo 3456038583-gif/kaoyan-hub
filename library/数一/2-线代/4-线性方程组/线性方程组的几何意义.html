@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>线性方程组的几何意义 · 数学/英语知识库</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/vendor/katex/katex.min.css">
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/library/note.css">
+</head>
+<body class="note-page">
+
+<nav class="sitebar" aria-label="站点导航">
+  <a class="sb-brand" href="/">考研资料总库</a>
+  <div class="sb-links">
+    <a href="/math/">数学真题</a>
+    <a href="/library/" class="on">知识库</a>
+    <a href="/exam/">英语真题</a>
+    <a href="/english/">英语速查</a>
+  </div>
+</nav>
+<div class="lib-layout">
+  <aside class="lib-side" id="libSide" aria-label="知识库目录">
+    <div class="side-head">
+      <a href="/library/">数学/英语知识库</a>
+      <button type="button" class="side-toggle" id="sideToggle" aria-expanded="false">目录</button>
+    </div>
+    <div class="side-tree" id="sideTree"></div>
+  </aside>
+  <main class="note-main">
+    <nav class="crumbs"><a href="/library/">知识库</a> <span class="sep">/</span> <span>数一</span> <span class="sep">/</span> <span>2 线代</span> <span class="sep">/</span> <span>4 线性方程组</span></nav>
+    <article class="note-article">
+      <header class="note-head">
+        <span class="badge">补充理解</span>
+        <h1>线性方程组的几何意义</h1>
+        <div class="note-meta"><span class="tag">#线代</span> <span class="tag">#线性方程组</span> <span class="tag">#几何意义</span> <span class="aliases">别名：线性方程组的几何意义</span></div>
+      </header>
+      <div class="prose" id="prose"><h2 id="几何理解">几何理解</h2><p>线性方程组的解，几何上可以理解为若干个几何对象的公共交点：</p>
+<ol>
+<li>二元一次方程对应平面上的直线。</li>
+<li>三元一次方程对应空间中的平面。</li>
+<li>方程组有解，就是这些直线或平面存在公共点。</li>
+<li>方程组无穷多解，就是公共部分不是单点，而是一条线、一个平面或更高维线性流形。</li>
+</ol>
+<h2 id="与秩的关系">与秩的关系</h2><ol>
+<li>约束越多，解空间维数越低。</li>
+<li>对齐次方程组 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>x</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">Ax=0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">A</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span>，解集一定过原点。</li>
+<li>对非齐次方程组 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>x</mi><mo>=</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">Ax=b</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">A</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span></span></span></span>，若有解，则其解集是齐次解空间的平移。</li>
+</ol>
+<div class="callout callout-quote"><div class="callout-title">引用</div><div class="callout-body"><p>齐次解空间看成“方向空间”，非齐次解集看成“方向空间 + 一个落点”会更容易理解通解结构。</p>
+</div></div>
+
+<h2 id="图解">图解</h2></div>
+      <section class="backlinks"><h2>引用本篇</h2><ul><li><a href="/library/%E6%95%B0%E4%B8%80/2-%E7%BA%BF%E4%BB%A3/4-%E7%BA%BF%E6%80%A7%E6%96%B9%E7%A8%8B%E7%BB%84/4-0-%E7%BA%BF%E6%80%A7%E6%96%B9%E7%A8%8B%E7%BB%84%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE">4-0 线性方程组思维导图</a></li></ul></section>
+      <nav class="pager">
+    <a class="pg prev" href="/library/%E6%95%B0%E4%B8%80/2-%E7%BA%BF%E4%BB%A3/4-%E7%BA%BF%E6%80%A7%E6%96%B9%E7%A8%8B%E7%BB%84/%E5%9F%BA%E7%A1%80%E8%A7%A3%E7%B3%BB%E3%80%81%E9%80%9A%E8%A7%A3%E3%80%81%E8%87%AA%E7%94%B1%E5%8F%98%E9%87%8F%E4%B8%8E%E6%9E%81%E5%A4%A7%E6%97%A0%E5%85%B3%E7%BB%84%E7%9A%84%E5%85%B3%E7%B3%BB"><span>上一篇</span>基础解系、通解、自由变量与极大无关组的关系</a>
+    <a class="pg next" href="/library/%E6%95%B0%E4%B8%80/2-%E7%BA%BF%E4%BB%A3/4-%E7%BA%BF%E6%80%A7%E6%96%B9%E7%A8%8B%E7%BB%84/%E8%87%AA%E7%94%B1%E5%8F%98%E9%87%8F"><span>下一篇</span>自由变量</a>
+  </nav>
+    </article>
+  </main>
+  <aside class="note-toc" aria-label="本篇目录"><div class="toc-title">本篇目录</div><div id="toc"></div></aside>
+</div>
+<script src="/library/note.js"></script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>多元函数可导可微连续的理解 · 数学/英语知识库</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/vendor/katex/katex.min.css">
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/library/note.css">
+</head>
+<body class="note-page">
+
+<nav class="sitebar" aria-label="站点导航">
+  <a class="sb-brand" href="/">考研资料总库</a>
+  <div class="sb-links">
+    <a href="/math/">数学真题</a>
+    <a href="/library/" class="on">知识库</a>
+    <a href="/exam/">英语真题</a>
+    <a href="/english/">英语速查</a>
+  </div>
+</nav>
+<div class="lib-layout">
+  <aside class="lib-side" id="libSide" aria-label="知识库目录">
+    <div class="side-head">
+      <a href="/library/">数学/英语知识库</a>
+      <button type="button" class="side-toggle" id="sideToggle" aria-expanded="false">目录</button>
+    </div>
+    <div class="side-tree" id="sideTree"></div>
+  </aside>
+  <main class="note-main">
+    <nav class="crumbs"><a href="/library/">知识库</a> <span class="sep">/</span> <span>数一</span> <span class="sep">/</span> <span>1 高数</span> <span class="sep">/</span> <span>6 多元函数微分学及其应用</span></nav>
+    <article class="note-article">
+      <header class="note-head">
+        <span class="badge">基础知识</span>
+        <h1>多元函数可导可微连续的理解</h1>
+        <div class="note-meta"><span class="tag">#高数</span> <span class="tag">#多元函数微分学及其应用</span> <span class="aliases">别名：多元函数可导可微连续的理解</span></div>
+      </header>
+      <div class="prose" id="prose"><p>要理解“偏导数存在且连续就可微”，我们可以从“可微的本质”和“偏导数连续的作用”两个角度，用直观的场景类比来解释。</p>
+<p>首先，先明确一个核心：<strong>可微的本质是“局部线性近似”</strong>。</p>
+<p>想象你站在一个曲面（比如山坡）上的某一点 P。如果这个曲面在 P 点“可微”，意味着在 P 点附近，曲面可以被一个“切平面”完美近似——就像你在山脚下看近处的山坡，会觉得它几乎是平的（这个“平”就是切平面）。此时，你从 P 点向任意方向走一小步（比如向东、向北、向东北……），高度的变化都能被切平面上对应方向的高度变化“精准预测”，误差小到可以忽略（数学上叫“高阶无穷小”）。</p>
+<p>接下来看“偏导数”的作用：偏导数是“特定方向的线性近似能力”。</p>
+<p>偏导数（比如对 x 的偏导数）本质是“沿 x 轴方向（比如正东方向）的坡度”——它告诉你沿正东方向走一小步，高度变化的近似值。同理，对 y 的偏导数是正北方向的坡度。</p>
+<p>但“偏导数存在”只能保证：<strong>沿 x 轴和 y 轴这两个特定方向，高度变化能被线性近似</strong>。就像山坡在 P 点，正东和正北方向确实有明确的坡度（能近似预测这两个方向的高度变化），但其他方向（比如东北方向）可能不行——比如曲面在 P 点附近可能是“褶皱的”：正东和正北方向看起来平缓，但东北方向突然凸起或凹陷，此时切平面就不存在（不可微）。</p>
+<p>这就是为什么“偏导数存在不一定可微”：两个特定方向的近似能力，不能保证“所有方向”都能被线性近似。</p>
+<p>最后，关键的“偏导数连续”：它能让“局部近似能力扩展到所有方向”。</p>
+<p>“偏导数连续”的意思是：在 P 点附近，偏导数（坡度）的变化是“平缓的”——比如正东方向的坡度在 P 点附近不会突然从 1 变成 100，正北方向的坡度也不会剧烈跳变。</p>
+<p>这种“平缓性”有什么用？假设你想知道东北方向（既向东又向北）的高度变化。因为正东和正北方向的坡度（偏导数）在附近变化平缓，意味着这两个方向的坡度不会“突然失控”，所以东北方向的高度变化可以通过“正东坡度×向东的步长 + 正北坡度×向北的步长”组合出来（就像两个平缓的力可以合成一个稳定的合力）。</p>
+<p>此时，这个“组合出来的近似”就是切平面上东北方向的高度变化——它能精准预测实际高度变化，误差小到可忽略。也就是说，因为偏导数连续，两个基础方向（x 和 y 轴）的坡度“稳定且可控”，它们的组合能覆盖所有方向，最终形成一个“全局有效的切平面”。</p>
+<p>反过来说，如果偏导数不连续（比如附近坡度突然跳变），两个基础方向的坡度本身就不稳定，它们的组合就无法覆盖所有方向的近似——比如东北方向的实际高度变化可能突然偏离组合预测，切平面就不存在了（不可微）。</p>
+<p>总结一下逻辑链：</p>
+<ol>
+<li>可微需要“所有方向的局部线性近似”（切平面存在）；</li>
+<li>偏导数存在，保证了 x、y 两个基础方向有线性近似能力；</li>
+<li>偏导数连续，保证了这两个基础方向的近似能力“稳定且可组合”，能扩展到所有方向；</li>
+<li>最终，所有方向都能被线性近似——即“可微”。</li>
+</ol>
+<p>就像搭积木：偏导数存在是有了两块基础积木（x 和 y 方向），偏导数连续是这两块积木能稳定拼接并扩展出整个平面（切平面），而可微就是“拼出了完整平面”。</p>
+</div>
+      <section class="backlinks"><h2>引用本篇</h2><ul><li><a href="/library/%E6%95%B0%E4%B8%80/1-%E9%AB%98%E6%95%B0/6-%E5%A4%9A%E5%85%83%E5%87%BD%E6%95%B0%E5%BE%AE%E5%88%86%E5%AD%A6%E5%8F%8A%E5%85%B6%E5%BA%94%E7%94%A8/6-0-%E5%A4%9A%E5%85%83%E5%87%BD%E6%95%B0%E5%BE%AE%E5%88%86%E5%AD%A6%E5%8F%8A%E5%85%B6%E5%BA%94%E7%94%A8%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE">6-0 多元函数微分学及其应用思维导图</a></li><li><a href="/library/%E6%95%B0%E4%B8%80/1-%E9%AB%98%E6%95%B0/6-%E5%A4%9A%E5%85%83%E5%87%BD%E6%95%B0%E5%BE%AE%E5%88%86%E5%AD%A6%E5%8F%8A%E5%85%B6%E5%BA%94%E7%94%A8/6-5-%E5%A4%9A%E5%85%83%E5%87%BD%E6%95%B0%E7%9A%84%E8%BF%9E%E7%BB%AD%E3%80%81%E5%8F%AF%E5%AF%BC%E3%80%81%E5%8F%AF%E5%BE%AE%E6%80%A7%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB">6-5 多元函数的连续、可导、可微性之间的关系</a></li></ul></section>
+      <nav class="pager">
+    <a class="pg prev" href="/library/%E6%95%B0%E4%B8%80/1-%E9%AB%98%E6%95%B0/6-%E5%A4%9A%E5%85%83%E5%87%BD%E6%95%B0%E5%BE%AE%E5%88%86%E5%AD%A6%E5%8F%8A%E5%85%B6%E5%BA%94%E7%94%A8/%E5%A4%9A%E5%85%83%E5%A4%8D%E5%90%88%E5%87%BD%E6%95%B0%E6%B1%82%E5%AF%BC"><span>上一篇</span>多元复合函数求导</a>
+    <a class="pg next" href="/library/%E6%95%B0%E4%B8%80/1-%E9%AB%98%E6%95%B0/6-%E5%A4%9A%E5%85%83%E5%87%BD%E6%95%B0%E5%BE%AE%E5%88%86%E5%AD%A6%E5%8F%8A%E5%85%B6%E5%BA%94%E7%94%A8/%E9%9A%90%E5%87%BD%E6%95%B0%E5%AD%98%E5%9C%A8%E5%AE%9A%E7%90%86"><span>下一篇</span>隐函数存在定理</a>
+  </nav>
+    </article>
+  </main>
+  <aside class="note-toc" aria-label="本篇目录"><div class="toc-title">本篇目录</div><div id="toc"></div></aside>
+</div>
+<script src="/library/note.js"></script>
+</body>
+</html>

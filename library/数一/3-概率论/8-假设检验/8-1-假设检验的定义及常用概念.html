@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>8-1 假设检验的定义及常用概念 · 数学/英语知识库</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/vendor/katex/katex.min.css">
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/library/note.css">
+</head>
+<body class="note-page">
+
+<nav class="sitebar" aria-label="站点导航">
+  <a class="sb-brand" href="/">考研资料总库</a>
+  <div class="sb-links">
+    <a href="/math/">数学真题</a>
+    <a href="/library/" class="on">知识库</a>
+    <a href="/exam/">英语真题</a>
+    <a href="/english/">英语速查</a>
+  </div>
+</nav>
+<div class="lib-layout">
+  <aside class="lib-side" id="libSide" aria-label="知识库目录">
+    <div class="side-head">
+      <a href="/library/">数学/英语知识库</a>
+      <button type="button" class="side-toggle" id="sideToggle" aria-expanded="false">目录</button>
+    </div>
+    <div class="side-tree" id="sideTree"></div>
+  </aside>
+  <main class="note-main">
+    <nav class="crumbs"><a href="/library/">知识库</a> <span class="sep">/</span> <span>数一</span> <span class="sep">/</span> <span>3 概率论</span> <span class="sep">/</span> <span>8 假设检验</span></nav>
+    <article class="note-article">
+      <header class="note-head">
+        <span class="badge">基础知识</span>
+        <h1>8-1 假设检验的定义及常用概念</h1>
+        <div class="note-meta"><span class="tag">#概率论</span> <span class="tag">#假设检验</span> </div>
+      </header>
+      <div class="prose" id="prose"><h2 id="假设检验的定义">假设检验的定义</h2><p>假设检验是数理统计学中根据一定假设条件由样本推断总体的一种方法。</p>
+<p>具体做法是: <strong>根据问题的需要对所研究的总体作某种假设</strong>, 记作 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">H_0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0813em;">H</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0813em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>; 选取合适的统计量, 这个统计量的选取要使得在假设 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">H_0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0813em;">H</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0813em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 成立时, 其分布为已知; 由实测的样本, 计算出统计量的值, 并根据预先给定的显著性水平进行检验, 作出拒绝或接受假设 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">H_0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0813em;">H</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0813em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 的判断。</p>
+<h2 id="有关假设检验的常用概念">有关假设检验的常用概念</h2><h3 id="原假设与备择假设">原假设与备择假设</h3><p>通常称对所关注问题的假设为原假设, 记作 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">H_0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0813em;">H</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0813em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>, 称与原假设相对立的假设为备择假设, 记作 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">H_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0813em;">H</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0813em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>。</p>
+<h3 id="检验统计量">检验统计量</h3><p>用于假设检验问题的统计量称为检验统计量。</p>
+<h3 id="拒绝域和临界点">拒绝域和临界点</h3><p>当检验统计量的观测值落在某一个区域时就拒绝 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">H_0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0813em;">H</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0813em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>。这一区域称为拒绝域, 拒绝域的边界点称为临界点。</p>
+<h3 id="假设检验的两类错误">假设检验的两类错误</h3><p><strong>第一类错误</strong> (<code>弃真错误</code>): 原假设 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">H_0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0813em;">H</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0813em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 为真时拒绝原假设; 第一类错误=<code>显著性水平</code></p>
+<p><strong>第二类错误</strong> (<code>取伪</code>错误): 备择假设 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">H_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0813em;">H</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0813em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 为真时接受原假设。</p>
+</div>
+      <section class="backlinks"><h2>引用本篇</h2><ul><li><a href="/library/%E6%95%B0%E4%B8%80/3-%E6%A6%82%E7%8E%87%E8%AE%BA/8-%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C/8-0-%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE">8-0 假设检验思维导图</a></li></ul></section>
+      <nav class="pager">
+    <a class="pg prev" href="/library/%E6%95%B0%E4%B8%80/3-%E6%A6%82%E7%8E%87%E8%AE%BA/8-%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C/8-0-%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE"><span>上一篇</span>8-0 假设检验思维导图</a>
+    <a class="pg next" href="/library/%E6%95%B0%E4%B8%80/3-%E6%A6%82%E7%8E%87%E8%AE%BA/8-%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C/8-2-%E6%98%BE%E8%91%97%E6%80%A7%E6%A3%80%E9%AA%8C"><span>下一篇</span>8-2 显著性检验</a>
+  </nav>
+    </article>
+  </main>
+  <aside class="note-toc" aria-label="本篇目录"><div class="toc-title">本篇目录</div><div id="toc"></div></aside>
+</div>
+<script src="/library/note.js"></script>
+</body>
+</html>

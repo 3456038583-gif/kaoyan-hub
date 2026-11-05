@@ -1,0 +1,54 @@
+/* 全站顶部导航条：只作用于 .sitebar，避免与各页原有样式冲突 */
+.sitebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 11px 0 10px;
+  border-bottom: 1px solid var(--line, #e0dfd4);
+  font-family: var(--sans, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.sitebar a { color: inherit; text-decoration: none; }
+.sb-brand {
+  font-family: var(--serif, "Noto Serif SC", "Songti SC", serif);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: .08em;
+  color: var(--ink, #1b211d);
+  white-space: nowrap;
+}
+.sb-brand::before {
+  content: "";
+  display: inline-block;
+  width: 6px; height: 6px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: var(--gold, #b5842f);
+  vertical-align: 2px;
+}
+.sb-links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.sb-links a {
+  color: var(--muted, #6d746c);
+  padding: 3px 0;
+  border-bottom: 2px solid transparent;
+  transition: color .15s, border-color .15s;
+}
+.sb-links a:hover { color: var(--ink, #1b211d); }
+.sb-links a.on {
+  color: var(--accent, #2f5d8a);
+  border-bottom-color: currentColor;
+  font-weight: 600;
+}
+@media (max-width: 520px) {
+  .sitebar { gap: 8px; }
+  .sb-links { gap: 12px; font-size: 12.5px; }
+  .sb-brand { font-size: 13px; letter-spacing: 0; }
+}

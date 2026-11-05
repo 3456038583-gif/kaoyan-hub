@@ -1,0 +1,2402 @@
+<meta charset="utf-8">
+<title>英一两刷答案速查</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* 版式：试卷答案页。一刷用批改红，二刷用蓝墨；切换资料时整页强调色随之改变。 */
+:root {
+  --paper: #f5f6f2;
+  --surface: #ffffff;
+  --ink: #16201b;
+  --muted: #6a756f;
+  --line: #dfe3dc;
+  --line-strong: #b9c2bb;
+  --mask: #e9ece5;
+  --accent: #9c3b2e;
+  --accent-soft: #f0dfda;
+  --accent-ink: #ffffff;
+  --seal-shadow: rgba(22, 32, 27, 0.16);
+
+  /* 成绩走势：三个模块的固定配色（不随一刷/二刷强调色变化） */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+
+  --serif: "Noto Serif SC", "Songti SC", "STSong", serif;
+  --sans: "Noto Sans SC", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+:root[data-set="r2"] {
+  --accent: #2d5a73;
+  --accent-soft: #dce7ec;
+  --accent-ink: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #121715;
+    --surface: #19201d;
+    --ink: #e9efea;
+    --muted: #94a19a;
+    --line: #2a332e;
+    --line-strong: #48544d;
+    --mask: #232b27;
+    --accent: #e0735f;
+    --accent-soft: #33201c;
+    --accent-ink: #17110f;
+    --seal-shadow: rgba(0, 0, 0, 0.4);
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    color-scheme: dark;
+  }
+  :root[data-set="r2"]:not([data-theme="light"]) {
+    --accent: #6fb3cc;
+    --accent-soft: #16262c;
+    --accent-ink: #0c1417;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #121715;
+  --surface: #19201d;
+  --ink: #e9efea;
+  --muted: #94a19a;
+  --line: #2a332e;
+  --line-strong: #48544d;
+  --mask: #232b27;
+  --accent: #e0735f;
+  --accent-soft: #33201c;
+  --accent-ink: #17110f;
+  --seal-shadow: rgba(0, 0, 0, 0.4);
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  color-scheme: dark;
+}
+:root[data-theme="dark"][data-set="r2"] {
+  --accent: #6fb3cc;
+  --accent-soft: #16262c;
+  --accent-ink: #0c1417;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 56px;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  background: var(--paper);
+  z-index: 30;
+}
+.page { max-width: 760px; margin-inline: auto; }
+
+.masthead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-block: clamp(26px, 6vw, 40px) 18px;
+}
+.seal {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  display: grid;
+  place-items: center;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1;
+  box-shadow: 0 1px 2px var(--seal-shadow);
+}
+.kicker {
+  margin: 0 0 2px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(30px, 7vw, 38px);
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  text-wrap: balance;
+}
+
+.navwrap {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 20;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.setrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 10px;
+}
+.seg {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--mask);
+}
+.segbtn {
+  border: 0;
+  padding: 6px 18px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.segbtn:hover:not([aria-pressed="true"]) { color: var(--ink); }
+.segbtn[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+.segbtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.setcount {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.years {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-block: 8px 11px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.years::-webkit-scrollbar { display: none; }
+.year {
+  flex: 0 0 auto;
+  min-width: 58px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 17px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.year:hover { background: var(--mask); color: var(--ink); }
+.year[aria-current="true"] {
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+}
+
+.yearhead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  padding-block: 28px 6px;
+}
+.yearhead h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(34px, 8vw, 44px);
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.yearhead h2 small {
+  font-size: 0.38em;
+  font-weight: 600;
+  color: var(--muted);
+  margin-left: 2px;
+  letter-spacing: 0.06em;
+}
+.note {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.part-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 38px 0 16px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.part-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.group + .group { margin-top: 30px; }
+.ghead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 14px;
+}
+.sec {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+.gtitle h3 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 21px;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+}
+.gmeta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+  padding-bottom: 2px;
+}
+.range, .count {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.count { white-space: nowrap; }
+.gtoggle {
+  border: 0;
+  padding: 2px 0;
+  background: none;
+  color: var(--accent);
+  font-family: var(--sans);
+  font-size: 12.5px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  white-space: nowrap;
+}
+.gtoggle:hover { text-decoration-thickness: 2px; }
+
+/* 每组标题下的当年真题信息：主题、话题与难度 */
+.gdesc {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px 8px;
+  margin: -6px 0 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.gdesc-title {
+  color: var(--ink);
+  font-size: 12.5px;
+  text-wrap: pretty;
+}
+.gtag, .gdiff {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 10.5px;
+  line-height: 1.45;
+  white-space: nowrap;
+}
+.gdiff b { color: var(--ink); font-weight: 600; }
+.gdiff .stars {
+  font-size: 9.5px;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+.gavg {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.grid.cloze { grid-template-columns: repeat(10, minmax(0, 1fr)); }
+
+.q {
+  position: relative;
+  height: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 3px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.q:hover { border-color: var(--line-strong); }
+.q:active { transform: translateY(1px); }
+.q:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.num {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 1;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.glyph {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 23px;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0;
+  transform: translateY(3px);
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+.q::after {
+  content: "";
+  position: absolute;
+  top: 62%;
+  left: 50%;
+  width: 11px;
+  height: 2px;
+  margin-left: -5.5px;
+  border-radius: 1px;
+  background: var(--line-strong);
+  transition: opacity 0.12s;
+}
+.q.on { border-color: var(--accent-soft); background: var(--surface); }
+.q.on .glyph { opacity: 1; transform: none; }
+.q.on::after { opacity: 0; }
+
+/* —— 成绩记录：每篇下方的答对数输入 —— */
+.setmeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.viewbtn {
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 5px 12px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.viewbtn:hover { border-color: var(--accent); color: var(--accent); }
+.viewbtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.scorebar {
+  display: flex;
+  align-items: center;
+  gap: 8px 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--mask);
+}
+.sblabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.sinput {
+  width: 3.4em;
+  padding: 3px 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.sinput:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+.sinput::placeholder { color: var(--line-strong); font-weight: 500; }
+.sbtotal {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.sbscore {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.sbscore b {
+  margin-right: 2px;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--line-strong);
+}
+.scorebar.has .sbscore b { color: var(--accent); }
+.sclear {
+  border: 0;
+  background: none;
+  padding: 2px 0;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 11.5px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.sclear:hover { color: var(--accent); }
+.sbprev {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  padding: 2px 7px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.sbprev b {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+}
+.sbprev[hidden] { display: none; }
+
+/* —— 成绩汇总 / 真题概况 —— */
+.page[data-view="summary"] .years,
+.page[data-view="overview"] .years,
+.page[data-view="summary"] .yearhead,
+.page[data-view="overview"] .yearhead { display: none; }
+
+.infoonly {
+  display: none;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.page[data-view="overview"] .seg,
+.page[data-view="overview"] .setcount { display: none; }
+.page[data-view="overview"] .infoonly { display: inline; }
+
+.sumhead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  padding-block: 28px 6px;
+}
+.sumhead h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(30px, 7vw, 38px);
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+}
+.sumhead h2 small {
+  font-size: 0.42em;
+  font-weight: 600;
+  color: var(--muted);
+  margin-left: 4px;
+  letter-spacing: 0.06em;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 20px;
+}
+.stat {
+  padding: 11px 12px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+.stat-label {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.stat-value {
+  display: block;
+  margin-top: 5px;
+  font-family: var(--mono);
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.stat-value small {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-left: 2px;
+}
+.stat-sub {
+  display: block;
+  margin-top: 3px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.sumsec { margin-top: 36px; }
+.sumsec-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--line);
+}
+.sumsec-title {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.3;
+}
+.sumsec-avg {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.srow {
+  display: grid;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 2px;
+  border-bottom: 1px solid var(--line);
+}
+.srow:last-of-type { border-bottom: 0; }
+.srow.head { padding-block: 8px 4px; border-bottom: 0; }
+.srow.single { grid-template-columns: 52px minmax(40px, 1fr) 92px 74px; }
+.srow.reading { grid-template-columns: 44px repeat(4, minmax(0, 1fr)) 74px; }
+.srow.total { grid-template-columns: 44px repeat(3, minmax(0, 1fr)) 80px; }
+.srow.head span {
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-align: right;
+}
+.srow.head span:first-child { text-align: left; }
+.syear {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.smeter {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--mask);
+  overflow: hidden;
+}
+.smeter i {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--accent);
+}
+.sdetail {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.sscore {
+  font-family: var(--mono);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.sscore em {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 10px;
+  color: var(--muted);
+}
+.sscore.empty { color: var(--line-strong); font-weight: 500; }
+.tcell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+.tcell b { font-size: 13px; font-weight: 600; }
+.tcell i {
+  font-style: normal;
+  font-size: 9.5px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+.tcell.empty b { color: var(--line-strong); font-weight: 500; }
+.tcell.total b { color: var(--accent); }
+.sumnote {
+  margin: 10px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* —— 历年走势：折线图 —— */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-top: 12px;
+  font-size: 11.5px;
+  color: var(--ink);
+}
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.legend i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.chartwrap {
+  position: relative;
+  margin-top: 4px;
+}
+.chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: pan-y;
+}
+.chart .grid-line { stroke: var(--line); stroke-width: 1; }
+.chart .axis-line { stroke: var(--line-strong); stroke-width: 1; }
+.chart .tick {
+  font-family: var(--mono);
+  font-size: 9px;
+  fill: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.chart .series-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.chart .dot {
+  stroke: none;
+}
+.chart .end-label {
+  font-family: var(--sans);
+  font-size: 10px;
+  fill: var(--ink);
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.chart .crosshair {
+  stroke: var(--line-strong);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  opacity: 0;
+  pointer-events: none;
+}
+.chart-tip {
+  position: absolute;
+  z-index: 5;
+  min-width: 142px;
+  padding: 7px 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: 0 4px 14px var(--seal-shadow);
+  font-size: 11px;
+  pointer-events: none;
+}
+.chart-tip[hidden] { display: none; }
+.chart-tip .tip-year {
+  margin-bottom: 3px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.chart-tip .tip-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  line-height: 1.7;
+  white-space: nowrap;
+}
+.chart-tip .tip-row > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+}
+.chart-tip .tip-row i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+.chart-tip .tip-row b {
+  font-family: var(--mono);
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.chart-tip .tip-row b em {
+  font-style: normal;
+  font-weight: 500;
+  color: var(--muted);
+}
+.chart-tip .tip-row b.empty { color: var(--line-strong); font-weight: 500; }
+
+.sumempty {
+  margin-top: 34px;
+  padding: 52px 20px 46px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 8px;
+  text-align: center;
+}
+.sumempty p { margin: 0 0 6px; }
+.sumempty .big {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 20px;
+}
+.sumempty .note {
+  max-width: 40ch;
+  margin-inline: auto;
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.sumempty .viewbtn {
+  margin-top: 18px;
+  padding: 7px 16px;
+}
+
+/* —— 真题概况 —— */
+.tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-block: 16px 12px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex: 0 0 auto;
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.tab:hover { border-color: var(--line-strong); color: var(--ink); }
+.tab[aria-current="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+}
+.tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.info-sec-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.info-sec-head h3 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.3;
+}
+.info-sec-head span {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.infonote {
+  margin: 3px 0 12px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.infohead {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) 58px;
+  gap: 10px;
+  padding: 0 2px 8px;
+  border-bottom: 1px solid var(--line);
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.infohead span:last-child { text-align: right; }
+.inforow {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) 58px;
+  gap: 10px;
+  padding: 10px 2px;
+  border-bottom: 1px solid var(--line);
+}
+.inforow:last-child { border-bottom: 0; }
+.infomain { min-width: 0; }
+.info-title {
+  display: block;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.info-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 5px;
+}
+.info-tags i {
+  font-style: normal;
+  font-size: 10px;
+  line-height: 1;
+  padding: 3px 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.info-score {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.info-score.empty {
+  color: var(--line-strong);
+  font-weight: 500;
+}
+
+.struc {
+  padding: 14px 14px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+.struc + .struc { margin-top: 10px; }
+.struc h3 {
+  margin: 0 0 8px;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.55;
+}
+.struc-list { display: grid; gap: 4px; }
+.struc-item {
+  display: flex;
+  gap: 8px;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.struc-item b {
+  flex: 0 0 40px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.struc-item span { color: var(--ink); }
+
+footer {
+  margin-top: 54px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+footer p { margin: 0; }
+
+@media (max-width: 560px) {
+  .grid.cloze { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .q { height: 60px; }
+  .gmeta { gap: 10px; }
+  .count { display: none; }
+  .setcount { display: none; }
+  .segbtn { padding: 6px 15px; }
+  .scorebar { padding: 7px 9px; }
+  .sdetail { font-size: 10px; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat-value { font-size: 23px; }
+  .srow.single { grid-template-columns: 46px minmax(30px, 1fr) 86px 66px; gap: 8px; }
+  .srow.reading { grid-template-columns: 34px repeat(4, minmax(0, 1fr)) 64px; gap: 6px; }
+  .srow.total { grid-template-columns: 34px repeat(3, minmax(0, 1fr)) 68px; gap: 6px; }
+  .tcell b { font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 0.01ms !important; }
+  .q:active { transform: none; }
+}
+</style>
+<link rel="stylesheet" href="/site.css">
+<style>
+/* 站内导航在这个 760px 版式里的间距 */
+.page > .sitebar { margin-bottom: 18px; }
+</style>
+
+<div class="page">
+  <nav class="sitebar">
+    <a class="sb-brand" href="/">考研资料总库</a>
+    <span class="sb-links">
+      <a href="/math/">数学真题</a>
+      <a href="/library/">数学/英语知识库</a>
+      <a href="/exam/">英语真题</a>
+      <a class="on" href="/english/">英语一速查</a>
+    </span>
+  </nav>
+  <header class="masthead">
+    <div class="seal" id="seal" aria-hidden="true">一</div>
+    <div>
+      <p class="kicker" id="kicker">一刷 · 全国硕士研究生招生考试 · 英语（一）· 2006—2026</p>
+      <h1 id="pageTitle">一刷速查</h1>
+    </div>
+  </header>
+
+  <div class="navwrap">
+    <div class="setrow">
+      <div class="seg" role="group" aria-label="选择资料">
+        <button class="segbtn" type="button" data-set="r1" aria-pressed="true">一刷</button>
+        <button class="segbtn" type="button" data-set="r2" aria-pressed="false">二刷</button>
+      </div>
+      <span class="infoonly" id="infoHint">真题数据 · 英语（一）</span>
+      <div class="setmeta">
+        <span class="setcount" id="setCount">21 套 · 2006—2026</span>
+        <button class="viewbtn" id="viewBtn" type="button">成绩汇总</button>
+        <button class="viewbtn" id="infoBtn" type="button">真题概况</button>
+      </div>
+    </div>
+    <nav class="years" id="years" aria-label="选择年份"></nav>
+  </div>
+
+  <div class="yearhead">
+    <h2><span id="yearNum">2021</span><small>年</small></h2>
+    <p class="note">点题号翻开答案 · 每组下方可记录答对题数</p>
+  </div>
+
+  <main id="groups" aria-live="polite"></main>
+
+  <section class="summary" id="summary" hidden aria-label="成绩汇总">
+    <div class="sumhead">
+      <h2>成绩汇总<small id="sumSet">一刷</small></h2>
+      <p class="note" id="sumMeta">数据保存在本机浏览器</p>
+    </div>
+    <div id="sumBody"></div>
+  </section>
+
+  <section class="overview" id="overview" hidden aria-label="真题概况">
+    <div class="sumhead">
+      <h2>真题概况<small>英语一</small></h2>
+      <p class="note">主题、题型与历年数据 · 据讲义整理</p>
+    </div>
+    <nav class="tabs" id="infoTabs" aria-label="选择题型"></nav>
+    <div id="infoBody"></div>
+  </section>
+
+  <footer>
+    <p>一刷：2006—2026 · 二刷：2007—2025 · 仅收录 1—45 题（完形填空、阅读理解 Part A、新题型 Part B）</p>
+    <p>两套资料的答案在部分年份不一致，请与所做资料的选项顺序对应使用。</p>
+    <p>成绩记录保存在本机浏览器，换设备或清理浏览器数据后会丢失。</p>
+  </footer>
+</div>
+
+<script>
+/* DATA-START */
+const RAW1 = {
+  "2006": { c: ["ABDAD", "CBCAA", "CBDCC", "ABCAD"], r: ["CACDB", "ABCDD", "CACDB", "DBDBA"], b: "CABFD" },
+  "2007": { c: ["BDACC", "DBABC", "ADACB", "DCABD"], r: ["CBADC", "DCAAB", "CBDCB", "DABAD"], b: "FDBCE" },
+  "2008": { c: ["BDACC", "ABDBC", "BDACD", "DCABA"], r: ["ADCBD", "DCAAB", "ACBDC", "DBCAB"], b: "DGACE" },
+  "2009": { c: ["BADBC", "ADCBD", "DBCDA", "CBAAC"], r: ["CDADA", "ACDAB", "DBBCC", "BBDAC"], b: "CEABG" },
+  "2010": { c: ["ABCBC", "BDACD", "CAADB", "ADCBD"], r: ["BADAB", "CDCBA", "BDACC", "ADCBD"], b: "BFDGA" },
+  "2011": { c: ["CDBBA", "BADCA", "BCDCB", "DADAC"], r: ["CBDBA", "BDCAC", "DCBAA", "CDADB"], b: "BDACF" },
+  "2012": { c: ["BABDC", "BDBAB", "ACCDA", "CACDD"], r: ["DBACD", "CDADA", "ABBDC", "CDBCA"], b: "CDAFG" },
+  "2013": { c: ["ABCDB", "DAADC", "ACBCB", "CDDBA"], r: ["DBACC", "ADCBD", "BBDAC", "ACBAD"], b: "EFBGC" },
+  "2014": { c: ["DBACC", "ACDBA", "ADBCD", "BBACD"], r: ["CADBA", "DBCDC", "CBADB", "ADCBA"], b: "CFGDB" },
+  "2015": { c: ["DBCAC", "ADABD", "BABDC", "CBDCA"], r: ["DABDC", "CAACB", "BCDCA", "ABCAC"], b: "CEGBA" },
+  "2016": { c: ["ADCAC", "ACCDB", "DDBAC", "DBACA"], r: ["ADBCA", "ADCAC", "BCDBA", "DABCD"], b: "BGDEF" },
+  "2017": { c: ["ACBAD", "ADCDC", "DBBCB", "CABAD"], r: ["ACDDC", "BABAD", "DCDCA", "CACBD"], b: "FEACG" },
+  "2018": { c: ["CADBD", "BCDBA", "BBACD", "ACBAC"], r: ["DCADB", "DABCA", "BCDDB", "BAACD"], b: "EGABD" },
+  "2019": { c: ["CCBDA", "BDCAD", "ABDCB", "DAABC"], r: ["ADBCB", "DAACB", "CDBAC", "CDCBA"], b: "EDGBA" },
+  "2020": { c: ["BADBC", "DBCCA", "ACDBA", "DCADB"], r: ["CBDBC", "DACAD", "ACDCB", "BDABA"], b: "CEGAD" },
+  "2021": { c: ["BCDAD", "DBADB", "CABCC", "ACDDB"], r: ["DBCAA", "CADDB", "BCABC", "ADDBC"], b: "EBGDF" },
+  "2022": { c: ["ACDCD", "BCBAD", "CBACB", "DAADB"], r: ["ACDDB", "CBCDA", "BAABC", "DADBC"], b: "FCADG" },
+  "2023": { c: ["CADCC", "ABBAD", "DCCBA", "BDADA"], r: ["CBACD", "ADBCD", "ACBAD", "BCABD"], b: "BFDCG" },
+  "2024": { c: ["DCBAB", "CADAD", "ACCDC", "BDCBA"], r: ["DDABA", "ABDCB", "BCCDA", "ABADB"], b: "ECFGB" },
+  "2025": { c: ["BCBCB", "ADAAD", "DADCD", "CBBBA"], r: ["CAABA", "BDCAC", "DAACD", "CBBCD"], b: "DGBEF" },
+  "2026": { c: ["ADBCB", "CADAD", "DDCAB", "CCBBA"], r: ["CDABB", "DABCA", "AACBD", "DCBDC"], b: "BEAGD" }
+};
+const RAW2 = {
+  "2007": { c: ["BDACC", "DBABC", "ADACB", "DCABD"], r: ["CBADC", "DCAAB", "CBDCB", "DABAD"], b: "FDBCE" },
+  "2008": { c: ["BDACC", "ABDBC", "BDACD", "DCABA"], r: ["ADCBD", "DCAAB", "ACBDC", "DBCAB"], b: "DGACE" },
+  "2009": { c: ["BADBC", "ADCBD", "DBCDA", "CBAAC"], r: ["CDADA", "ACDAB", "DBBCC", "BBDAC"], b: "CEABG" },
+  "2010": { c: ["ABCBC", "BDACD", "CAADB", "ADCBD"], r: ["BADAB", "CDBCA", "BDACC", "ADCBD"], b: "BFDGA" },
+  "2011": { c: ["CDBBA", "BADCA", "BCDCB", "DADAC"], r: ["CBDBA", "BDCAC", "DCBAA", "CDADB"], b: "BDACF" },
+  "2012": { c: ["BABDC", "BDBAB", "ACCDA", "CACDD"], r: ["DBACD", "CDADA", "ABBDC", "CDBCA"], b: "CDAFG" },
+  "2013": { c: ["ADCAB", "BADDA", "DCBDB", "CACBC"], r: ["BDADC", "BDCAD", "BADCC", "CCDAB"], b: "EFBGC" },
+  "2014": { c: ["ABDCA", "ACBDC", "DAAAD", "BDCCB"], r: ["BCDAD", "DCBAC", "DBBAA", "ACCDB"], b: "CFGDB" },
+  "2015": { c: ["ABDCC", "ACDBD", "BDBCA", "DBACA"], r: ["DABDC", "BCADB", "BCDCA", "ADCAB"], b: "CEGBA" },
+  "2016": { c: ["BDCAC", "ACCDB", "DDBAC", "DBACA"], r: ["ADBCA", "DACBC", "BCDBA", "DABCD"], b: "BGDEF" },
+  "2017": { c: ["BCACD", "ABCDB", "DBDAC", "AABCD"], r: ["BCBDA", "ACDAB", "DADBC", "CACCD"], b: "FEACG" },
+  "2018": { c: ["BCBDA", "CABDA", "CADCB", "DABDC"], r: ["DCADB", "DCBAB", "CDBAC", "BAACD"], b: "EGABD" },
+  "2019": { c: ["ACDBC", "DBACB", "CDBAD", "BCADA"], r: ["BDCAC", "BDACD", "ABCDA", "CDBAB"], b: "BGEDA" },
+  "2020": { c: ["CABDA", "BDADC", "CABDC", "BABCB"], r: ["CBDBC", "DACAD", "ACDCB", "CABCB"], b: "CEGAD" },
+  "2021": { c: ["CDABA", "ACBAC", "DBCDD", "BDAAC"], r: ["DBCDD", "BDCCA", "ABDAA", "CBBDA"], b: "GCEBD" },
+  "2022": { c: ["ACDCD", "BCBAD", "CBACB", "DAADB"], r: ["ACDDB", "CBCDA", "BAABC", "DADBC"], b: "FCADG" },
+  "2023": { c: ["CADCC", "ABBAD", "DCCBA", "BDADA"], r: ["CBACD", "ADBCD", "ACBAD", "BCABD"], b: "BFDCG" },
+  "2024": { c: ["DCBAB", "CADAD", "ACCDC", "BDCBA"], r: ["DDABA", "ABDCB", "BCCDA", "ABADB"], b: "ECFGB" },
+  "2025": { c: ["BCBCB", "ADAAD", "DADCD", "CBBBA"], r: ["CAABA", "BDCAC", "DAACD", "CBBCD"], b: "DGBEF" }
+};
+/* DATA-END */
+
+const SETS = {
+  r1: {
+    title: "一刷速查",
+    seal: "一",
+    kicker: "一刷 · 全国硕士研究生招生考试 · 英语（一）· 2006—2026",
+    count: "21 套 · 2006—2026"
+  },
+  r2: {
+    title: "二刷速查",
+    seal: "二",
+    kicker: "二刷 · 全国硕士研究生招生考试 · 英语（一）· 2007—2025",
+    count: "19 套 · 2007—2025"
+  }
+};
+
+function normalize(v) {
+  return { cloze: v.c.join(""), texts: v.r, partB: v.b };
+}
+const DATA = { r1: {}, r2: {} };
+for (const [year, v] of Object.entries(RAW1)) DATA.r1[year] = normalize(v);
+for (const [year, v] of Object.entries(RAW2)) DATA.r2[year] = normalize(v);
+
+/* 成绩记录：{ r1: { "2021": { cloze, t1..t4, partB } }, r2: {...} } */
+const SCORE_KEY = "kaoyan-eng1-scores-v1";
+const SCORES = { r1: {}, r2: {} };
+const TEXT_KEYS = ["t1", "t2", "t3", "t4"];
+const SCORE_KEYS = ["cloze", "t1", "t2", "t3", "t4", "partB"];
+
+(function loadScores() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(SCORE_KEY) || "null");
+    if (!raw || typeof raw !== "object") return;
+    for (const set of ["r1", "r2"]) {
+      const src = raw[set];
+      if (!src || typeof src !== "object") continue;
+      for (const [year, rec] of Object.entries(src)) {
+        if (!rec || typeof rec !== "object") continue;
+        const clean = {};
+        for (const key of SCORE_KEYS) {
+          const v = rec[key];
+          if (Number.isInteger(v) && v >= 0) clean[key] = v;
+        }
+        if (Object.keys(clean).length) SCORES[set][year] = clean;
+      }
+    }
+  } catch (e) {}
+})();
+
+function saveScores() {
+  try { localStorage.setItem(SCORE_KEY, JSON.stringify(SCORES)); } catch (e) {}
+}
+
+function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
+
+function fmt(n) {
+  if (!Number.isFinite(n)) return "—";
+  const r = Math.round(n * 10) / 10;
+  return Number.isInteger(r) ? String(r) : r.toFixed(1);
+}
+
+function avgOf(list) {
+  return list.length ? list.reduce((s, v) => s + v, 0) / list.length : null;
+}
+
+function readingTotal(rec) {
+  let sum = 0;
+  for (const key of TEXT_KEYS) {
+    if (!isNum(rec[key])) return null;
+    sum += rec[key];
+  }
+  return sum * 2;
+}
+
+function objectiveTotal(rec) {
+  const reading = readingTotal(rec);
+  if (!isNum(rec.cloze) || !isNum(rec.partB) || reading === null) return null;
+  return rec.cloze * 0.5 + reading + rec.partB * 2;
+}
+
+/* 往年真题概况（数据来自讲义；s 为讲义中的平均分/难度，null 表示“/”） */
+const EXAM_INFO = {
+  cloze: {
+    label: "完形",
+    title: "完形填空",
+    avg: "平均 4.77 / 10",
+    note: "2010—2025 · 考生平均分（满分 10）· 「—」为未提供统计数据",
+    head: ["年份", "主题", "平均分"],
+    rows: [
+      { y: "2010", t: "照明的作用：质疑霍桑效应", s: null },
+      { y: "2011", t: "笑有助于改善情绪", s: null },
+      { y: "2012", t: "最高法院法官参与政治活动损害法院的合法性", s: null },
+      { y: "2013", t: "人们做决定时会受局部信息影响", s: "3.42" },
+      { y: "2014", t: "大脑训练可以改善大脑功能", s: "4.72" },
+      { y: "2015", t: "朋友间具有相似基因", s: "4.35" },
+      { y: "2016", t: "柬埔寨的婚俗", s: "5.22" },
+      { y: "2017", t: "拥抱有益于健康", s: "5.13" },
+      { y: "2018", t: "为何信任是我们与生俱来的本能", s: "5.15" },
+      { y: "2019", t: "如何走出迷失的森林", s: "5.21" },
+      { y: "2020", t: "别碰我们的烤土豆（高温烤制食品）", s: "4.44" },
+      { y: "2021", t: "腹部脂肪与大脑", s: "5.28" },
+      { y: "2022", t: "植物意识与智慧", s: null },
+      { y: "2023", t: "丝绸之路上的商队客栈", s: null },
+      { y: "2024", t: "自动门装置的工作原理", s: null },
+      { y: "2025", t: "沉没的水下古城帕夫洛彼特里", s: null }
+    ]
+  },
+  partB: {
+    label: "新题型",
+    title: "新题型 Part B",
+    avg: "平均难度 4.93",
+    note: "2005—2025 · 难度值（讲义统计），数值越高表示该年题目越难",
+    head: ["年份", "主题 / 题型", "难度"],
+    rows: [
+      { y: "2005", t: "加拿大建立全国性药品机构", tag: "选择填空", s: "4.16" },
+      { y: "2006", t: "美国赌博业的兴旺", tag: "选择填空", s: "4.52" },
+      { y: "2007", t: "父母帮助孩子顺利进入成年期", tag: "小标题", s: "6.2" },
+      { y: "2008", t: "如何写作初稿", tag: "选择填空", s: "4.9" },
+      { y: "2009", t: "19—20 世纪的文化人类学理论", tag: "选择填空", s: null },
+      { y: "2010", t: "欧洲食品饮料零售向批发转型", tag: "段落排序", s: "2.89" },
+      { y: "2011", t: "美国的大学教育：教授的专业化", tag: "段落排序", s: "5.32" },
+      { y: "2012", t: "联网计算机引发下载与上传争论", tag: "选择填空", s: "5.52" },
+      { y: "2013", t: "社会科学研究发展状况、问题及方案", tag: "选择填空", s: "4.73" },
+      { y: "2014", t: "考古学家如何通过勘测 & 抽样方法进行考古", tag: "段落排序", s: "4.88" },
+      { y: "2015", t: "英语文学专业阅读的高级技巧", tag: "选择填空", s: "4.06" },
+      { y: "2016", t: "教你如何提升职业形象", tag: "小标题", s: "6.96" },
+      { y: "2017", t: "狄更斯传记", tag: "段落排序", s: "8.72" },
+      { y: "2018", t: "艾森豪威尔行政办公楼", tag: "段落排序", s: "3.32" },
+      { y: "2019", t: "如何赢得每一场争论", tag: "段落排序", s: "4.62" },
+      { y: "2020", t: "眼神交流如何拉近人们之间的距离", tag: "小标题", s: "4.12" },
+      { y: "2021", t: "人工智能对企业的帮助", tag: "选择填空", s: "3.96" },
+      { y: "2022", t: "动物园的存在是否有价值", tag: "小标题", s: null },
+      { y: "2023", t: "拯救黄石公园的照片", tag: "段落排序", s: null },
+      { y: "2024", t: "美国博物馆归还他国文物的评论", tag: "小标题", s: null },
+      { y: "2025", t: "英国蝴蝶摄影师彼得斯", tag: "段落排序", s: null }
+    ]
+  },
+  small: {
+    label: "小作文",
+    title: "小作文",
+    avg: "平均 5.21 / 10",
+    note: "2005—2025 · 平均分（满分 10）",
+    head: ["年份", "类别", "平均分"],
+    rows: [
+      { y: "2005", t: "辞职 + 道歉", s: null },
+      { y: "2006", t: "申请信", s: null },
+      { y: "2007", t: "建议信", s: null },
+      { y: "2008", t: "道歉信", s: null },
+      { y: "2009", t: "建议信", s: null },
+      { y: "2010", t: "通知", s: null },
+      { y: "2011", t: "推荐信", s: null },
+      { y: "2012", t: "建议信", s: null },
+      { y: "2013", t: "邀请信", s: "5.48" },
+      { y: "2014", t: "建议信", s: "5.10" },
+      { y: "2015", t: "推荐信", s: "5.21" },
+      { y: "2016", t: "通知", s: "5.02" },
+      { y: "2017", t: "推荐信", s: "5.19" },
+      { y: "2018", t: "邀请信", s: "5.31" },
+      { y: "2019", t: "回复信", s: "4.86" },
+      { y: "2020", t: "通知", s: "5.03" },
+      { y: "2021", t: "建议信", s: "5.67" },
+      { y: "2022", t: "邀请信", s: null },
+      { y: "2023", t: "通知", s: null },
+      { y: "2024", t: "建议信", s: null },
+      { y: "2025", t: "回复信", s: null }
+    ]
+  },
+  translation: {
+    label: "翻译",
+    title: "翻译",
+    avg: "平均 3.89 / 10",
+    note: "2005—2025 · 平均分（满分 10）· 选文跨度大，偏学术、书籍与“通识”读物",
+    head: ["年份", "翻译主题", "平均分"],
+    rows: [
+      { y: "2005", t: "欧洲的电视媒体", s: null },
+      { y: "2006", t: "对“知识分子”的定义", s: null },
+      { y: "2007", t: "法律在新闻报道中的作用", s: null },
+      { y: "2008", t: "达尔文的思想", s: null },
+      { y: "2009", t: "教育学", s: null },
+      { y: "2010", t: "生态学", s: "3.94" },
+      { y: "2011", t: "人的性格和环境的关系", s: "3.45" },
+      { y: "2012", t: "人类对一致性的追求", s: "3.27" },
+      { y: "2013", t: "花园及人类的生存", s: "2.99" },
+      { y: "2014", t: "对贝多芬音乐的评价（纽约书评）", s: "4.77" },
+      { y: "2015", t: "美国建国历史", s: "3.7" },
+      { y: "2016", t: "心理健康与生俱来", s: "5.24" },
+      { y: "2017", t: "英语走向何方", s: "4.67" },
+      { y: "2018", t: "莎士比亚", s: "3.62" },
+      { y: "2019", t: "为何这么多糟糕的科学论文会被发表", s: "3.32" },
+      { y: "2020", t: "文艺复兴", s: "4.22" },
+      { y: "2021", t: "二战以来现代社会高等教育的发展", s: "3.47" },
+      { y: "2022", t: "伊比利亚半岛密码战与乔治斯科维尔", s: null },
+      { y: "2023", t: "人工智能给营销带来的变化和挑战", s: null },
+      { y: "2024", t: "大象的空间导航能力", s: null },
+      { y: "2025", t: "公民科学是如何运作的", s: null }
+    ]
+  },
+  big: {
+    label: "大作文",
+    title: "大作文",
+    avg: "平均 10.39 / 20",
+    note: "2005—2025 · 平均分（满分 20）· 标签依次为主题、感情色彩",
+    head: ["年份", "题目 / 主题 · 感情", "平均分"],
+    rows: [
+      { y: "2005", t: "养老足球赛", theme: "社会美德", tone: "负", s: null },
+      { y: "2006", t: "追星", theme: "社会现象", tone: "中", s: null },
+      { y: "2007", t: "自信", theme: "道德品质", tone: "正", s: null },
+      { y: "2008", t: "合作的重要性", theme: "道德品质", tone: "正", s: null },
+      { y: "2009", t: "网络的“近”与“远”", theme: "网络科技", tone: "中", s: null },
+      { y: "2010", t: "文化火锅", theme: "文化教育", tone: "正", s: null },
+      { y: "2011", t: "旅游带来的河水污染", theme: "环境健康", tone: "负", s: null },
+      { y: "2012", t: "乐观与悲观", theme: "道德品质", tone: "正", s: null },
+      { y: "2013", t: "毕业生面临选择", theme: "文化教育", tone: "中", s: "10.82" },
+      { y: "2014", t: "亲子关系——“相携”", theme: "社会美德", tone: "正", s: "10.84" },
+      { y: "2015", t: "手机时代", theme: "网络科技", tone: "中", s: "10.86" },
+      { y: "2016", t: "榜样的力量", theme: "社会美德", tone: "正", s: "9.68" },
+      { y: "2017", t: "“有书”与“读书”", theme: "文化教育", tone: "中", s: "10.34" },
+      { y: "2018", t: "选课进行时", theme: "文化教育", tone: "负", s: "9.76" },
+      { y: "2019", t: "途中", theme: "道德品质", tone: "中", s: "10.6" },
+      { y: "2020", t: "习惯", theme: "道德品质", tone: "中", s: "10.42" },
+      { y: "2021", t: "坚持自己的梦想", theme: "道德品质", tone: "正", s: "10.16" },
+      { y: "2022", t: "打破专业限制，全面提升自我", theme: "文化教育", tone: "中", s: null },
+      { y: "2023", t: "龙舟赛越来越热闹", theme: "文化教育", tone: "正", s: null },
+      { y: "2024", t: "公园数量增加", theme: "文化教育", tone: "正", s: null },
+      { y: "2025", t: "近年来全国居民平均每百户年末主要耐用消费品拥有量", theme: "社会现象", tone: "正", s: null }
+    ]
+  }
+};
+
+/* 阅读理解难度表（据讲义）：2004—2025 每年四篇，tag 为话题，lv/n 为难度与星数 */
+const READING_INFO = {
+  "2004": [
+    { t: "网上找工作", tag: "职场", lv: "中等", n: 3 },
+    { t: "人名歧视", tag: "社会", lv: "简单", n: 2 },
+    { t: "美国的经济不景气，但还行", tag: "经济", lv: "偏难", n: 4 },
+    { t: "美国教育不应重视实用主义", tag: "教育", lv: "困难", n: 5 }
+  ],
+  "2005": [
+    { t: "猴子和人一样会因不公平而愤怒", tag: "社会", lv: "中等", n: 3 },
+    { t: "环境保护与抽烟一样，要引以为戒", tag: "环保", lv: "偏难", n: 4 },
+    { t: "做梦是可以被控制的", tag: "科研", lv: "困难", n: 5 },
+    { t: "语言向非正式语言发展", tag: "历史文化", lv: "困难", n: 5 }
+  ],
+  "2006": [
+    { t: "美国大熔炉同化能力", tag: "社会", lv: "中等", n: 3 },
+    { t: "英国旅游小镇", tag: "旅行", lv: "中等", n: 3 },
+    { t: "海洋生物保护", tag: "环保", lv: "困难", n: 5 },
+    { t: "忧愁艺术", tag: "艺术", lv: "困难", n: 5 }
+  ],
+  "2007": [
+    { t: "足球明星出生于上半年纯属偶然", tag: "体育", lv: "中等", n: 3 },
+    { t: "IQ 测试是否科学", tag: "科学", lv: "中等", n: 3 },
+    { t: "美国中产阶级生活已经危险", tag: "经济", lv: "困难", n: 5 },
+    { t: "信息安全立法的必要性", tag: "法律", lv: "困难", n: 5 }
+  ],
+  "2008": [
+    { t: "女人更容易忧伤", tag: "情绪", lv: "中等", n: 3 },
+    { t: "新兴网络在线出版", tag: "历史文化", lv: "简单", n: 2 },
+    { t: "人的身高其实没有多大变化", tag: "健康", lv: "偏难", n: 4 },
+    { t: "华盛顿拔奴隶牙齿", tag: "历史文化", lv: "困难", n: 5 }
+  ],
+  "2009": [
+    { t: "习惯可以创新", tag: "职场", lv: "偏难", n: 4 },
+    { t: "DNA 检测以及问题", tag: "健康", lv: "偏难", n: 4 },
+    { t: "正式教育不能促进经济发展", tag: "教育", lv: "困难", n: 5 },
+    { t: "美国早期移民", tag: "历史文化", lv: "困难", n: 5 }
+  ],
+  "2010": [
+    { t: "报纸艺术评论的范围和严肃性在下降", tag: "艺术", lv: "困难", n: 5 },
+    { t: "高法院将减少商业方法专利的授权", tag: "法律", lv: "困难", n: 5 },
+    { t: "普通人驱动了社会时尚", tag: "社会", lv: "困难", n: 5 },
+    { t: "会计准则的修改无助于银行复兴", tag: "经济", lv: "困难", n: 5 }
+  ],
+  "2011": [
+    { t: "对新任指挥家不看好", tag: "艺术", lv: "偏难", n: 4 },
+    { t: "辞职追求自己的理想", tag: "职场", lv: "简单", n: 2 },
+    { t: "网络新媒体", tag: "传媒", lv: "偏难", n: 4 },
+    { t: "批评社会和媒体对育儿观的负面影响", tag: "教育", lv: "简单", n: 2 }
+  ],
+  "2012": [
+    { t: "同辈压力真的有益处吗？", tag: "社会", lv: "困难", n: 5 },
+    { t: "核电站公司背水一战起诉州政府违宪", tag: "法律", lv: "困难", n: 5 },
+    { t: "科学发现声明的取信过程", tag: "科研", lv: "偏难", n: 4 },
+    { t: "工会势力太大会阻碍改革", tag: "社会", lv: "困难", n: 5 }
+  ],
+  "2013": [
+    { t: "着装过度会污染环境", tag: "环保", lv: "偏难", n: 4 },
+    { t: "微软与隐私：信息追踪的改变", tag: "科技", lv: "偏难", n: 4 },
+    { t: "人类未来没有那么悲观", tag: "科研", lv: "简单", n: 2 },
+    { t: "最高法院反对奥巴马攫取权利", tag: "法律", lv: "困难", n: 5 }
+  ],
+  "2014": [
+    { t: "失业救济金的领取不应该有条件限制", tag: "经济", lv: "偏难", n: 4 },
+    { t: "美国法律服务费用太昂贵必须改革的方法", tag: "法律", lv: "偏难", n: 4 },
+    { t: "新兴科学巨额奖引发争议", tag: "科研", lv: "困难", n: 5 },
+    { t: "《问题核心》实质", tag: "经济", lv: "困难", n: 5 }
+  ],
+  "2015": [
+    { t: "欧洲皇室是否行将就木", tag: "历史文化", lv: "中等", n: 3 },
+    { t: "高法应该开始为手机隐私保护制定条例", tag: "法律", lv: "困难", n: 5 },
+    { t: "《科学》努力推进论文统计审查的行列", tag: "科研", lv: "偏难", n: 4 },
+    { t: "从电话窃听案看公共生活中的道德缺失", tag: "社会", lv: "困难", n: 5 }
+  ],
+  "2016": [
+    { t: "反对时尚业推崇的骨感过瘦之美", tag: "社会", lv: "简单", n: 2 },
+    { t: "拯救英国乡村绿地", tag: "环保", lv: "偏难", n: 4 },
+    { t: "企业社会责任有助于减轻罚款", tag: "商业", lv: "困难", n: 5 },
+    { t: "报纸将成为奢侈消费品", tag: "传媒", lv: "中等", n: 3 }
+  ],
+  "2017": [
+    { t: "安检队伍过长", tag: "交通", lv: "简单", n: 2 },
+    { t: "夏威夷人反对望远镜站点修建", tag: "环保", lv: "偏难", n: 4 },
+    { t: "GDP 不是衡量国家经济实力的标准", tag: "经济", lv: "中等", n: 3 },
+    { t: "偏袒不属于贪腐", tag: "政治", lv: "困难", n: 5 }
+  ],
+  "2018": [
+    { t: "中产阶级面临机器人就业的挑战", tag: "经济", lv: "简单", n: 2 },
+    { t: "美国年轻人社交媒体分辨力好", tag: "社会", lv: "偏难", n: 4 },
+    { t: "英国医保病人隐私不能被数据公司处理", tag: "健康", lv: "偏难", n: 4 },
+    { t: "美国邮政巨额赤字", tag: "经济", lv: "中等", n: 3 }
+  ],
+  "2019": [
+    { t: "英国反对企业只追求短期快钱", tag: "经济", lv: "偏难", n: 4 },
+    { t: "学生 CPAs 成绩看的背后因素", tag: "教育", lv: "偏难", n: 4 },
+    { t: "科技大数据时代伦理问题", tag: "科技", lv: "偏难", n: 4 },
+    { t: "网上购物需上税", tag: "经济", lv: "困难", n: 5 }
+  ],
+  "2020": [
+    { t: "英国文化之城", tag: "历史文化", lv: "中等", n: 3 },
+    { t: "科学刊物暴利", tag: "科研", lv: "偏难", n: 4 },
+    { t: "女性配额制无效", tag: "社会", lv: "偏难", n: 4 },
+    { t: "向美国公司征税", tag: "经济", lv: "中等", n: 3 }
+  ],
+  "2021": [
+    { t: "火车运营商涨价不合理", tag: "交通", lv: "偏难", n: 4 },
+    { t: "印尼扶贫计划有助于森林保护", tag: "环保", lv: "中等", n: 3 },
+    { t: "维多利亚人照相刻板", tag: "历史文化", lv: "偏难", n: 4 },
+    { t: "组织垄断提供商一手遮天", tag: "商业", lv: "困难", n: 5 }
+  ],
+  "2022": [
+    { t: "当塑料弥足珍贵之时", tag: "环保", lv: "简单", n: 2 },
+    { t: "大学学位不能定义 Z 时代", tag: "教育", lv: "中等", n: 3 },
+    { t: "艺术与科学的联姻不至于传播科学", tag: "艺术", lv: "中等", n: 3 },
+    { t: "不正当解雇法不适用于高薪员工", tag: "法律", lv: "困难", n: 5 }
+  ],
+  "2023": [
+    { t: "学校面临加强环境教育的呼吁", tag: "教育", lv: "中等", n: 3 },
+    { t: "对短期租赁的看法", tag: "住房", lv: "偏难", n: 4 },
+    { t: "书店与出版商的战争", tag: "商业", lv: "困难", n: 5 },
+    { t: "科学论文引用乱象", tag: "科研", lv: "困难", n: 5 }
+  ],
+  "2024": [
+    { t: "廉价技术带来革命性变革", tag: "商业", lv: "中等", n: 3 },
+    { t: "借鉴非洲狩猎采集社会实践，培养更快乐的孩子", tag: "社会", lv: "简单", n: 2 },
+    { t: "艺术家与 AI：伦理与版权的较量", tag: "文化", lv: "简单", n: 2 },
+    { t: "湾区之美：湿地保护与法律挑战", tag: "法律", lv: "简单", n: 2 }
+  ],
+  "2025": [
+    { t: "采用“排练室”法，教授莎剧，可助力小学生学英语", tag: "文化", lv: "困难", n: 5 },
+    { t: "研究产生的碳排放，是我们了解世界所必须付出的代价", tag: "科技", lv: "困难", n: 5 },
+    { t: "盗版流媒体：好莱坞的新威胁", tag: "商业", lv: "困难", n: 5 },
+    { t: "数字信息的保存挑战", tag: "科技", lv: "困难", n: 5 }
+  ]
+};
+
+/* 按年份索引，便于答案页在每组标题下取当年主题与平均分 */
+const INFO_BY_YEAR = { cloze: {}, partB: {} };
+for (const key of ["cloze", "partB"]) {
+  for (const row of EXAM_INFO[key].rows) INFO_BY_YEAR[key][row.y] = row;
+}
+
+const WRITING_STRUCTURES = [
+  {
+    name: "负面现象 + 原因分析 / 负面影响 + 解决方案",
+    years: [
+      ["2005", "养老足球赛"],
+      ["2006", "追星"],
+      ["2009", "网络的“近”与“远”"],
+      ["2011", "旅游带来的河水污染"],
+      ["2015", "手机时代"],
+      ["2018", "选课进行时"]
+    ]
+  },
+  {
+    name: "提出观点 + 论证观点 + 总结观点",
+    years: [
+      ["2007", "自信"],
+      ["2008", "合作的重要性"],
+      ["2012", "乐观与悲观"],
+      ["2013", "毕业生面临选择"],
+      ["2014", "亲子关系——“相携”"],
+      ["2016", "榜样的力量"],
+      ["2017", "“有书”与“读书”"],
+      ["2019", "途中"],
+      ["2020", "习惯"],
+      ["2021", "坚持自己的梦想"],
+      ["2022", "打破专业限制，全面提升自我"]
+    ]
+  },
+  {
+    name: "正面现象 + 原因分析 / 好处 + 总结 / 憧憬未来",
+    years: [
+      ["2010", "文化火锅"],
+      ["2023", "龙舟赛越来越热闹"],
+      ["2024", "公园数量增加"],
+      ["2025", "近年来全国居民平均每百户年末主要耐用消费品拥有量"]
+    ]
+  }
+];
+
+const INFO_TABS = [
+  ["cloze", "完形"],
+  ["partB", "新题型"],
+  ["small", "小作文"],
+  ["translation", "翻译"],
+  ["big", "大作文"],
+  ["structure", "写作结构"]
+];
+
+const PAGE = document.getElementById("groups");
+const YEARS_NAV = document.getElementById("years");
+const YEAR_NUM = document.getElementById("yearNum");
+const SEAL = document.getElementById("seal");
+const TITLE = document.getElementById("pageTitle");
+const KICKER = document.getElementById("kicker");
+const SET_COUNT = document.getElementById("setCount");
+
+let currentSet = "r1";
+const yearBySet = { r1: "2021", r2: "2021" };
+
+function buildGroup(sec, title, start, answers, cls, part, desc) {
+  const tiles = Array.from(answers).map((a, i) => {
+    const n = start + i;
+    return '<button class="q" type="button" data-a="' + a + '" aria-label="第 ' + n + ' 题，点击查看答案">' +
+      '<span class="num">' + n + '</span><span class="glyph" aria-hidden="true">' + a + '</span></button>';
+  }).join("");
+  const total = answers.length;
+  const per = part === "cloze" ? 0.5 : 2;
+  return '<section class="group">' +
+    '<div class="ghead">' +
+      '<div class="gtitle"><span class="sec">' + sec + '</span><h3>' + title + '</h3></div>' +
+      '<div class="gmeta">' +
+        '<span class="range">' + start + "—" + (start + total - 1) + '</span>' +
+        '<span class="count">0 / ' + total + '</span>' +
+        '<button class="gtoggle" type="button">全部显示</button>' +
+      '</div>' +
+    '</div>' +
+    (desc ? '<p class="gdesc">' + desc + '</p>' : '') +
+    '<div class="grid ' + cls + '">' + tiles + '</div>' +
+    '<div class="scorebar" data-part="' + part + '" data-total="' + total + '" data-per="' + per + '">' +
+      '<label class="sblabel">答对' +
+        '<input class="sinput" type="text" inputmode="numeric" autocomplete="off" placeholder="—" ' +
+          'aria-label="' + title + '答对题数，共 ' + total + ' 题">' +
+        '<span class="sbtotal">/ ' + total + ' 题</span>' +
+      '</label>' +
+      '<span class="sbprev" hidden></span>' +
+      '<span class="sbscore" aria-live="polite"><b>—</b><span>/ ' + fmt(total * per) + ' 分</span></span>' +
+      '<button class="sclear" type="button" hidden>清除</button>' +
+    '</div>' +
+  '</section>';
+}
+
+function paintBar(bar, value) {
+  const per = Number(bar.dataset.per);
+  const out = bar.querySelector(".sbscore b");
+  out.textContent = value === null ? "—" : fmt(value * per);
+  bar.classList.toggle("has", value !== null);
+  bar.querySelector(".sclear").hidden = value === null;
+}
+
+function paintPrev(bar, year) {
+  const prev = bar.querySelector(".sbprev");
+  if (!prev) return;
+  const value = currentSet === "r2" && SCORES.r1[year]
+    ? SCORES.r1[year][bar.dataset.part]
+    : undefined;
+  if (!isNum(value)) {
+    prev.hidden = true;
+    prev.textContent = "";
+    return;
+  }
+  prev.innerHTML = "一刷 <b>" + fmt(value * Number(bar.dataset.per)) + "</b> 分";
+  prev.hidden = false;
+}
+
+function applyScores(year) {
+  const rec = (SCORES[currentSet] && SCORES[currentSet][year]) || {};
+  for (const bar of PAGE.querySelectorAll(".scorebar")) {
+    const value = rec[bar.dataset.part];
+    const valid = isNum(value);
+    bar.querySelector(".sinput").value = valid ? String(value) : "";
+    paintBar(bar, valid ? value : null);
+    paintPrev(bar, year);
+  }
+}
+
+function commitScore(bar, value) {
+  const year = yearBySet[currentSet];
+  let rec = SCORES[currentSet][year];
+  if (!rec) rec = SCORES[currentSet][year] = {};
+  if (value === null) delete rec[bar.dataset.part];
+  else rec[bar.dataset.part] = value;
+  if (!Object.keys(rec).length) delete SCORES[currentSet][year];
+  saveScores();
+  paintBar(bar, value);
+}
+
+function clozeMeta(year) {
+  const info = INFO_BY_YEAR.cloze[year];
+  if (!info) return "";
+  return '<span class="gdesc-title">' + info.t + '</span>' +
+    (info.s !== null ? '<span class="gavg">平均 ' + info.s + ' / 10</span>' : '');
+}
+
+function partBMeta(year) {
+  const info = INFO_BY_YEAR.partB[year];
+  if (!info) return "";
+  return '<span class="gdesc-title">' + info.t + '</span>' +
+    (info.tag ? '<span class="gtag">' + info.tag + '</span>' : '') +
+    (info.s !== null ? '<span class="gavg">难度 ' + info.s + '</span>' : '');
+}
+
+function readMeta(year, index) {
+  const info = READING_INFO[year] && READING_INFO[year][index];
+  if (!info) return "";
+  return '<span class="gdesc-title">' + info.t + '</span>' +
+    '<span class="gtag">' + info.tag + '</span>' +
+    '<span class="gdiff" aria-label="难度 ' + info.lv + '，' + info.n + ' 星">' +
+      '<b>' + info.lv + '</b>' +
+      '<span class="stars" aria-hidden="true">' + "★".repeat(info.n) + '</span>' +
+    '</span>';
+}
+
+function render(year) {
+  const d = DATA[currentSet][year];
+  let html = buildGroup("Use of English", "完形填空", 1, d.cloze, "cloze", "cloze", clozeMeta(year));
+  html += '<p class="part-label">Section II · 阅读理解 Part A</p>';
+  d.texts.forEach((answers, i) => {
+    html += buildGroup("Text " + (i + 1), "第 " + (i + 1) + " 篇", 21 + i * 5, answers, "read", "t" + (i + 1), readMeta(year, i));
+  });
+  html += '<p class="part-label">Section II · Part B</p>';
+  html += buildGroup("Part B", "新题型", 41, d.partB, "read", "partB", partBMeta(year));
+  PAGE.innerHTML = html;
+  YEAR_NUM.textContent = year;
+  applyScores(year);
+}
+
+function updateGroup(group) {
+  const tiles = Array.from(group.querySelectorAll(".q"));
+  const shown = tiles.filter(t => t.classList.contains("on")).length;
+  group.querySelector(".count").textContent = shown + " / " + tiles.length;
+  group.querySelector(".gtoggle").textContent = shown === tiles.length ? "全部收起" : "全部显示";
+}
+
+function setTile(tile, on) {
+  tile.classList.toggle("on", on);
+  const n = tile.querySelector(".num").textContent;
+  const a = tile.dataset.a;
+  tile.setAttribute("aria-label", on ? "第 " + n + " 题，答案 " + a : "第 " + n + " 题，点击查看答案");
+  const group = tile.closest(".group");
+  if (group) updateGroup(group);
+}
+
+function markYear(year) {
+  for (const btn of YEARS_NAV.children) {
+    const active = btn.dataset.year === year;
+    btn.setAttribute("aria-current", active ? "true" : "false");
+  }
+}
+
+function buildYears(selected) {
+  YEARS_NAV.innerHTML = "";
+  for (const year of Object.keys(DATA[currentSet]).sort()) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "year";
+    btn.dataset.year = year;
+    btn.textContent = year;
+    btn.setAttribute("aria-label", year + " 年");
+    YEARS_NAV.appendChild(btn);
+  }
+  markYear(selected);
+}
+
+function persist() {
+  try {
+    localStorage.setItem("kaoyan-set", currentSet);
+    localStorage.setItem("kaoyan-" + currentSet + "-year", yearBySet[currentSet]);
+  } catch (e) {}
+}
+
+function selectYear(year, options) {
+  const opts = options || {};
+  if (!DATA[currentSet][year]) return;
+  yearBySet[currentSet] = year;
+  render(year);
+  markYear(year);
+  persist();
+  const chip = YEARS_NAV.querySelector('[data-year="' + year + '"]');
+  if (chip && opts.scroll !== false) {
+    chip.scrollIntoView({ inline: "center", block: "nearest" });
+  }
+}
+
+function setSet(name) {
+  if (!SETS[name]) return;
+  currentSet = name;
+  const s = SETS[name];
+  document.documentElement.setAttribute("data-set", name);
+  SEAL.textContent = s.seal;
+  TITLE.textContent = s.title;
+  KICKER.textContent = s.kicker;
+  SET_COUNT.textContent = s.count;
+  for (const btn of document.querySelectorAll(".segbtn")) {
+    btn.setAttribute("aria-pressed", btn.dataset.set === name ? "true" : "false");
+  }
+  let year = yearBySet[name];
+  if (!DATA[name][year]) {
+    year = DATA[name]["2021"] ? "2021" : Object.keys(DATA[name]).sort()[0];
+  }
+  yearBySet[name] = year;
+  buildYears(year);
+  render(year);
+  persist();
+  const chip = YEARS_NAV.querySelector('[data-year="' + year + '"]');
+  if (chip) chip.scrollIntoView({ inline: "center", block: "nearest" });
+  if (currentView === "summary") renderSummary();
+}
+
+/* —— 成绩汇总视图 —— */
+const SUMMARY = document.getElementById("summary");
+const SUM_BODY = document.getElementById("sumBody");
+const SUM_SET = document.getElementById("sumSet");
+const SUM_META = document.getElementById("sumMeta");
+const OVERVIEW = document.getElementById("overview");
+const INFO_TABS_EL = document.getElementById("infoTabs");
+const INFO_BODY = document.getElementById("infoBody");
+const VIEW_BTN = document.getElementById("viewBtn");
+const INFO_BTN = document.getElementById("infoBtn");
+const PAGE_EL = document.querySelector(".page");
+
+let currentView = "answers";
+let currentInfoTab = "cloze";
+let answersScroll = 0;
+let LAST_TREND = null;
+
+function setView(view) {
+  if (view === currentView) return;
+  if (currentView === "answers") answersScroll = window.scrollY;
+  currentView = view;
+  PAGE_EL.setAttribute("data-view", view);
+  PAGE.hidden = view !== "answers";
+  SUMMARY.hidden = view !== "summary";
+  OVERVIEW.hidden = view !== "overview";
+  VIEW_BTN.textContent = view === "summary" ? "返回答案" : "成绩汇总";
+  INFO_BTN.textContent = view === "overview" ? "返回答案" : "真题概况";
+  if (view === "summary") renderSummary();
+  if (view === "overview") renderOverview();
+  window.scrollTo(0, view === "answers" ? answersScroll : 0);
+}
+
+function cellScore(value, max) {
+  return value === null
+    ? '<span class="tcell empty"><b>—</b><i>/ ' + max + '</i></span>'
+    : '<span class="tcell"><b>' + fmt(value) + '</b><i>/ ' + max + '</i></span>';
+}
+
+/* —— 历年走势：各模块得分率折线图 —— */
+const TREND_SERIES = [
+  { key: "cloze", label: "完形", max: 10, color: "var(--series-1)" },
+  { key: "reading", label: "阅读", max: 40, color: "var(--series-2)" },
+  { key: "partB", label: "新题型", max: 10, color: "var(--series-3)" }
+];
+
+function trendScore(rec, key) {
+  if (key === "cloze") return isNum(rec.cloze) ? rec.cloze * 0.5 : null;
+  if (key === "partB") return isNum(rec.partB) ? rec.partB * 2 : null;
+  if (key === "reading") return readingTotal(rec);
+  return null;
+}
+
+function buildTrend(recs, years) {
+  const pts = [];
+  for (const year of years) {
+    const rec = recs[year];
+    if (!rec) continue;
+    const vals = {};
+    let any = false;
+    for (const s of TREND_SERIES) {
+      const v = trendScore(rec, s.key);
+      vals[s.key] = v;
+      if (v !== null) any = true;
+    }
+    if (any) pts.push({ year, vals });
+  }
+  if (!pts.length) {
+    LAST_TREND = null;
+    return "";
+  }
+  const active = TREND_SERIES.filter(s => pts.some(p => p.vals[s.key] !== null));
+
+  const width = Math.max(260, Math.floor(SUM_BODY.clientWidth || 640));
+  const height = 232;
+  const padL = 32, padR = 64, padT = 16, padB = 28;
+  const plotW = width - padL - padR;
+  const plotH = height - padT - padB;
+  const n = pts.length;
+  const xs = pts.map((_, i) =>
+    n === 1 ? padL + plotW / 2 : padL + plotW * i / (n - 1)
+  );
+  const yOf = pct => padT + (1 - pct / 100) * plotH;
+
+  let grid = "";
+  for (const v of [0, 25, 50, 75, 100]) {
+    const y = yOf(v);
+    grid += '<line class="' + (v === 0 ? "axis-line" : "grid-line") +
+      '" x1="' + padL + '" y1="' + y + '" x2="' + (padL + plotW) + '" y2="' + y + '"/>' +
+      '<text class="tick" x="' + (padL - 6) + '" y="' + (y + 3) + '" text-anchor="end">' + v + '</text>';
+  }
+
+  const stepPx = n > 1 ? plotW / (n - 1) : plotW;
+  const dense = stepPx < 26;
+  const dotR = dense ? 2 : 2.8;
+  const every = Math.max(1, Math.ceil(30 / Math.max(stepPx, 1)));
+  let xLabels = "";
+  pts.forEach((p, i) => {
+    if (i % every === 0 || i === n - 1) {
+      xLabels += '<text class="tick" x="' + xs[i].toFixed(1) + '" y="' + (height - 9) +
+        '" text-anchor="middle">' + p.year + '</text>';
+    }
+  });
+
+  let paths = "";
+  let dots = "";
+  for (const s of active) {
+    let d = "";
+    let pen = false;
+    pts.forEach((p, i) => {
+      const v = p.vals[s.key];
+      if (v === null) {
+        pen = false;
+        return;
+      }
+      const y = yOf(v / s.max * 100);
+      d += (pen ? " L" : "M") + xs[i].toFixed(1) + " " + y.toFixed(1);
+      pen = true;
+      dots += '<circle class="dot" cx="' + xs[i].toFixed(1) + '" cy="' + y.toFixed(1) +
+        '" r="' + dotR + '" fill="' + s.color + '"/>';
+    });
+    if (d) paths += '<path class="series-line" d="' + d + '" stroke="' + s.color + '"/>';
+  }
+
+  /* 线尾直接标注模块名；同一年结束的两条线会上下错开，避免文字重叠 */
+  const labels = [];
+  for (const s of active) {
+    let last = -1;
+    pts.forEach((p, i) => { if (p.vals[s.key] !== null) last = i; });
+    if (last < 0) continue;
+    labels.push({
+      x: xs[last],
+      y: yOf(pts[last].vals[s.key] / s.max * 100),
+      text: s.label,
+      color: s.color
+    });
+  }
+  labels.sort((a, b) => a.y - b.y);
+  for (let i = 1; i < labels.length; i++) {
+    if (labels[i].y - labels[i - 1].y < 12) labels[i].y = labels[i - 1].y + 12;
+  }
+  if (labels.length) {
+    const overflow = labels[labels.length - 1].y - (padT + plotH - 2);
+    if (overflow > 0) for (const l of labels) l.y -= overflow;
+  }
+  let labelMarks = "";
+  for (const l of labels) {
+    labelMarks += '<circle cx="' + (l.x + 9).toFixed(1) + '" cy="' + l.y.toFixed(1) +
+      '" r="2.5" fill="' + l.color + '"/>' +
+      '<text class="end-label" x="' + (l.x + 15).toFixed(1) + '" y="' + (l.y + 3.5).toFixed(1) + '">' +
+        l.text + '</text>';
+  }
+
+  const crosshair = '<line class="crosshair" x1="' + padL + '" y1="' + padT +
+    '" x2="' + padL + '" y2="' + (padT + plotH) + '"/>';
+  const svg = '<svg class="chart' + (dense ? " dense" : "") + '" width="' + width + '" height="' + height +
+    '" viewBox="0 0 ' + width + ' ' + height + '" role="img" ' +
+    'aria-label="历年完形、阅读、新题型的得分率折线图，具体分数见下方表格">' +
+    grid + xLabels + crosshair + paths + dots + labelMarks + '</svg>';
+
+  const legend = '<div class="legend">' + active.map(s =>
+    '<span><i style="background:' + s.color + '"></i>' + s.label + '</span>'
+  ).join("") + '</div>';
+
+  LAST_TREND = { pts, xs, width, height, padL, padR, padT, plotH, active };
+
+  return '<section class="sumsec">' +
+    '<div class="sumsec-head">' +
+      '<span class="sumsec-title">历年走势</span>' +
+      '<span class="sumsec-avg">得分率 · ' + pts.length + ' 年</span>' +
+    '</div>' +
+    legend +
+    '<div class="chartwrap">' + svg + '<div class="chart-tip" hidden></div></div>' +
+    '<p class="sumnote">纵轴为得分率（满分占比）；阅读需四篇填全才计入。悬停或点按查看当年分数。</p>' +
+  '</section>';
+}
+
+function trendTipHTML(p, active) {
+  let rows = "";
+  for (const s of active) {
+    const v = p.vals[s.key];
+    rows += '<div class="tip-row"><span><i style="background:' + s.color + '"></i>' + s.label + '</span>' +
+      (v === null
+        ? '<b class="empty">—</b>'
+        : '<b>' + Math.round(v / s.max * 100) + '%<em> ' + fmt(v) + '/' + s.max + '</em></b>') +
+      '</div>';
+  }
+  return '<div class="tip-year">' + p.year + ' 年</div>' + rows;
+}
+
+function showTrendTip(wrap, clientX) {
+  const T = LAST_TREND;
+  const svg = wrap.querySelector(".chart");
+  const tip = wrap.querySelector(".chart-tip");
+  if (!T || !svg || !tip) return;
+  const rect = svg.getBoundingClientRect();
+  const scale = rect.width / T.width || 1;
+  const cx = (clientX - rect.left) / scale;
+  let idx = 0;
+  if (T.pts.length > 1) {
+    const step = (T.xs[T.xs.length - 1] - T.xs[0]) / (T.pts.length - 1);
+    idx = Math.round((cx - T.xs[0]) / step);
+    idx = Math.max(0, Math.min(T.pts.length - 1, idx));
+  }
+  const x = T.xs[idx];
+  const cross = svg.querySelector(".crosshair");
+  if (cross) {
+    cross.setAttribute("x1", x);
+    cross.setAttribute("x2", x);
+    cross.style.opacity = "1";
+  }
+  tip.innerHTML = trendTipHTML(T.pts[idx], T.active);
+  tip.hidden = false;
+  const tipW = tip.offsetWidth;
+  let left = x * scale + 12;
+  if (left + tipW > rect.width - 4) left = x * scale - tipW - 12;
+  if (left < 4) left = 4;
+  tip.style.left = left + "px";
+  tip.style.top = "8px";
+}
+
+function hideTrendTip(wrap) {
+  if (!wrap) return;
+  const tip = wrap.querySelector(".chart-tip");
+  if (tip) tip.hidden = true;
+  const cross = wrap.querySelector(".crosshair");
+  if (cross) cross.style.opacity = "0";
+}
+
+function renderSummary() {
+  const set = currentSet;
+  const recs = SCORES[set] || {};
+  const years = Object.keys(DATA[set]).sort();
+  SUM_SET.textContent = set === "r1" ? "一刷" : "二刷";
+
+  const clozeRows = [];
+  const readingRows = [];
+  const partBRows = [];
+  const totalRows = [];
+  const textScores = [[], [], [], []];
+  const clozeScores = [];
+  const readingScores = [];
+  const partBScores = [];
+  const totals = [];
+  let recordedYears = 0;
+
+  for (const year of years) {
+    const rec = recs[year];
+    if (!rec) continue;
+    if (!SCORE_KEYS.some(key => isNum(rec[key]))) continue;
+    recordedYears++;
+
+    if (isNum(rec.cloze)) {
+      const score = rec.cloze * 0.5;
+      clozeRows.push({ year, correct: rec.cloze, score });
+      clozeScores.push(score);
+    }
+
+    const filled = TEXT_KEYS.filter(key => isNum(rec[key]));
+    if (filled.length) {
+      const cells = TEXT_KEYS.map((key, i) => {
+        if (!isNum(rec[key])) return null;
+        const score = rec[key] * 2;
+        textScores[i].push(score);
+        return { correct: rec[key], score };
+      });
+      const total = readingTotal(rec);
+      readingRows.push({ year, cells, total, filled: filled.length });
+      if (total !== null) readingScores.push(total);
+    }
+
+    if (isNum(rec.partB)) {
+      const score = rec.partB * 2;
+      partBRows.push({ year, correct: rec.partB, score });
+      partBScores.push(score);
+    }
+
+    const objective = objectiveTotal(rec);
+    if (objective !== null) totals.push(objective);
+    totalRows.push({ year, rec, total: objective });
+  }
+
+  SUM_META.textContent = recordedYears
+    ? "已记录 " + recordedYears + " 年 · 数据保存在本机浏览器"
+    : "数据保存在本机浏览器";
+
+  if (!recordedYears) {
+    LAST_TREND = null;
+    SUM_BODY.innerHTML =
+      '<div class="sumempty">' +
+        '<p class="big">还没有成绩记录</p>' +
+        '<p class="note">回到答案页，在每一篇下方填写“答对题数”，这里会自动汇总历年的完形、阅读和新题型成绩。</p>' +
+        '<button class="viewbtn" type="button" data-back="1">回到答案页</button>' +
+      '</div>';
+    return;
+  }
+
+  const stats = [
+    { label: "完形平均", avg: avgOf(clozeScores), max: 10, sub: "记录 " + clozeRows.length + " 年" },
+    { label: "阅读平均", avg: avgOf(readingScores), max: 40, sub: "完整 " + readingScores.length + " 年" },
+    { label: "新题型平均", avg: avgOf(partBScores), max: 10, sub: "记录 " + partBRows.length + " 年" },
+    { label: "客观题平均", avg: avgOf(totals), max: 60, sub: "完整 " + totals.length + " 年" }
+  ];
+
+  let html = '<div class="stats">' +
+    stats.map(s =>
+      '<div class="stat">' +
+        '<span class="stat-label">' + s.label + '</span>' +
+        '<span class="stat-value">' +
+          (s.avg === null ? "—" : fmt(s.avg) + "<small>/ " + s.max + "</small>") +
+        '</span>' +
+        '<span class="stat-sub">' + s.sub + '</span>' +
+      '</div>'
+    ).join("") +
+  '</div>';
+
+  const trend = buildTrend(recs, years);
+  if (trend) html += trend;
+
+  /* 完形填空 */
+  html += '<section class="sumsec">' +
+    '<div class="sumsec-head">' +
+      '<span class="sumsec-title">完形填空</span>' +
+      '<span class="sumsec-avg">' +
+        (clozeRows.length ? "平均 " + fmt(avgOf(clozeScores)) + " / 10 · 共 " + clozeRows.length + " 年" : "尚未记录") +
+      '</span>' +
+    '</div>';
+  if (clozeRows.length) {
+    html += clozeRows.map(r =>
+      '<div class="srow single">' +
+        '<span class="syear">' + r.year + '</span>' +
+        '<span class="smeter"><i style="width:' + (r.score / 10 * 100) + '%"></i></span>' +
+        '<span class="sdetail">对 ' + r.correct + ' / 20</span>' +
+        '<span class="sscore">' + fmt(r.score) + '<em> / 10</em></span>' +
+      '</div>'
+    ).join("");
+  } else {
+    html += '<p class="sumnote">在答案页的完形填空下方填写答对题数，这里会自动汇总。</p>';
+  }
+  html += '</section>';
+
+  /* 阅读理解 */
+  const textAvg = textScores.map(avgOf);
+  html += '<section class="sumsec">' +
+    '<div class="sumsec-head">' +
+      '<span class="sumsec-title">阅读理解 Part A</span>' +
+      '<span class="sumsec-avg">' +
+        (readingScores.length ? "平均 " + fmt(avgOf(readingScores)) + " / 40 · 完整 " + readingScores.length + " 年" : "尚未完整记录") +
+      '</span>' +
+    '</div>';
+  if (readingRows.length) {
+    html += '<div class="srow reading head">' +
+      '<span>年份</span><span>第1篇</span><span>第2篇</span><span>第3篇</span><span>第4篇</span><span>合计</span>' +
+    '</div>';
+    html += readingRows.map(r =>
+      '<div class="srow reading">' +
+        '<span class="syear">' + r.year + '</span>' +
+        r.cells.map(c => c === null
+          ? '<span class="tcell empty"><b>—</b></span>'
+          : '<span class="tcell"><b>' + fmt(c.score) + '</b><i>' + c.correct + '/5</i></span>'
+        ).join("") +
+        (r.total === null
+          ? '<span class="sscore empty">—<em> ' + r.filled + '/4 篇</em></span>'
+          : '<span class="sscore">' + fmt(r.total) + '<em> / 40</em></span>') +
+      '</div>'
+    ).join("");
+    html += '<p class="sumnote">各篇平均（满分 10）：' +
+      textAvg.map((v, i) => "第" + (i + 1) + "篇 " + (v === null ? "—" : fmt(v))).join(" · ") +
+    '</p>';
+  } else {
+    html += '<p class="sumnote">四篇阅读分别填写答对题数后，这里会汇总每篇得分与总分。</p>';
+  }
+  html += '</section>';
+
+  /* 新题型 */
+  html += '<section class="sumsec">' +
+    '<div class="sumsec-head">' +
+      '<span class="sumsec-title">新题型 Part B</span>' +
+      '<span class="sumsec-avg">' +
+        (partBRows.length ? "平均 " + fmt(avgOf(partBScores)) + " / 10 · 共 " + partBRows.length + " 年" : "尚未记录") +
+      '</span>' +
+    '</div>';
+  if (partBRows.length) {
+    html += partBRows.map(r =>
+      '<div class="srow single">' +
+        '<span class="syear">' + r.year + '</span>' +
+        '<span class="smeter"><i style="width:' + (r.score / 10 * 100) + '%"></i></span>' +
+        '<span class="sdetail">对 ' + r.correct + ' / 5</span>' +
+        '<span class="sscore">' + fmt(r.score) + '<em> / 10</em></span>' +
+      '</div>'
+    ).join("");
+  } else {
+    html += '<p class="sumnote">在答案页的新题型下方填写答对题数。</p>';
+  }
+  html += '</section>';
+
+  /* 客观题合计 */
+  html += '<section class="sumsec">' +
+    '<div class="sumsec-head">' +
+      '<span class="sumsec-title">客观题合计</span>' +
+      '<span class="sumsec-avg">' +
+        (totals.length ? "平均 " + fmt(avgOf(totals)) + " / 60 · 完整 " + totals.length + " 年" : "三部分填全后计算") +
+      '</span>' +
+    '</div>' +
+    '<div class="srow total head">' +
+      '<span>年份</span><span>完形</span><span>阅读</span><span>新题型</span><span>总分</span>' +
+    '</div>';
+  html += totalRows.map(r =>
+    '<div class="srow total">' +
+      '<span class="syear">' + r.year + '</span>' +
+      cellScore(isNum(r.rec.cloze) ? r.rec.cloze * 0.5 : null, 10) +
+      cellScore(readingTotal(r.rec), 40) +
+      cellScore(isNum(r.rec.partB) ? r.rec.partB * 2 : null, 10) +
+      (r.total === null
+        ? '<span class="tcell total empty"><b>—</b><i>未填全</i></span>'
+        : '<span class="tcell total"><b>' + fmt(r.total) + '</b><i>/ 60</i></span>') +
+    '</div>'
+  ).join("");
+  html += '<p class="sumnote">客观题满分 60：完形 20×0.5 + 阅读 20×2 + 新题型 5×2。三部分填全才计入总分与平均。</p>';
+  html += '</section>';
+
+  SUM_BODY.innerHTML = html;
+
+  const chartWrap = SUM_BODY.querySelector(".chartwrap");
+  if (chartWrap) {
+    chartWrap.addEventListener("pointermove", event => {
+      if (event.pointerType !== "touch") showTrendTip(chartWrap, event.clientX);
+    });
+    chartWrap.addEventListener("pointerdown", event => showTrendTip(chartWrap, event.clientX));
+    chartWrap.addEventListener("pointerleave", event => {
+      if (event.pointerType !== "touch") hideTrendTip(chartWrap);
+    });
+  }
+}
+
+/* —— 真题概况视图 —— */
+function renderInfoTabs() {
+  INFO_TABS_EL.innerHTML = INFO_TABS.map(([key, label]) =>
+    '<button class="tab" type="button" data-tab="' + key + '" aria-current="' +
+      (key === currentInfoTab ? "true" : "false") + '">' + label + '</button>'
+  ).join("");
+}
+
+function infoRowHTML(row) {
+  const tags = [];
+  if (row.tag) tags.push(row.tag);
+  if (row.theme) tags.push(row.theme);
+  if (row.tone) tags.push(row.tone);
+  return '<div class="inforow">' +
+    '<span class="syear">' + row.y + '</span>' +
+    '<div class="infomain">' +
+      '<span class="info-title">' + row.t + '</span>' +
+      (tags.length ? '<span class="info-tags">' + tags.map(t => '<i>' + t + '</i>').join("") + '</span>' : '') +
+    '</div>' +
+    (row.s === null ? '<span class="info-score empty">—</span>' : '<span class="info-score">' + row.s + '</span>') +
+  '</div>';
+}
+
+function renderInfoBody() {
+  if (currentInfoTab === "structure") {
+    INFO_BODY.innerHTML = '<div class="info-sec">' +
+      '<div class="info-sec-head"><h3>大作文结构</h3><span>2005—2025</span></div>' +
+      '<p class="infonote">按首段—中段—末段的写法归类，年份后为当年题目。</p>' +
+      WRITING_STRUCTURES.map(group =>
+        '<div class="struc">' +
+          '<h3>' + group.name + '</h3>' +
+          '<div class="struc-list">' +
+            group.years.map(([year, topic]) =>
+              '<div class="struc-item"><b>' + year + '</b><span>' + topic + '</span></div>'
+            ).join("") +
+          '</div>' +
+        '</div>'
+      ).join("") +
+    '</div>';
+    return;
+  }
+
+  const info = EXAM_INFO[currentInfoTab];
+  INFO_BODY.innerHTML = '<div class="info-sec">' +
+    '<div class="info-sec-head"><h3>' + info.title + '</h3><span>' + info.avg + '</span></div>' +
+    '<p class="infonote">' + info.note + '</p>' +
+    '<div class="infohead">' + info.head.map(h => '<span>' + h + '</span>').join("") + '</div>' +
+    info.rows.map(infoRowHTML).join("") +
+  '</div>';
+}
+
+function renderOverview() {
+  renderInfoTabs();
+  renderInfoBody();
+}
+
+INFO_TABS_EL.addEventListener("click", event => {
+  const btn = event.target.closest(".tab");
+  if (!btn || btn.dataset.tab === currentInfoTab) return;
+  currentInfoTab = btn.dataset.tab;
+  for (const tab of INFO_TABS_EL.children) {
+    tab.setAttribute("aria-current", tab === btn ? "true" : "false");
+  }
+  renderInfoBody();
+  btn.scrollIntoView({ inline: "center", block: "nearest" });
+});
+
+VIEW_BTN.addEventListener("click", () => {
+  setView(currentView === "summary" ? "answers" : "summary");
+});
+
+INFO_BTN.addEventListener("click", () => {
+  setView(currentView === "overview" ? "answers" : "overview");
+});
+
+SUM_BODY.addEventListener("click", event => {
+  if (event.target.closest("[data-back]")) setView("answers");
+});
+
+PAGE.addEventListener("click", event => {
+  const tile = event.target.closest(".q");
+  if (tile) {
+    setTile(tile, !tile.classList.contains("on"));
+    return;
+  }
+  const clear = event.target.closest(".sclear");
+  if (clear) {
+    const bar = clear.closest(".scorebar");
+    const input = bar.querySelector(".sinput");
+    input.value = "";
+    commitScore(bar, null);
+    input.focus();
+    return;
+  }
+  const toggle = event.target.closest(".gtoggle");
+  if (toggle) {
+    const group = toggle.closest(".group");
+    const tiles = Array.from(group.querySelectorAll(".q"));
+    const allOn = tiles.every(t => t.classList.contains("on"));
+    tiles.forEach(t => setTile(t, !allOn));
+  }
+});
+
+PAGE.addEventListener("input", event => {
+  const input = event.target.closest(".sinput");
+  if (!input) return;
+  const bar = input.closest(".scorebar");
+  const max = Number(bar.dataset.total);
+  const digits = input.value.replace(/\D/g, "");
+  let value = null;
+  if (digits !== "") {
+    value = Math.min(parseInt(digits, 10), max);
+    if (input.value !== String(value)) input.value = String(value);
+  } else if (input.value !== "") {
+    input.value = "";
+  }
+  commitScore(bar, value);
+});
+
+PAGE.addEventListener("focusin", event => {
+  const input = event.target.closest && event.target.closest(".sinput");
+  if (input) input.select();
+});
+
+/* 触屏点按图表后，点空白处收起提示 */
+document.addEventListener("pointerdown", event => {
+  if (event.target.closest && event.target.closest(".chartwrap")) return;
+  hideTrendTip(SUM_BODY.querySelector(".chartwrap"));
+}, true);
+
+YEARS_NAV.addEventListener("click", event => {
+  const btn = event.target.closest(".year");
+  if (btn) selectYear(btn.dataset.year);
+});
+
+document.querySelector(".seg").addEventListener("click", event => {
+  const btn = event.target.closest(".segbtn");
+  if (btn) setSet(btn.dataset.set);
+});
+
+let initialSet = "r1";
+try {
+  const storedSet = localStorage.getItem("kaoyan-set");
+  if (SETS[storedSet]) initialSet = storedSet;
+  const storedYear = localStorage.getItem("kaoyan-" + initialSet + "-year");
+  if (DATA[initialSet][storedYear]) yearBySet[initialSet] = storedYear;
+} catch (e) {}
+setSet(initialSet);
+
+/* 窗口宽度变化时按新宽度重绘折线图（避免文字被整体缩放） */
+let resizeTimer = 0;
+window.addEventListener("resize", () => {
+  if (currentView !== "summary") return;
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(renderSummary, 150);
+});
+</script>

@@ -1,0 +1,9 @@
+.DS_Store
+
+# 体积过大，不随仓库分发；PDF 通过站点链接访问
+pdfs/
+exam/pdf/
+
+# 工具缓存
+.wrangler/
+node_modules/

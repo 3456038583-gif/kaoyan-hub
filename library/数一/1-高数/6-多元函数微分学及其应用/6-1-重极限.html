@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>6-1 重极限 · 数学/英语知识库</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/vendor/katex/katex.min.css">
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/library/note.css">
+</head>
+<body class="note-page">
+
+<nav class="sitebar" aria-label="站点导航">
+  <a class="sb-brand" href="/">考研资料总库</a>
+  <div class="sb-links">
+    <a href="/math/">数学真题</a>
+    <a href="/library/" class="on">知识库</a>
+    <a href="/exam/">英语真题</a>
+    <a href="/english/">英语速查</a>
+  </div>
+</nav>
+<div class="lib-layout">
+  <aside class="lib-side" id="libSide" aria-label="知识库目录">
+    <div class="side-head">
+      <a href="/library/">数学/英语知识库</a>
+      <button type="button" class="side-toggle" id="sideToggle" aria-expanded="false">目录</button>
+    </div>
+    <div class="side-tree" id="sideTree"></div>
+  </aside>
+  <main class="note-main">
+    <nav class="crumbs"><a href="/library/">知识库</a> <span class="sep">/</span> <span>数一</span> <span class="sep">/</span> <span>1 高数</span> <span class="sep">/</span> <span>6 多元函数微分学及其应用</span></nav>
+    <article class="note-article">
+      <header class="note-head">
+        <span class="badge">基础知识</span>
+        <h1>6-1 重极限</h1>
+        <div class="note-meta"><span class="tag">#高数</span> <span class="tag">#多元函数微分学及其应用</span> <span class="aliases">别名：重极限</span></div>
+      </header>
+      <div class="prose" id="prose"><h2 id="定义">定义</h2><p>设函数 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false">(</mo><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">f(x,y)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.1076em;">f</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">y</span><span class="mclose">)</span></span></span></span> 在点 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><msub><mi>x</mi><mn>0</mn></msub><mo separator="true">,</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(x_0,y_0)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0359em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span> 的某去心邻域内有定义，若存在常数 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi></mrow><annotation encoding="application/x-tex">A</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">A</span></span></span></span>，使得
+<div class="math-display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><munder><mrow><mi>lim</mi><mo>⁡</mo></mrow><mrow><mo stretchy="false">(</mo><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo stretchy="false">)</mo><mo>→</mo><mo stretchy="false">(</mo><msub><mi>x</mi><mn>0</mn></msub><mo separator="true">,</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="false">)</mo></mrow></munder><mi>f</mi><mo stretchy="false">(</mo><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo stretchy="false">)</mo><mo>=</mo><mi>A</mi><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+\lim_{(x,y)\to(x_0,y_0)}f(x,y)=A,
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.716em;vertical-align:-0.966em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.6944em;"><span style="top:-2.309em;margin-left:0em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathnormal mtight">x</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.0359em;">y</span><span class="mclose mtight">)</span><span class="mrel mtight">→</span><span class="mopen mtight">(</span><span class="mord mtight"><span class="mord mathnormal mtight">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3173em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span><span class="mpunct mtight">,</span><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.0359em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3173em;"><span style="top:-2.357em;margin-left:-0.0359em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span><span class="mclose mtight">)</span></span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span><span class="mop">lim</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.966em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.1076em;">f</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">y</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">A</span><span class="mpunct">,</span></span></span></span></span></div>
+则称 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi></mrow><annotation encoding="application/x-tex">A</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">A</span></span></span></span> 为函数 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false">(</mo><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">f(x,y)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.1076em;">f</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">y</span><span class="mclose">)</span></span></span></span> 当 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(x,y)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">y</span><span class="mclose">)</span></span></span></span> 趋于 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><msub><mi>x</mi><mn>0</mn></msub><mo separator="true">,</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(x_0,y_0)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0359em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span> 时的重极限。</p>
+<h2 id="常见性质">常见性质</h2><p>一元函数极限中的下述性质对多元函数仍成立：</p>
+<ol>
+<li>局部有界性。</li>
+<li>保号性。</li>
+<li>有理运算。</li>
+<li>极限与无穷小的关系。</li>
+<li>夹逼性。</li>
+</ol>
+<h2 id="题型提醒">题型提醒</h2><ul>
+<li>证明极限不存在时，常用不同路径法。</li>
+<li>证明极限存在时，常联想：<ul>
+<li><a class="wl" href="/library/%E6%95%B0%E4%B8%80/1-%E9%AB%98%E6%95%B0/0-%E6%B1%87%E6%80%BB/%E6%96%B9%E6%B3%95%E4%B8%8E%E6%80%9D%E7%BB%B4/%E6%95%B4%E4%BD%93%E8%A7%82">整体观</a></li>
+<li><a class="wl" href="/library/%E6%95%B0%E4%B8%80/1-%E9%AB%98%E6%95%B0/0-%E6%B1%87%E6%80%BB/%E6%96%B9%E6%B3%95%E4%B8%8E%E6%80%9D%E7%BB%B4/%E5%A4%B9%E9%80%BC">夹逼</a></li>
+<li><a class="wl" href="/library/%E6%95%B0%E4%B8%80/1-%E9%AB%98%E6%95%B0/0-%E6%B1%87%E6%80%BB/%E6%96%B9%E6%B3%95%E4%B8%8E%E6%80%9D%E7%BB%B4/%E6%94%BE%E7%BC%A9-1">放缩</a></li>
+<li>极坐标代换</li>
+<li><a class="wl" href="/library/%E6%95%B0%E4%B8%80/1-%E9%AB%98%E6%95%B0/1-%E5%87%BD%E6%95%B0-%E6%9E%81%E9%99%90%E4%B8%8E%E8%BF%9E%E7%BB%AD/1-2-%E6%9E%81%E9%99%90">一元极限</a>中的无穷小与有界量思想</li>
+</ul>
+</li>
+</ul>
+</div>
+      <section class="backlinks"><h2>引用本篇</h2><ul><li><a href="/library/%E6%95%B0%E4%B8%80/1-%E9%AB%98%E6%95%B0/6-%E5%A4%9A%E5%85%83%E5%87%BD%E6%95%B0%E5%BE%AE%E5%88%86%E5%AD%A6%E5%8F%8A%E5%85%B6%E5%BA%94%E7%94%A8/6-0-%E5%A4%9A%E5%85%83%E5%87%BD%E6%95%B0%E5%BE%AE%E5%88%86%E5%AD%A6%E5%8F%8A%E5%85%B6%E5%BA%94%E7%94%A8%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE">6-0 多元函数微分学及其应用思维导图</a></li></ul></section>
+      <nav class="pager">
+    <a class="pg prev" href="/library/%E6%95%B0%E4%B8%80/1-%E9%AB%98%E6%95%B0/6-%E5%A4%9A%E5%85%83%E5%87%BD%E6%95%B0%E5%BE%AE%E5%88%86%E5%AD%A6%E5%8F%8A%E5%85%B6%E5%BA%94%E7%94%A8/6-0-%E5%A4%9A%E5%85%83%E5%87%BD%E6%95%B0%E5%BE%AE%E5%88%86%E5%AD%A6%E5%8F%8A%E5%85%B6%E5%BA%94%E7%94%A8%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE"><span>上一篇</span>6-0 多元函数微分学及其应用思维导图</a>
+    <a class="pg next" href="/library/%E6%95%B0%E4%B8%80/1-%E9%AB%98%E6%95%B0/6-%E5%A4%9A%E5%85%83%E5%87%BD%E6%95%B0%E5%BE%AE%E5%88%86%E5%AD%A6%E5%8F%8A%E5%85%B6%E5%BA%94%E7%94%A8/6-2-%E8%BF%9E%E7%BB%AD"><span>下一篇</span>6-2 连续</a>
+  </nav>
+    </article>
+  </main>
+  <aside class="note-toc" aria-label="本篇目录"><div class="toc-title">本篇目录</div><div id="toc"></div></aside>
+</div>
+<script src="/library/note.js"></script>
+</body>
+</html>

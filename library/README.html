@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>README · 数学/英语知识库</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/vendor/katex/katex.min.css">
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/library/note.css">
+</head>
+<body class="note-page">
+
+<nav class="sitebar" aria-label="站点导航">
+  <a class="sb-brand" href="/">考研资料总库</a>
+  <div class="sb-links">
+    <a href="/math/">数学真题</a>
+    <a href="/library/" class="on">知识库</a>
+    <a href="/exam/">英语真题</a>
+    <a href="/english/">英语速查</a>
+  </div>
+</nav>
+<div class="lib-layout">
+  <aside class="lib-side" id="libSide" aria-label="知识库目录">
+    <div class="side-head">
+      <a href="/library/">数学/英语知识库</a>
+      <button type="button" class="side-toggle" id="sideToggle" aria-expanded="false">目录</button>
+    </div>
+    <div class="side-tree" id="sideTree"></div>
+  </aside>
+  <main class="note-main">
+    <nav class="crumbs"><a href="/library/">知识库</a></nav>
+    <article class="note-article">
+      <header class="note-head">
+        
+        <h1>README</h1>
+        <div class="note-meta"> </div>
+      </header>
+      <div class="prose" id="prose"><h1 id="Lazy-Kaoyan-Library">Lazy-Kaoyan-Library</h1><h2 id="项目简介">项目简介</h2><p>本项目由一名不知名的26考研生编写。</p>
+<p>本项目不是一个静态的笔记仓库，是专为不想手动刷题的人准备的<code>思维导图</code>+<code>错题仓库</code> (<del>不过由于版权原因所有题目无法上传</del></p>
+<ul>
+<li>前期用 AI 与 OCR 工具辅助转录课程知识与题目成 md 形式</li>
+<li>后期用 <strong>思维导图 +   AI 对话</strong> 作为入口，串起复习流程；</li>
+<li>用 <strong>本地优先、无纸化、可持续迭代、双向链接</strong> 的方式代替大量纸质整理。</li>
+</ul>
+<p>目前仓库主体包括：</p>
+<ul>
+<li><strong>数一</strong>：高数、线代、概率论，以及题目整理；</li>
+<li><strong>英一</strong>：大小作文相关模板与内容；</li>
+<li><strong>模板文件夹</strong>：基础知识、方法、错题、同类题目汇总等模板；</li>
+</ul>
+<h2 id="适用对象">适用对象</h2><p>如果你本来就喜欢：</p>
+<ul>
+<li>用 AI 偷懒，自己能少刷题就少刷；</li>
+<li>无纸化学习，尽量少写重复性的纸质笔记；</li>
+<li>让知识点和题目形成网络，所有笔记和题目 ALL in one；</li>
+<li>更注重整理知识库过程中的充实感而非纠结于实际作用与结果的人</li>
+</ul>
+<p>那这套仓库思路大概率会很对胃口。</p>
+<h2 id="项目特色">项目特色</h2><h3 id="1.-AI-友好的本地结构化知识库">1. AI 友好的本地结构化知识库</h3><ul>
+<li>按“<strong>章节 -&gt; 知识点 -&gt; 方法 -&gt; 题型 -&gt; 题目/错题</strong>”来组织，便于检索、回顾和复盘。</li>
+<li>可以转录的资料尽量本地 md 化，AI 友好</li>
+<li>不能转录的资料用图片形式按 <code>./fig</code> 路径储存在当前笔记所在文件夹，迁移、同步、清理都更直接。</li>
+<li>鼓励把所有有价值的题目喂给 ai，卡片笔记形式储存在本地方便回顾，少刷题，多回顾复盘总结</li>
+</ul>
+<h3 id="2.-思维导图化整理">2. 思维导图化整理</h3><ul>
+<li>选择思维导图作为入口与复习中心串联卡片笔记，结构与松散动态统一，方便回顾</li>
+</ul>
+<h3 id="3-.-鼓励动态更新与查询">3 . 鼓励动态更新与查询</h3><ul>
+<li>鼓励使用 dataview 动态查询 (<del>虽然做的很粗略</del></li>
+</ul>
+<h3 id="4.-模板驱动">4. 模板驱动</h3><ul>
+<li>鼓励使用 Templater模板，便于持续扩写</li>
+</ul>
+<h2 id="仓库结构">仓库结构</h2><pre class="code"><code>.
+├─ README.md
+├─ 数一
+│  ├─ 0.题目
+│  ├─ 1 高数
+│  ├─ 2 线代
+│  └─ 3 概率论
+├─ 英一
+│  ├─ 2026英一大小作文预测与检验.md
+│  ├─ 大作文模板最终版.md
+│  └─ 小作文模版.md
+├─ 模版文件夹
+│  ├─ 基础知识模板.md
+│  ├─ 方法模板.md
+│  ├─ 错题模板.md
+│  └─ 同类题目汇总模版.md
+└─ .obsidian</code></pre>
+<p>从内容形态上看，仓库里主要有几类笔记：</p>
+<ul>
+<li><strong>基础知识</strong></li>
+<li><strong>方法</strong></li>
+<li><strong>思维导图</strong></li>
+<li><strong>题目 / 错题模板</strong></li>
+<li><strong>同类题目汇总</strong></li>
+</ul>
+<h2 id="如何使用">如何使用</h2><ol>
+<li>安装 <strong>Obsidian 桌面端</strong>；</li>
+<li>下载或克隆本仓库；</li>
+<li>在 Obsidian 中选择“打开本地文件夹作为仓库”；</li>
+<li>允许加载仓库自带的 <code>.obsidian</code> 配置；</li>
+<li>按下文的插件建议补齐必要依赖；</li>
+<li>从 <code>数一</code>、<code>英一</code>、<code>模版文件夹</code> 开始使用。</li>
+</ol>
+<h2 id="环境与插件依赖">环境与插件依赖</h2><h3 id="必须安装">必须安装</h3><ul>
+<li><strong>Templater</strong>：模板文件夹中的模板依赖</li>
+<li><strong>Dataview</strong>： 动态查询维护</li>
+<li><strong>Style Settings</strong>：用于配合主题和样式细调；</li>
+<li><strong>Paste Image Rename</strong>：用于图片粘贴后重命名和管理。</li>
+</ul>
+<h3 id="推荐安装">推荐安装</h3><ul>
+<li><strong>Obsidian Mind Map NextGen</strong>：用于思维导图类笔记；</li>
+<li><strong>Excalidraw</strong>：适合后续自己扩展图解、手绘和知识结构图；</li>
+<li><strong>Easy Typing</strong>：中文输入体验更顺手；</li>
+<li><strong>Floating TOC</strong>：悬浮目录，快速定位</li>
+<li><strong>Mousewheel Image Zoom</strong>：查看图解时更舒服；</li>
+<li><strong>OZ Clear Unused Images</strong>：清理无用图片；</li>
+<li><strong>Obsidian Git</strong>：做版本管理和同步时很省心；</li>
+<li><strong>Callout Manager</strong>：一键管理所有 Call out</li>
+<li><strong>Editing-toolbar</strong>：整合常用书写工具，obsidian word化</li>
+<li><strong>Claudian</strong>：直接接入 AI 对话，强烈安利</li>
+</ul>
+<h2 id="主题与界面建议">主题与界面建议</h2><img width="1512" height="1339" alt="image" src="https://github.com/user-attachments/assets/fbfd1844-bdc2-4bc4-b0c3-3880fe9a854a" />
+
+<p>当前仓库配置中使用了：</p>
+<ul>
+<li><strong>Blue Topaz</strong>的 Topaz-Nord 主题，深色模式；</li>
+<li><strong>Style Settings</strong> 做样式细调；</li>
+<li>若干 CSS Snippets（如页面宽度、图片居中、隐藏标题等）。</li>
+<li>字体：京华老宋体</li>
+</ul>
+<p>如果你只是想使用内容，不必完全复刻作者界面。  </p>
+<h2 id="关于图片与附件管理">关于图片与附件管理</h2><p>仓库当前附件路径配置为：</p>
+<pre class="code"><code>./fig</code></pre>
+<ul>
+<li>图片通常放在当前笔记所在目录下的 <code>fig</code> 文件夹；</li>
+</ul>
+<p>推荐搭配：</p>
+<ul>
+<li><strong>Paste Image Rename</strong>：粘贴图片后顺手重命名；</li>
+<li><strong>OZ Clear Unused Images</strong>：定期清理无引用图片。</li>
+</ul>
+<h2 id="贡献与使用建议">贡献与使用建议</h2><p>如果你在使用过程中发现问题，或者你对目录结构、模板设计、插件工作流有更好的想法，欢迎：</p>
+<ul>
+<li>提交 <strong>Issue</strong>；</li>
+<li>Fork 后自行修改；</li>
+<li>发起 <strong>Pull Request</strong>；</li>
+<li>或者直接把它改造成你自己的考研仓库。</li>
+</ul>
+<h2 id="致谢">致谢</h2><p>本项目的灵感主要来源于：<code>Math-And-English-Library</code>与<code>Pkmer-Math</code>。
+感谢去年夏天最好的 <code>Gemini 2.5 pro</code> 与 <code>AI Studio</code> ，没有 Gemini 也就没有这个仓库和今天的笔者。
+感谢 <code>Paddleocr</code> 对本项目的 ocr 支持。</p>
+<h2 id="写在最后面的话">写在最后面的话</h2><p>这是最好的时代，这是最坏的时代。</p>
+<p>这个时代好在我们有各种开源的工具、资料、经验以及 AI 工具辅助人类学习；</p>
+<p>这个时代悲哀在 AI 已经发展到高考考研乃至奥赛都能轻松高分的现在，世界上还有无数人为了一个 N 年后的预期而透支自己的生命在一个个有标准答案的考试上。</p>
+<p>我还是坚持认为，如果一个考试事先知道答案再回答就能全对的话，这个考试就是没有意义的。</p>
+<p>但世界上还有许多没有答案的东西，这是从有标准答案的考试上学不到的。</p>
+<p>本仓库设立的初衷就是借助 AI 工具，减少学生在整理笔记与刷题上的时间，把更多的时间从书本上转移到现实世界与个人生活中。</p>
+<p>考研这一年笔者一个很大的收获就是学会了用更成熟的方式表达自己的意见和不满。</p>
+<p>这个仓库就是我想说的话。</p>
+<p>每个人有每个人的生活方式，可以不认同，但要相互尊重彼此的选择。</p>
+<p>祝所有考研学子们能都写下自己的答案。</p>
+</div>
+      
+      <nav class="pager">
+    <a class="pg prev" href="/library/%E8%8B%B1%E4%B8%80/%E5%B0%8F%E4%BD%9C%E6%96%87%E6%A8%A1%E7%89%88"><span>上一篇</span>小作文模版</a>
+    <span></span>
+  </nav>
+    </article>
+  </main>
+  <aside class="note-toc" aria-label="本篇目录"><div class="toc-title">本篇目录</div><div id="toc"></div></aside>
+</div>
+<script src="/library/note.js"></script>
+</body>
+</html>
