@@ -18,6 +18,7 @@
   <div class="sb-links">
     <a href="/math/">数学真题</a>
     <a href="/exam/" class="on">英语真题</a>
+    <a href="/politics/">政治真题</a>
     <a href="/english/">英语速查</a>
     <a href="/library/">知识库</a>
   </div>
@@ -42,12 +43,14 @@
     </div>
   </header>
 
-  <nav class="ex-tabs" aria-label="试卷分类">
-      <button class="ex-tab on" type="button" data-set="y1">英语（一）<span>21 套</span></button>
-      <button class="ex-tab" type="button" data-set="y2">英语（二）<span>17 套</span></button>
-  </nav>
-
-    <div class="ex-years" data-set="y1">
+  <nav class="ex-sets" aria-label="试卷分类">
+  <section class="ex-set">
+    <div class="ex-set-head">
+      <h2>英语（一）</h2>
+      <span>2006 — 2026 · 21 套</span>
+      <span class="ex-yhint">点年份直接进入该年试卷</span>
+    </div>
+    <div class="ex-years">
 <a class="yr" href="/exam/2026-y1" data-id="2026-y1" title="2026 年英语（一） · 进入试卷">2026</a>
 <a class="yr" href="/exam/2025-y1" data-id="2025-y1" title="2025 年英语（一） · 进入试卷">2025</a>
 <a class="yr" href="/exam/2024-y1" data-id="2024-y1" title="2024 年英语（一） · 进入试卷">2024</a>
@@ -69,9 +72,15 @@
 <a class="yr" href="/exam/2008-y1" data-id="2008-y1" title="2008 年英语（一） · 进入试卷">2008</a>
 <a class="yr" href="/exam/2007-y1" data-id="2007-y1" title="2007 年英语（一） · 进入试卷">2007</a>
 <a class="yr" href="/exam/2006-y1" data-id="2006-y1" title="2006 年英语（一） · 进入试卷">2006</a>
-      <span class="ex-yhint">点击年份直接进入该年试卷</span>
     </div>
-    <div class="ex-years" data-set="y2" hidden>
+  </section>
+  <section class="ex-set">
+    <div class="ex-set-head">
+      <h2>英语（二）</h2>
+      <span>2010 — 2026 · 17 套</span>
+      <span class="ex-yhint">点年份直接进入该年试卷</span>
+    </div>
+    <div class="ex-years">
 <a class="yr" href="/exam/2026-y2" data-id="2026-y2" title="2026 年英语（二） · 进入试卷">2026</a>
 <a class="yr" href="/exam/2025-y2" data-id="2025-y2" title="2025 年英语（二） · 进入试卷">2025</a>
 <a class="yr" href="/exam/2024-y2" data-id="2024-y2" title="2024 年英语（二） · 进入试卷">2024</a>
@@ -89,8 +98,9 @@
 <a class="yr" href="/exam/2012-y2" data-id="2012-y2" title="2012 年英语（二） · 进入试卷">2012</a>
 <a class="yr" href="/exam/2011-y2" data-id="2011-y2" title="2011 年英语（二） · 进入试卷">2011</a>
 <a class="yr" href="/exam/2010-y2" data-id="2010-y2" title="2010 年英语（二） · 进入试卷">2010</a>
-      <span class="ex-yhint">点击年份直接进入该年试卷</span>
     </div>
+  </section>
+  </nav>
 
   <section class="my-stats" id="myStats" hidden></section>
 
@@ -125,16 +135,6 @@
 
 <script>
 (function () {
-  var tabs = [].slice.call(document.querySelectorAll('.ex-tab'));
-  var rows = [].slice.call(document.querySelectorAll('.ex-years'));
-
-  tabs.forEach(function (t) {
-    t.addEventListener('click', function () {
-      tabs.forEach(function (x) { x.classList.toggle('on', x === t); });
-      rows.forEach(function (r) { r.hidden = r.dataset.set !== t.dataset.set; });
-    });
-  });
-
   /* 已作答的卷子在年份上点一个小标 */
   [].forEach.call(document.querySelectorAll('.yr[data-id]'), function (a) {
     try {

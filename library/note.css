@@ -383,6 +383,18 @@ a { color: var(--accent); }
 
 /* ── 知识库首页 ───────────────────────────────────────────── */
 .lib-wrap { max-width: 1000px; margin: 0 auto; padding: 34px 0 70px; }
+/* 科目切换 */
+.lib-tabs { display: flex; flex-wrap: wrap; gap: 7px; margin: 16px 0 4px; }
+.lib-tab {
+  appearance: none; cursor: pointer;
+  font-family: var(--sans); font-size: 13px; line-height: 1;
+  padding: 8px 16px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--muted);
+  transition: color .15s, border-color .15s, background .15s;
+}
+.lib-tab:hover { color: var(--ink); border-color: var(--ink); }
+.lib-tab.on { background: var(--ink); border-color: var(--ink); color: var(--paper); font-weight: 500; }
+.lib-col[hidden] { display: none; }
 /* 首页内容宽 1000，顶栏跟着收窄，品牌字与刊头左对齐 */
 body.lib-index > .sitebar { max-width: 1000px; }
 .lib-mast { display: flex; align-items: center; gap: 16px; padding-bottom: 22px; }

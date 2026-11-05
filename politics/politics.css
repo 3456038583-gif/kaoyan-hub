@@ -1,0 +1,64 @@
+/* 考研政治真题 · 版块样式（基础组件复用 /exam/exam.css） */
+
+/* 首页 */
+.po-mast .ex-seal { background: #8c2f2a; }
+.po-mast .ex-seal::after { content: none; }
+.po-set { margin-bottom: 22px; }
+
+/* 试卷页 */
+.q-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+.q-list.essay-list { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+
+.q { scroll-margin-top: 62px; }
+.q.has-pick { border-color: color-mix(in srgb, var(--accent) 34%, var(--line)); }
+.q.ok { border-color: var(--green); }
+.q-tag {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .04em;
+  color: var(--gold); border: 1px solid var(--line); border-radius: 3px;
+  padding: 0 5px;
+}
+.opts { margin-top: 2px; }
+.opt.miss {
+  background: color-mix(in srgb, var(--green-soft) 60%, var(--surface));
+  outline: 1px dashed var(--green);
+}
+.opt.miss .k { color: var(--green); border-color: var(--green); }
+.opt.wrong { text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--red) 55%, transparent); }
+.q-multi .opt .k { border-radius: 3px; }
+
+/* 分析题 */
+.q-essay { padding: 16px 18px 14px; }
+.essay-body p {
+  margin: 0 0 10px; font-size: 14.5px; line-height: 1.85;
+  text-indent: 1.5em;
+}
+.essay-body p:last-child { margin-bottom: 0; }
+.essay-body p:first-child { text-indent: 0; }
+
+/* 统计面板补充 */
+.stat-wrong {
+  margin: 12px 0 0; font-size: 12.5px; color: var(--muted);
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+}
+.stat-wrong b { color: var(--red); font-weight: 600; }
+.stat-wrong a {
+  font-family: var(--mono); font-size: 11.5px;
+  padding: 1px 7px; border: 1px solid var(--line); border-radius: 3px;
+  color: var(--muted);
+}
+.stat-wrong a:hover { color: var(--accent); border-color: var(--accent); }
+
+/* 年份 chips（首页） */
+.po-years .yr { min-width: 62px; }
+
+@media (max-width: 720px) {
+  .q-list { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .q { padding: 12px 13px 10px; }
+  .opt { font-size: 14.5px; }
+  .essay-body p { text-indent: 0; }
+}

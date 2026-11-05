@@ -138,7 +138,7 @@ h1 {
 /* 入口卡片 */
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(172px, 1fr));
   gap: 16px;
   margin-bottom: 54px;
 }
@@ -292,8 +292,9 @@ footer .fl { display: flex; flex-wrap: wrap; gap: 16px; }
     <nav aria-label="站内导航">
       <a href="/math/">数学真题</a>
       <a href="/exam/">英语真题</a>
-      <a href="/english/">英语一速查</a>
-      <a href="/library/">数学/英语知识库</a>
+      <a href="/politics/">政治真题</a>
+      <a href="/english/">英语速查</a>
+      <a href="/library/">知识库</a>
     </nav>
   </header>
 
@@ -302,7 +303,7 @@ footer .fl { display: flex; flex-wrap: wrap; gap: 16px; }
     <div>
       <p class="kicker">Postgraduate Entrance Exam · Archive</p>
       <h1>考研资料总库</h1>
-      <p class="sub">数学真题 · 数学/英语知识库 · 英语真题逐题练习 · 英语一答案速查</p>
+      <p class="sub">数学真题 · 英语真题 · 政治真题 · 知识库 · 英语一答案速查</p>
     </div>
   </header>
 
@@ -310,25 +311,31 @@ footer .fl { display: flex; flex-wrap: wrap; gap: 16px; }
     <div class="cards">
       <a class="card" href="/math/">
         <span class="tag">Mathematics</span>
-        <h2>数学真题速查</h2>
+        <h2>数学真题</h2>
         <p>2010—2026 年数一 / 数二 / 数三原卷与解析，逐题 LaTeX 还原，按年份、题型、难度筛选，PDF 在线翻阅。</p>
         <div class="meta"><span>17 年</span><span>121 份 PDF</span><span>逐题还原</span></div>
       </a>
       <a class="card" href="/library/">
         <span class="tag">Knowledge Base</span>
-        <h2>数学/英语知识库</h2>
-        <p>高数、线代、概率论的知识框架与解题方法，旁及英语作文模板，支持全文搜索与按类型筛选。</p>
-        <div class="meta"><span><b data-stat="notes">258</b> 篇笔记</span><span>全文搜索</span><span>双向链接</span></div>
+        <h2>知识库</h2>
+        <p>高数、线代、概率论的知识框架与解题方法，旁及英语作文模板与政治一页纸手册，支持全文搜索与按科目筛选。</p>
+        <div class="meta"><span><b data-stat="notes">259</b> 篇笔记</span><span>全文搜索</span><span>三科切换</span></div>
       </a>
       <a class="card" href="/exam/">
-        <span class="tag">English · Past Papers</span>
-        <h2>英语真题逐题练习</h2>
+        <span class="tag">English</span>
+        <h2>英语真题</h2>
         <p>英语一 2006—2026、英语二 2010—2026 真题逐题还原，每题标注难度，文章配全文精翻，附原卷解析 PDF。</p>
         <div class="meta"><span>38 套</span><span>逐题还原</span><span>全文精翻</span></div>
       </a>
+      <a class="card" href="/politics/">
+        <span class="tag">Politics</span>
+        <h2>政治真题</h2>
+        <p>2010—2026 年考研政治真题，单选 / 多选 / 材料分析三类题型逐题还原，点选即判、自动算分，附成绩统计与原卷解析 PDF。</p>
+        <div class="meta"><span>17 年</span><span>客观题自动判分</span><span>错题清单</span></div>
+      </a>
       <a class="card" href="/english/">
         <span class="tag">English I</span>
-        <h2>英语一答案速查</h2>
+        <h2>英语速查</h2>
         <p>一刷 2006—2026、二刷 2007—2025 的阅读答案与成绩记录，可在页面上直接记分并查看汇总。</p>
         <div class="meta"><span>一刷 / 二刷</span><span>成绩记录</span></div>
       </a>
@@ -391,6 +398,15 @@ footer .fl { display: flex; flex-wrap: wrap; gap: 16px; }
           <li><a href="/library/#moban">方法模板</a></li>
           <li><a href="/library/#moban">错题模板</a></li>
           <li><a href="/library/#moban">同类题目汇总模板</a></li>
+        </ul>
+      </section>
+      <section class="col">
+        <h3>政治 · 一页纸 <small>32 页</small></h3>
+        <ul>
+          <li><a href="/library/政治/一页纸.html">一页纸知识点手册（网页版）</a></li>
+          <li><a href="/pdfs/politics/27-yiyeye.pdf">27 考研政治一页纸 PDF</a></li>
+          <li><a href="/politics/">2010—2026 政治真题</a></li>
+          <li><a href="/library/#politics">知识库 · 政治分区</a></li>
         </ul>
       </section>
     </div>
