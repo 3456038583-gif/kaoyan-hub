@@ -103,9 +103,28 @@
     return (paras || [])
       .map((p) => {
         const en = esc(p.en).replace(/\{\{(\d+)\}\}/g, (_, n) => `<span class="blank" data-n="${n}">${n}</span>`);
-        return `<p>${en}</p>${p.zh ? `<div class="zh">${esc(p.zh)}</div>` : ''}`;
+        return `<p>${en}</p>`;
       })
       .join('');
+  }
+
+  /* 全文译文：默认收起，点标题右侧的「全文译文」才展开 */
+  function zhBlock(s) {
+    if (s.kind === 'translation') return '';
+    const ps = (s.paras || []).filter((p) => p && p.zh);
+    if (!ps.length) return '';
+    const rows = ps
+      .map((p, i) => {
+        // 译文里的 {{41}} / [[41]] 是原文空位，渲染成小徽标
+        const zh = esc(p.zh).replace(/\{\{(\d+)\}\}|\[\[\s*(\d+)\s*\]\]/g,
+          (_, a, b) => `<span class="zh-blank">${a || b}</span>`);
+        return `<p><span class="zh-i">${i + 1}</span>${zh}</p>`;
+      })
+      .join('');
+    return `<div class="tr-box" hidden>
+      <div class="tr-box-head"><b>全文译文</b><span>${ps.length} 段 · 点击「收起译文」可隐藏</span></div>
+      ${rows}
+    </div>`;
   }
 
   /* 翻译：把要译的句子在原文里划出来（和试卷一样），不再重复列句子 */
@@ -126,7 +145,7 @@
           .replace(/\u0000(\d+)\u0000/g, '<u class="tr-u" data-n="$1">')
           .replace(/\u0001/g, '</u>')
           .replace(/(<u class="tr-u" data-n="(\d+)">)([\s\S]*?)<\/u>/g, (_, a, n, body) => `${a}${body}<sup>${n}</sup></u>`);
-        return `<p>${html}</p>${p.zh ? `<div class="zh">${esc(p.zh)}</div>` : ''}`;
+        return `<p>${html}</p>`;
       })
       .join('');
   }
@@ -143,12 +162,13 @@
   }
 
   function secHead(s) {
-    const hasZh = s.kind === 'translation' && (s.paras || []).some((p) => p.zh);
+    // 翻译板块本身就有逐句参考译文，不再重复挂「全文译文」
+    const hasZh = s.kind !== 'translation' && (s.paras || []).some((p) => p && p.zh);
     const isObj = OBJ_KINDS.indexOf(s.kind) >= 0 && (s.questions || []).length > 0;
     return `<div class="sec-head">
       <span class="lbl">${esc(s.label || '')}</span>
       <h2>${esc(s.title)}</h2>
-      ${hasZh ? '<button class="sec-btn" type="button" data-tr="1">全文译文</button>' : ''}
+      ${hasZh ? '<button class="sec-btn sec-tr" type="button" data-tr="1" aria-expanded="false">全文译文</button>' : ''}
       ${isObj ? `<button class="sec-btn sec-submit" type="button" data-sec="${esc(s.id)}" disabled>提交本部分</button>` : ''}
       ${s.points ? `<span class="pts">${s.points} 分</span>` : ''}
     </div>
@@ -227,6 +247,7 @@
       ${secHead(s)}
       ${s.direction ? `<div class="direction">${esc(s.direction)}</div>` : ''}
       ${body}
+      ${zhBlock(s)}
     </section>`;
   }
 
@@ -466,8 +487,13 @@
     const trBtn = e.target.closest('[data-tr]');
     if (trBtn) {
       const sec = trBtn.closest('.sec');
-      const on = sec.classList.toggle('show-tr');
+      const box = $('.tr-box', sec);
+      if (!box) return;
+      const on = box.hasAttribute('hidden');
+      if (on) box.removeAttribute('hidden'); else box.setAttribute('hidden', '');
+      sec.classList.toggle('show-tr', on);
       trBtn.classList.toggle('on', on);
+      trBtn.setAttribute('aria-expanded', on ? 'true' : 'false');
       trBtn.textContent = on ? '收起译文' : '全文译文';
       return;
     }
