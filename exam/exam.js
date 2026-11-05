@@ -16,7 +16,54 @@
   };
 
   const allQ = [];
+  /* 合并主题表：完形取 cloze，写作按 Part A / Part B 分配 */
+  const TP = (window.__TOPICS__ || {})[P.id] || {};
+  P.sections.forEach((s) => {
+    if (TP.cloze && (s.kind === 'cloze' || s.kind === 'use')) s.topic = s.topic || TP.cloze;
+    if (TP.small || TP.big) {
+      (s.parts || []).forEach((p) => {
+        const lab = p.label || '';
+        if (/Part\s*A|小作文/i.test(lab) && TP.small) p.topic = p.topic || TP.small;
+        if (/Part\s*B|大作文/i.test(lab) && TP.big) p.topic = p.topic || TP.big;
+      });
+    }
+  });
   P.sections.forEach((s) => (s.questions || []).forEach((q) => allQ.push(q)));
+
+  /* ---------- 计分 ---------- */
+  const OBJ_KINDS = ['cloze', 'reading', 'newtype'];
+  const qMeta = {};
+  let objFull = 0;
+  P.sections.forEach((s) => {
+    const qs = s.questions || [];
+    const per = qs.length ? (s.points || 0) / qs.length : 0;
+    const isObj = OBJ_KINDS.indexOf(s.kind) >= 0;
+    if (isObj) objFull += s.points || 0;
+    qs.forEach((q) => {
+      qMeta[q.n] = { sec: s.id, kind: s.kind, per, obj: isObj, answer: q.answer };
+    });
+  });
+  const fmtScore = (v) => (Math.abs(v - Math.round(v)) < 0.05 ? String(Math.round(v)) : v.toFixed(1));
+
+  function scoreStat() {
+    let done = 0, right = 0, score = 0, objDone = 0;
+    const bySec = {};
+    P.sections.forEach((s) => {
+      bySec[s.id] = { title: s.nav || s.title, kind: s.kind, points: s.points || 0, n: (s.questions || []).length, done: 0, right: 0, score: 0 };
+    });
+    allQ.forEach((q) => {
+      const m = qMeta[q.n];
+      const pick = picks[q.n];
+      if (!m) return;
+      if (pick) { done++; bySec[m.sec].done++; if (m.obj) objDone++; }
+      if (m.obj && pick && pick === m.answer) {
+        right++; score += m.per;
+        bySec[m.sec].right++;
+        bySec[m.sec].score += m.per;
+      }
+    });
+    return { done, right, score, objDone, bySec };
+  }
 
   /* ---------- 渲染 ---------- */
   const diffBadge = (q) =>
@@ -59,11 +106,14 @@
   }
 
   function secHead(s) {
+    const hasZh = s.kind === 'translation' && (s.paras || []).some((p) => p.zh);
     return `<div class="sec-head">
       <span class="lbl">${esc(s.label || '')}</span>
       <h2>${esc(s.title)}</h2>
+      ${hasZh ? '<button class="sec-btn" type="button" data-tr="1">全文译文</button>' : ''}
       ${s.points ? `<span class="pts">${s.points} 分</span>` : ''}
-    </div>`;
+    </div>
+    ${s.topic ? `<p class="sec-topic"><b>主题</b>${esc(s.topic)}</p>` : ''}`;
   }
 
   function renderSection(s) {
@@ -96,10 +146,18 @@
       </div>`;
     } else if (s.kind === 'writing') {
       body = (s.parts || [])
-        .map((p) => `<div class="wcard">
+        .map((p) => {
+          const isBig = /Part\s*B|大作文/.test(p.label || '');
+          const fig = isBig
+            ? `<div class="wfig-wrap"><img class="wfig" src="/exam/figs/writing/${esc(P.id)}.png" alt="${esc(P.title)} 作文配图" loading="lazy" onerror="this.parentNode.remove()"></div>`
+            : '';
+          return `<div class="wcard">
           <h3>${esc(p.label)} <span class="pts">${p.points || ''} 分</span></h3>
+          ${p.topic ? `<p class="w-topic"><b>主题</b>${esc(p.topic)}</p>` : ''}
           ${(p.direction || []).map((d) => `<p class="${/^[A-Za-z]/.test(d) ? 'en' : ''}">${esc(d)}</p>`).join('')}
-        </div>`)
+          ${fig}
+        </div>`;
+        })
         .join('');
     } else if (s.kind === 'text') {
       body = `<div class="wcard">${(s.paras || []).map((p) => `<p>${esc(p.en)}</p>`).join('')}</div>`;
@@ -164,13 +222,27 @@
         ${switchHtml()}
         <button class="btn" id="btnZh">显示译文</button>
         <button class="btn" id="btnAns">显示答案</button>
+        <button class="btn" id="btnStat">统计</button>
         <button class="btn" id="btnClear">清空作答</button>
       </div>
       ${P.note ? `<p class="paper-note">${esc(P.note)}</p>` : ''}
     </div>
     <nav class="sec-nav" id="secNav">${navItems}</nav>
     <div class="paper-body">${P.sections.map(renderSection).join('')}</div>
-    <div class="scorebar" id="scorebar">已答 <b id="scDone">0</b>/<span id="scAll">0</span> <span id="scRight"></span></div>
+    <div class="scorebar" id="scorebar">
+      <span>已答 <b id="scDone">0</b>/<span id="scAll">0</span></span>
+      <span class="sb-score">客观题 <b id="scScore">0</b>/<span id="scFull">${fmtScore(objFull)}</span> 分</span>
+      <span id="scPct" class="sb-pct"></span>
+    </div>
+    <div class="stat-mask" id="statMask" hidden>
+      <div class="stat-panel" role="dialog" aria-modal="true" aria-label="本卷统计">
+        <div class="stat-head">
+          <h3>${esc(P.title)} · 作答统计</h3>
+          <button class="stat-close" type="button" id="statClose" aria-label="关闭">×</button>
+        </div>
+        <div class="stat-body" id="statBody"></div>
+      </div>
+    </div>
   `;
 
   /* ---------- 交互 ---------- */
@@ -254,13 +326,84 @@
       b.classList.toggle('done', !!p);
       b.textContent = p || b.dataset.n;
     });
-    $('#scDone').textContent = String(done);
+    const st = scoreStat();
+    $('#scDone').textContent = String(st.done);
     $('#scAll').textContent = String(allQ.length);
-    $('#scRight').innerHTML = allRevealed ? `· 正确 <b style="color:var(--green)">${right}</b>` : '';
+    $('#scScore').textContent = fmtScore(st.score);
+    const pct = st.objDone ? Math.round((st.right / st.objDone) * 100) : 0;
+    $('#scPct').textContent = st.objDone ? `正确率 ${pct}%` : '';
+    $('#scPct').className = 'sb-pct' + (st.objDone ? (pct >= 60 ? ' good' : ' bad') : '');
     document.body.classList.add('show-score');
+    try {
+      localStorage.setItem(
+        'kaoyan-exam-sum:' + P.id,
+        JSON.stringify({ id: P.id, title: P.title, score: st.score, full: objFull, right: st.right, objDone: st.objDone, done: st.done, total: allQ.length, t: Date.now() })
+      );
+    } catch (e) {}
+    if (statMask && !statMask.hidden) renderStat();
+  }
+
+  /* ---------- 统计面板 ---------- */
+  const statMask = $('#statMask'), statBody = $('#statBody');
+  const SEC_NAME = {
+    cloze: '完形填空', reading: '阅读理解', newtype: '新题型',
+    translation: '翻译（主观）', writing: '写作（主观）',
+  };
+  function renderStat() {
+    const st = scoreStat();
+    const rows = P.sections
+      .filter((s) => (s.questions || []).length)
+      .map((s) => {
+        const d = st.bySec[s.id];
+        const isObj = OBJ_KINDS.indexOf(s.kind) >= 0;
+        const rate = d.done ? Math.round((d.right / d.done) * 100) : 0;
+        const label = s.kind === 'reading' ? s.nav || '阅读' : SEC_NAME[s.kind] || s.nav || d.title;
+        return `<tr>
+          <td>${esc(label)}</td>
+          <td class="num">${d.n}</td>
+          <td class="num">${d.done}</td>
+          <td class="num">${isObj ? d.right : '—'}</td>
+          <td class="num">${isObj ? `${fmtScore(d.score)} / ${fmtScore(d.points)}` : '—'}</td>
+          <td class="num">${isObj && d.done ? rate + '%' : '—'}</td>
+        </tr>`;
+      })
+      .join('');
+    const pct = st.objDone ? Math.round((st.right / st.objDone) * 100) : 0;
+    statBody.innerHTML = `
+      <div class="stat-kpi">
+        <div><span>客观题得分</span><b>${fmtScore(st.score)}<i> / ${fmtScore(objFull)}</i></b></div>
+        <div><span>已答</span><b>${st.done}<i> / ${allQ.length}</i></b></div>
+        <div><span>正确率</span><b class="${pct >= 60 ? 'good' : 'bad'}">${st.objDone ? pct + '%' : '—'}</b></div>
+      </div>
+      <table class="stat-table">
+        <thead><tr><th>题型</th><th>题数</th><th>已答</th><th>正确</th><th>得分</th><th>正确率</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <p class="stat-tip">客观题（完形、阅读、新题型）自动计分；翻译与写作属主观题，需自行估分。作答记录保存在本机浏览器。</p>`;
+  }
+  const btnStat = $('#btnStat');
+  if (btnStat) {
+    btnStat.addEventListener('click', () => {
+      renderStat();
+      statMask.hidden = false;
+    });
+    statMask.addEventListener('click', (e) => {
+      if (e.target === statMask || e.target.closest('#statClose')) statMask.hidden = true;
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') statMask.hidden = true;
+    });
   }
 
   root.addEventListener('click', (e) => {
+    const trBtn = e.target.closest('[data-tr]');
+    if (trBtn) {
+      const sec = trBtn.closest('.sec');
+      const on = sec.classList.toggle('show-tr');
+      trBtn.classList.toggle('on', on);
+      trBtn.textContent = on ? '收起译文' : '全文译文';
+      return;
+    }
     const ansBtn = e.target.closest('.q-ans');
     if (ansBtn) {
       ansBtn.closest('.q').classList.toggle('revealed');
