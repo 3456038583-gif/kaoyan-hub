@@ -4,7 +4,47 @@
   --sans: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 }
 .op-page { background: var(--paper); }
-.op-wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px 80px; }
+.op-page .sitebar { max-width: 1440px; padding-left: 20px; padding-right: 20px; }
+.op-wrap { max-width: 1440px; margin: 0 auto; padding: 0 20px 80px; }
+
+/* 左侧目录 + 正文两栏 */
+.op-layout {
+  display: grid; grid-template-columns: 252px minmax(0, 1fr);
+  gap: 26px; align-items: start;
+}
+.op-main { min-width: 0; }
+.op-side { position: sticky; top: 14px; align-self: start; }
+.op-side-in {
+  max-height: calc(100vh - 28px); overflow: auto; overscroll-behavior: contain;
+  background: #fff; border: 1px solid var(--line); border-radius: 12px;
+  padding: 14px 10px 16px;
+}
+.op-side-in::-webkit-scrollbar { width: 6px; }
+.op-side-in::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+.op-side-t {
+  margin: 0 8px 10px; font-family: var(--sans); font-size: 11.5px; font-weight: 600;
+  letter-spacing: .2em; color: var(--muted);
+}
+.op-side-nav { display: flex; flex-direction: column; gap: 1px; }
+.op-nav-item {
+  display: block; padding: 6px 9px; border-radius: 6px;
+  font-family: var(--sans); font-size: 13px; line-height: 1.45;
+  color: var(--ink, #1b211d); text-decoration: none;
+  border-left: 2px solid transparent;
+}
+.op-nav-item:hover { background: var(--surface, #f6f5ef); }
+.op-nav-item.on { color: var(--accent); background: var(--accent-soft, #f3f0e8); border-left-color: var(--accent); font-weight: 600; }
+.op-nav-item.lvl0 { font-weight: 600; }
+.op-nav-item.lvl1 {
+  margin-top: 8px; font-weight: 700; font-size: 13.5px;
+  border-top: 1px solid var(--line); border-radius: 0 6px 6px 0; padding-top: 9px;
+}
+.op-nav-item.lvl2 { padding-left: 20px; font-size: 12.5px; color: var(--muted); }
+.op-nav-item.lvl2.on { color: var(--accent); }
+.op-side-btn { display: none; }
+
+/* 锚点定位时避开顶部 */
+.sec-banner, .sub-banner, .kcard, .op-toc { scroll-margin-top: 16px; }
 .op-head { padding: 26px 0 16px; border-bottom: 1px solid var(--line); margin-bottom: 18px; }
 .crumbs { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
 .crumbs a:hover { color: var(--accent); }
@@ -119,6 +159,21 @@ u { text-underline-offset: 3px; }
 /* 页脚 */
 .op-foot { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
 .op-foot a { border-bottom: 1px solid var(--line); }
+
+/* 窄屏：目录改为可折叠 */
+@media (max-width: 1080px) {
+  .op-layout { grid-template-columns: 1fr; gap: 0; }
+  .op-side { position: static; }
+  .op-side-in { display: none; max-height: none; margin-top: 10px; }
+  .op-side.open .op-side-in { display: block; }
+  .op-side-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin: 10px 0 0; padding: 7px 14px; cursor: pointer;
+    font-family: var(--sans); font-size: 13px; font-weight: 600;
+    color: var(--accent); background: #fff;
+    border: 1px solid var(--line); border-radius: 7px;
+  }
+}
 
 @media (max-width: 720px) {
   .op-wrap { padding: 0 12px 60px; }
