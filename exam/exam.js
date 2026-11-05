@@ -38,8 +38,11 @@
   }
 
   function qHtml(q, extra) {
+    const hasAns = !!(q.answer || q.ref);
+    const ansBtn = hasAns ? `<button class="q-ans" type="button" data-n="${q.n}">答案</button>` : '';
+    const ansVal = q.answer ? `<span class="q-ansval">答案 <b>${esc(q.answer)}</b></span>` : '';
     return `<div class="q${extra || ''}" id="q-${q.n}" data-n="${q.n}">
-      <div class="q-top"><span class="q-num">${q.n}</span>${diffBadge(q)}${rateBadge(q)}${solLink(q)}</div>
+      <div class="q-top"><span class="q-num">${q.n}</span>${diffBadge(q)}${ansVal}${rateBadge(q)}<span class="q-tools">${ansBtn}${solLink(q)}</span></div>
       ${q.stem ? `<p class="q-stem">${esc(q.stem)}</p>` : ''}
       ${optsHtml(q)}
       ${q.ref ? `<div class="q-ref"><b>参考译文</b>${esc(q.ref)}</div>` : ''}
@@ -146,6 +149,7 @@
     const on = document.body.classList.toggle('show-ans');
     btnAns.classList.toggle('on', on);
     btnAns.textContent = on ? '隐藏答案' : '显示答案';
+    $$('.q').forEach((el) => el.classList.remove('revealed'));
     paint();
   });
   btnClear.addEventListener('click', () => {
@@ -156,13 +160,22 @@
     paint();
   });
 
+  function syncAnsText(el) {
+    const b = $('.q-ans', el);
+    if (!b) return;
+    const on = el.classList.contains('revealed') || document.body.classList.contains('show-ans');
+    b.textContent = on ? '收起' : '答案';
+  }
+
   function paint() {
-    const revealed = document.body.classList.contains('show-ans');
+    const allRevealed = document.body.classList.contains('show-ans');
     let done = 0, right = 0;
     $$('.q').forEach((el) => {
       const n = el.dataset.n;
       const q = allQ.find((x) => String(x.n) === n);
       if (!q) return;
+      const revealed = allRevealed || el.classList.contains('revealed');
+      syncAnsText(el);
       const pick = picks[n];
       if (pick) done++;
       $$('.opt', el).forEach((o) => {
@@ -181,13 +194,19 @@
     });
     $('#scDone').textContent = String(done);
     $('#scAll').textContent = String(allQ.length);
-    $('#scRight').innerHTML = revealed ? `· 正确 <b style="color:var(--green)">${right}</b>` : '';
+    $('#scRight').innerHTML = allRevealed ? `· 正确 <b style="color:var(--green)">${right}</b>` : '';
     document.body.classList.add('show-score');
   }
 
   root.addEventListener('click', (e) => {
+    const ansBtn = e.target.closest('.q-ans');
+    if (ansBtn) {
+      ansBtn.closest('.q').classList.toggle('revealed');
+      paint();
+      return;
+    }
     const opt = e.target.closest('.opt');
-    if (opt && !document.body.classList.contains('show-ans')) {
+    if (opt && !document.body.classList.contains('show-ans') && !opt.closest('.q').classList.contains('revealed')) {
       const n = opt.dataset.n;
       if (picks[n] === opt.dataset.k) delete picks[n];
       else picks[n] = opt.dataset.k;
