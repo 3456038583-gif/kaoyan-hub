@@ -1040,6 +1040,27 @@ footer {
 }
 footer p { margin: 0; }
 
+/* 数据迁移：把本机成绩带到总库（只在浏览器里流转） */
+footer .migrate {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+footer .migrate button {
+  font: inherit;
+  font-size: 12px;
+  padding: 4px 11px;
+  cursor: pointer;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface, #fffdf8);
+  color: var(--ink, #1b211d);
+}
+footer .migrate button:hover { border-color: var(--accent, #2f5d8a); color: var(--accent, #2f5d8a); }
+footer .migrate .msg { font-size: 11.5px; opacity: .8; }
+
 @media (max-width: 560px) {
   .grid.cloze { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .q { height: 60px; }
@@ -1131,6 +1152,13 @@ footer p { margin: 0; }
     <p>一刷：2006—2026 · 二刷：2007—2025 · 仅收录 1—45 题（完形填空、阅读理解 Part A、新题型 Part B）</p>
     <p>两套资料的答案在部分年份不一致，请与所做资料的选项顺序对应使用。</p>
     <p>成绩记录保存在本机浏览器，换设备或清理浏览器数据后会丢失。</p>
+    <p class="migrate">
+      <button type="button" id="migPush">发送到总库</button>
+      <button type="button" id="migExport">导出成绩</button>
+      <button type="button" id="migImport">导入成绩</button>
+      <input type="file" id="migFile" accept="application/json,.json" hidden>
+      <span class="msg" id="migMsg"></span>
+    </p>
   </footer>
 </div>
 
@@ -2400,4 +2428,179 @@ window.addEventListener("resize", () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(renderSummary, 150);
 });
+
+/* ── 数据迁移：本机速查页 ↔ 总库 /english/ ──
+   数据只在浏览器里流转：要么走地址栏片段（# 后面不会发给服务器），要么走本地 json 文件。
+   导出只读，不会改动当前页面已有的记录。 */
+const MIG_VERSION = 1;
+const MIG_BANNER = "kaoyanEng.sync.banner";
+const MIG_HUB = new URLSearchParams(location.search).get("hub") || "https://kaoyan.feikntn111.us.ci/english/";
+const MIG_KEYS = [SCORE_KEY, "kaoyan-set", "kaoyan-y1-year", "kaoyan-y2-year"];
+
+const migB64 = str => {
+  const bytes = new TextEncoder().encode(str);
+  let bin = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) {
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  }
+  return btoa(bin);
+};
+const migUnb64 = str => {
+  const bin = atob(str);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+};
+const migOnHub = () => /^\/english(\/|$)/.test(location.pathname);
+const migFrom = () => (location.protocol === "file:" ? "本机速查页" : location.host);
+
+function migCollect() {
+  const data = {};
+  for (const k of MIG_KEYS) {
+    const v = localStorage.getItem(k);
+    if (v !== null) data[k] = v;
+  }
+  return data;
+}
+function migEnvelope() {
+  return { v: MIG_VERSION, from: migFrom(), at: Date.now(), data: migCollect() };
+}
+
+/* 合并原则：来源里有分的地方以来源为准，本机独有年份保留 */
+function migMergeScores(incoming) {
+  let cur = {};
+  try { cur = JSON.parse(localStorage.getItem(SCORE_KEY) || "{}") || {}; } catch (e) { cur = {}; }
+  let changed = 0;
+  for (const set of ["r1", "r2"]) {
+    const src = incoming && incoming[set];
+    if (!src || typeof src !== "object") continue;
+    if (!cur[set] || typeof cur[set] !== "object") cur[set] = {};
+    for (const [year, rec] of Object.entries(src)) {
+      if (!rec || typeof rec !== "object") continue;
+      const tgt = cur[set][year] && typeof cur[set][year] === "object" ? cur[set][year] : (cur[set][year] = {});
+      for (const k of SCORE_KEYS) {
+        const v = rec[k];
+        if (Number.isInteger(v) && v >= 0 && tgt[k] !== v) { tgt[k] = v; changed++; }
+      }
+    }
+  }
+  if (changed) localStorage.setItem(SCORE_KEY, JSON.stringify(cur));
+  return changed;
+}
+
+function migApply(pack) {
+  const data = (pack && pack.data) || {};
+  let scores = 0;
+  let prefs = 0;
+  try { if (data[SCORE_KEY]) scores = migMergeScores(JSON.parse(data[SCORE_KEY])); } catch (e) { /* 跳过坏数据 */ }
+  for (const k of ["kaoyan-y1-year", "kaoyan-y2-year"]) {
+    const v = data[k];
+    if (typeof v === "string" && !localStorage.getItem(k)) { localStorage.setItem(k, v); prefs++; }
+  }
+  return { scores: scores, prefs: prefs };
+}
+
+function migToast(text) {
+  const box = document.createElement("div");
+  box.setAttribute("role", "status");
+  box.style.cssText = [
+    "position:fixed", "left:50%", "top:18px", "transform:translateX(-50%)", "z-index:9999",
+    "max-width:min(92vw,560px)", "padding:11px 16px", "border-radius:12px",
+    "background:#1b211d", "color:#fffdf8", "font:13px/1.55 'Noto Sans SC',-apple-system,'PingFang SC',sans-serif",
+    "box-shadow:0 10px 30px rgba(0,0,0,.22)"
+  ].join(";");
+  box.textContent = text;
+  document.body.appendChild(box);
+  setTimeout(() => box.remove(), 9000);
+}
+
+function migRunImport(pack, onEmpty) {
+  const res = migApply(pack);
+  if (!res.scores && !res.prefs) {
+    if (onEmpty) onEmpty();
+    return 0;
+  }
+  try {
+    sessionStorage.setItem(MIG_BANNER, JSON.stringify({ scores: res.scores, prefs: res.prefs, from: (pack && pack.from) || "" }));
+  } catch (e) { /* 忽略 */ }
+  location.reload();
+  return res.scores + res.prefs;
+}
+
+function migDownload() {
+  const text = JSON.stringify(migEnvelope(), null, 2);
+  const blob = new Blob([text], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "kaoyan-eng1-" + new Date().toISOString().slice(0, 10) + ".json";
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+
+(function initMigrate() {
+  // 先把上次导入的结果告诉用户
+  try {
+    const info = JSON.parse(sessionStorage.getItem(MIG_BANNER) || "null");
+    if (info) {
+      sessionStorage.removeItem(MIG_BANNER);
+      const from = info.from ? " " + info.from + " " : "";
+      migToast("已从" + from + "导入：成绩 " + info.scores + " 项 · 偏好 " + info.prefs + " 项");
+    }
+  } catch (e) { /* 忽略 */ }
+
+  // 已经在总库了，就不用再「发送到总库」
+  const btnPush = document.getElementById("migPush");
+  if (btnPush && migOnHub()) btnPush.hidden = true;
+
+  // 地址栏里带了 #sync=... 就导入，导完立刻把片段抹掉，避免被复制分享
+  const hit = /[#&]sync=([^&]+)/.exec(location.hash || "");
+  if (hit) {
+    let pack = null;
+    try { pack = JSON.parse(migUnb64(decodeURIComponent(hit[1]))); } catch (e) { pack = null; }
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { /* 忽略 */ }
+    if (pack && pack.v === MIG_VERSION && pack.data && Object.keys(pack.data).length) {
+      const ok = window.confirm(
+        "检测到来自「" + (pack.from || "另一个页面") + "」的成绩记录。\n\n" +
+        "导入会与本机现有记录合并：来源里有分数的地方以来源为准，本机独有的年份保留。\n" +
+        "不会修改原来的页面/浏览器的数据。\n\n继续导入？"
+      );
+      if (ok) migRunImport(pack);
+    }
+  }
+
+  const msg = document.getElementById("migMsg");
+  const say = t => { if (msg) msg.textContent = t; };
+
+  const btnExport = document.getElementById("migExport");
+  if (btnExport) btnExport.addEventListener("click", () => {
+    migDownload();
+    say("已导出 json 文件，可在另一个站点用「导入成绩」打开它");
+  });
+
+  const fileInput = document.getElementById("migFile");
+  const btnImport = document.getElementById("migImport");
+  if (btnImport && fileInput) {
+    btnImport.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", () => {
+      const f = fileInput.files && fileInput.files[0];
+      if (!f) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        let pack = null;
+        try { pack = JSON.parse(String(reader.result)); } catch (e) { pack = null; }
+        if (!pack || !pack.data) { say("这个文件里没有可导入的成绩记录"); return; }
+        migRunImport(pack, () => say("没有新的记录可导入（可能已经导入过）"));
+      };
+      reader.readAsText(f);
+      fileInput.value = "";
+    });
+  }
+
+  if (btnPush) btnPush.addEventListener("click", () => {
+    if (migOnHub()) return;
+    const payload = encodeURIComponent(migB64(JSON.stringify(migEnvelope())));
+    location.href = MIG_HUB + "#sync=" + payload;
+  });
+})();
 </script>
