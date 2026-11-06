@@ -57,6 +57,50 @@
     return { done, right, score, objDone, bySec };
   }
 
+  /* ---------- 右下角客观题卡片：单选 / 多选 / 合计 + 完成进度 ---------- */
+  function paintFloat(st) {
+    /* 这些节点在 root.innerHTML 之后才存在，每次现取 */
+    const psfLines = $('#psfLines'), psfMiss = $('#psfMiss'), psfTick = $('#psfTick'), psfBar = $('#psfBar');
+    if (!psfLines) return;
+    /* 单选、多选各一行，做完的那一档在末尾打勾 */
+    psfLines.innerHTML = P.sections
+      .filter((s) => PER[s.kind])
+      .map((s) => {
+        const d = st.bySec[s.id];
+        const full = (PER[s.kind] || 0) * (s.questions || []).length;
+        const all = d.n > 0 && d.done === d.n;
+        return `<div class="psf-line${all ? ' all' : ''}">
+          <span>${esc(s.nav || s.title)}</span>
+          <b>${fmt(d.score)}</b><i>/ ${fmt(full)}</i>
+          ${all ? '<em class="psf-tick">✓</em>' : `<em class="psf-left" title="还剩 ${d.n - d.done} 题未做">剩 ${d.n - d.done}</em>`}
+        </div>`;
+      })
+      .join('');
+
+    /* 已完成 / 未完成：未完成的题号直接可点，跳到那道题 */
+    const total = objQ.length;
+    const missing = objQ.filter((q) => !submitted[q.n]).map((q) => q.n);
+    const allDone = total > 0 && missing.length === 0;
+    psfTick.hidden = !allDone;
+    if (allDone) {
+      psfMiss.innerHTML = '<span class="psf-allok">全部做完</span>';
+    } else if (!missing.length) {
+      psfMiss.innerHTML = '';
+    } else {
+      const shown = missing.slice(0, window.innerWidth <= 720 ? 6 : 12);
+      const rest = missing.length - shown.length;
+      psfMiss.innerHTML =
+        '<span class="psf-mlabel">未完成</span>' +
+        shown.map((n) => `<a href="#q-${n}" title="第 ${n} 题">${n}</a>`).join('') +
+        (rest > 0 ? `<i class="psf-more">＋${rest}</i>` : '');
+    }
+
+    /* 进度条按得分率走，和数学那张卡保持一致 */
+    const rate = objFull ? Math.max(0, Math.min(1, st.score / objFull)) : 0;
+    psfBar.style.width = (rate * 100).toFixed(1) + '%';
+    $('#scorebar').classList.toggle('has-score', st.score > 0);
+  }
+
   /* ---------- 渲染 ---------- */
   function qHtml(q, kind) {
     const showAns = !!q.answer;
@@ -142,9 +186,17 @@
     </div>
     <nav class="sec-nav" id="secNav">${navItems}</nav>
     <div class="paper-body">${P.sections.map(renderSection).join('')}</div>
-    <div class="scorebar" id="scorebar">
-      <span>已提交 <b id="scDone">0</b>/<span id="scAll">0</span></span>
-      <span class="sb-score">客观题 <b id="scScore">0</b>/<span id="scFull">${fmt(objFull)}</span> 分</span>
+    <div class="scorebar psfloat" id="scorebar">
+      <div class="psf-top">
+        <span>客观题</span><b id="scScore">0</b><i>/ <span id="scFull">${fmt(objFull)}</span> 分</i>
+      </div>
+      <div class="psf-lines" id="psfLines"></div>
+      <div class="psf-done">
+        <span>已完成</span><b id="scDone">0</b><i>/ <span id="scAll">0</span> 题</i>
+        <em class="psf-tick" id="psfTick" hidden>✓</em>
+      </div>
+      <div class="psf-miss" id="psfMiss"></div>
+      <div class="psf-bar"><i id="psfBar"></i></div>
       <span id="scPct" class="sb-pct"></span>
     </div>
     <div class="stat-mask" id="statMask" hidden>
@@ -250,6 +302,7 @@
     $('#scPct').textContent = st.objDone ? `正确率 ${pct}%` : '';
     $('#scPct').className = 'sb-pct' + (st.objDone ? (pct >= 60 ? ' good' : ' bad') : '');
     document.body.classList.add('show-score');
+    paintFloat(st);
     try {
       localStorage.setItem(
         'kaoyan-politics-sum:' + P.id,
@@ -377,4 +430,11 @@
   }
   jumpToHash();
   window.addEventListener('hashchange', jumpToHash);
+
+  /* 手机和桌面能放的题号个数不一样，转屏或改窗口宽度时重画一下卡片 */
+  let rzTimer = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(rzTimer);
+    rzTimer = setTimeout(() => paintFloat(stat()), 180);
+  });
 })();
