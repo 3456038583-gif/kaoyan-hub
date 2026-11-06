@@ -195,7 +195,7 @@ h1 {
 /* ── 吸顶导航 ────────────────────────── */
 .navwrap {
   position: sticky;
-  top: env(safe-area-inset-top, 0px);
+  top: calc(env(safe-area-inset-top, 0px) + var(--sb-h, 48px));
   z-index: 30;
   background: var(--paper);
   border-bottom: 1px solid var(--line);
@@ -1082,7 +1082,7 @@ body.tzoom-open { overflow: hidden; }
   padding: 16px 18px 14px;
   margin-bottom: 10px;
   box-shadow: var(--shadow);
-  scroll-margin-top: 120px;
+  scroll-margin-top: calc(var(--sb-h, 48px) + 120px);
   position: relative;
 }
 .qcard.is-key { border-left: 3px solid var(--hard); }
@@ -1427,7 +1427,7 @@ body.tzoom-open { overflow: hidden; }
   border-top: 1px solid var(--line);
 }
 .keytopic:first-of-type { border-top: 0; }
-.keytopic .topicbox { position: sticky; top: 118px; align-self: start; }
+.keytopic .topicbox { position: sticky; top: calc(var(--sb-h, 48px) + 118px); align-self: start; }
 .keytopic .topicbox .idx {
   font-family: var(--mono);
   font-size: 10px;

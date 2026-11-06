@@ -144,7 +144,7 @@ h1 {
 
 .navwrap {
   position: sticky;
-  top: env(safe-area-inset-top, 0px);
+  top: calc(env(safe-area-inset-top, 0px) + var(--sb-h, 48px));
   z-index: 20;
   background: var(--paper);
   border-bottom: 1px solid var(--line);

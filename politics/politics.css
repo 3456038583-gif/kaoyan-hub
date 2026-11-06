@@ -14,7 +14,7 @@
 }
 .q-list.essay-list { grid-template-columns: minmax(0, 1fr); gap: 14px; }
 
-.q { scroll-margin-top: 62px; }
+.q { scroll-margin-top: calc(var(--sb-h, 48px) + 62px); }
 .q.has-pick { border-color: color-mix(in srgb, var(--accent) 34%, var(--line)); }
 .q.ok { border-color: var(--green); }
 .q-tag {

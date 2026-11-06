@@ -1,5 +1,9 @@
 /* 全站顶部导航条：只作用于 .sitebar，避免与各页原有样式冲突 */
+:root { --sb-h: 48px; }          /* 导航条高度，供各页二级吸顶栏让位 */
 .sitebar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 50;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -8,6 +12,7 @@
   margin: 0 auto;
   padding: 11px 0 10px;
   border-bottom: 1px solid var(--line, #e0dfd4);
+  background: var(--paper, #f5f4ee);
   font-family: var(--sans, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif);
   font-size: 13px;
   line-height: 1.4;
@@ -48,8 +53,33 @@
   border-bottom-color: currentColor;
   font-weight: 600;
 }
-@media (max-width: 520px) {
-  .sitebar { gap: 8px; padding-left: 15px; padding-right: 15px; flex-wrap: wrap; }
-  .sb-links { gap: 8px 12px; font-size: 12px; flex-wrap: wrap; justify-content: flex-end; }
-  .sb-brand { font-size: 13px; letter-spacing: 0; }
+/* 窄屏：单行不换行，链接区可横向滑动，高度恒定（--sb-h 才能对得上） */
+@media (max-width: 720px) {
+  :root { --sb-h: 44px; }
+  .sitebar {
+    box-sizing: border-box;
+    flex-wrap: nowrap;
+    height: var(--sb-h);
+    padding: 0 15px;
+    gap: 10px;
+  }
+  .sb-brand { font-size: 12.5px; letter-spacing: .02em; }
+  .sb-links {
+    flex: 0 1 auto;
+    min-width: 0;
+    margin-left: auto;
+    gap: 12px;
+    font-size: 12px;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    /* 尾部留白 + 右缘渐隐：提示可横向滑动，滚到底时最后一项不被渐隐 */
+    padding-right: 18px;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 18px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 calc(100% - 18px), transparent 100%);
+  }
+  .sb-links::-webkit-scrollbar { display: none; }
+  .sb-links a { flex: none; padding: 2px 0; }
 }

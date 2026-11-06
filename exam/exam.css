@@ -217,7 +217,7 @@ button { font: inherit; color: inherit; }
 
 /* 小节导航 */
 .sec-nav {
-  position: sticky; top: 0; z-index: 30;
+  position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--sb-h, 48px)); z-index: 30;
   max-width: var(--max); margin: 0 auto;
   padding: 8px 22px;
   background: color-mix(in srgb, var(--paper) 92%, transparent);
@@ -311,13 +311,13 @@ body.show-zh .passage .zh,
 
 /* 题目列 */
 .qcol { display: flex; flex-direction: column; gap: 14px; }
-.qcol.sticky { position: sticky; top: 54px; max-height: calc(100vh - 66px); overflow-y: auto; padding-right: 4px; }
+.qcol.sticky { position: sticky; top: calc(var(--sb-h, 48px) + 54px); max-height: calc(100vh - var(--sb-h, 48px) - 66px); overflow-y: auto; padding-right: 4px; }
 .qcol.sticky::-webkit-scrollbar { width: 6px; }
 .qcol.sticky::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
 
 .q {
   background: var(--surface); border: 1px solid var(--line); border-radius: 4px;
-  padding: 14px 16px 12px; scroll-margin-top: 60px;
+  padding: 14px 16px 12px; scroll-margin-top: calc(var(--sb-h, 48px) + 60px);
   transition: border-color .15s, box-shadow .15s;
 }
 .q.focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
@@ -677,7 +677,7 @@ body.show-score .scorebar { display: flex; }
 /* ── 试卷页顶部条：板块切换 + 年份（进来就是试卷，不再有「年份列表」中转页） ── */
 .ex-bar {
   position: sticky;
-  top: 0;
+  top: var(--sb-h, 48px);
   z-index: 40;
   background: var(--paper);
   border-bottom: 1px solid var(--line);
@@ -803,8 +803,8 @@ body.show-score .scorebar { display: flex; }
 .nt-insert .nt-passage .blank,
 .nt-match .nt-passage .blank { min-width: 3.5em; height: 2em; font-size: 14px; }
 .nt-side {
-  position: sticky; top: 58px;
-  max-height: calc(100vh - 74px); overflow-y: auto; overscroll-behavior: contain;
+  position: sticky; top: calc(var(--sb-h, 48px) + 58px);
+  max-height: calc(100vh - var(--sb-h, 48px) - 74px); overflow-y: auto; overscroll-behavior: contain;
   display: flex; flex-direction: column; gap: 12px;
   padding: 0 3px 54px 0; scrollbar-width: thin;
 }
@@ -856,8 +856,8 @@ body.show-score .scorebar { display: flex; }
 .tr-u.on { background: color-mix(in srgb, var(--gold) 34%, transparent); }
 .tr-u sup { font-family: var(--mono); font-size: 10px; color: var(--gold); margin-left: 2px; text-decoration: none; }
 .tr-side {
-  position: sticky; top: 58px;
-  max-height: calc(100vh - 74px); overflow-y: auto; overscroll-behavior: contain;
+  position: sticky; top: calc(var(--sb-h, 48px) + 58px);
+  max-height: calc(100vh - var(--sb-h, 48px) - 74px); overflow-y: auto; overscroll-behavior: contain;
   padding: 0 3px 54px 0; scrollbar-width: thin;
 }
 .tr-side::-webkit-scrollbar { width: 6px; }

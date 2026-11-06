@@ -65,12 +65,16 @@ a { color: inherit; text-decoration: none; }
 
 /* 顶栏 */
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 16px;
   padding: 18px 0 14px;
   border-bottom: 1px solid var(--line);
+  background: var(--paper);
   font-size: 13px;
 }
 .brand {
@@ -279,8 +283,19 @@ footer .fl { display: flex; flex-wrap: wrap; gap: 16px; }
   .wrap { padding: 0 18px 56px; }
 }
 @media (max-width: 480px) {
-  .topbar { flex-direction: column; align-items: flex-start; gap: 8px; }
-  .topbar nav { gap: 14px; font-size: 12.5px; }
+  .topbar { align-items: center; gap: 10px; padding: 10px 0 9px; }
+  .topbar nav {
+    flex: 1 1 auto; min-width: 0; margin-left: auto;
+    flex-wrap: nowrap; justify-content: flex-start;
+    gap: 12px; font-size: 12.5px;
+    overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+    /* 尾部留白 + 右缘渐隐：提示导航可横向滑动 */
+    padding-right: 18px;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 18px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 calc(100% - 18px), transparent 100%);
+  }
+  .topbar nav a { flex: none; white-space: nowrap; }
+  .topbar nav::-webkit-scrollbar { display: none; }
 }
 </style>
 </head>
