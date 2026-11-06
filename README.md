@@ -2,7 +2,8 @@
 
 一个纯静态的考研资料站点，把数学真题、数学 / 英语知识库、英语一答案速查和英语真题逐题练习整合在同一个入口下。
 
-线上地址：<https://kaoyan.feikntn111.us.ci>（数学真题另有一个独立站 <https://math.feikntn111.us.ci>）
+线上地址：<https://kaoyan.feikntn111.us.ci>（短域名 <https://k.feikntn111.us.ci>；
+数学真题另有一个独立站 <https://math.feikntn111.us.ci>，源码在同级目录 `../kaoyan-math-standalone/`）
 源码仓库：<https://github.com/3456038583-gif/kaoyan-hub>（只含网页与题目数据，不含 PDF）
 
 ## 站点结构
@@ -68,20 +69,20 @@ wrangler.jsonc        Cloudflare Workers 静态资源配置
 
 ## 构建与更新
 
-知识库和英语真题索引由站外的 `kaoyan-site-tools` 生成：
+知识库、英语真题索引与政治题库由同级目录 `../build-tools/` 生成：
 
 ```bash
 # 重新生成 exam/index.html 与各套试卷页
-node ~/File_no_iCloud/kaoyan-website/kaoyan-site-tools/build-exam.mjs
+node ~/File_no_iCloud/kaoyan-website/build-tools/build-exam.mjs
 
 # 重新生成 politics/ 与政治题库（读 PDF + OCR 缓存）
-python3 ~/File_no_iCloud/kaoyan-website/kaoyan-site-tools/build-politics-site.py
+python3 ~/File_no_iCloud/kaoyan-website/build-tools/build-politics-site.py
 
 # 重新生成 knowledge base（读取 Obsidian 仓库）
-node ~/File_no_iCloud/kaoyan-website/kaoyan-site-tools/build-library.mjs
+node ~/File_no_iCloud/kaoyan-website/build-tools/build-library.mjs
 
 # 部署
-cd ~/File_no_iCloud/kaoyan-website/kaoyan-math-site-full
+cd ~/File_no_iCloud/kaoyan-website/kaoyan-hub
 NODE_OPTIONS=--dns-result-order=ipv4first npx wrangler@latest deploy
 ```
 

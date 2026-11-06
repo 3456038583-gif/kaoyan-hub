@@ -1,5 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
+  // Worker 名沿用历史值：改名会新建一个 Worker，导致下面两个自定义域名冲突。
+  // 项目对外名称见 GitHub 仓库 kaoyan-hub，与目录名一致。
   "name": "kaoyan-math-site-full",
   "compatibility_date": "2026-10-23",
   "observability": {
