@@ -191,8 +191,10 @@
       const ntCls = /排序/.test(t) ? ' nt-order'
         : /小标题/.test(t) ? ' nt-head'
         : /七选五/.test(t) ? ' nt-insert' : ' nt-match';
+      // 正误判断（T/F）的陈述句较长，单独给一个类，作答卡里字号收小
+      const isTF = (s.questions || []).some((q) => (q.options || []).join('') === 'TF');
       // 左文右栏：右边是作答卡 + 选项库，随页面滚动固定在视口内，文章再长也能对照
-      body = `<div class="nt${ntCls}">
+      body = `<div class="nt${ntCls}${isTF ? ' nt-tf' : ''}">
         <div class="nt-main">
           <div class="passage nt-passage">${parasHtml(s.paras)}</div>
         </div>

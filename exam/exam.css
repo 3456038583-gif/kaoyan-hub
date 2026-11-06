@@ -817,7 +817,16 @@ body.show-score .scorebar { display: flex; }
 .nt-answers { display: flex; flex-direction: column; gap: 6px; order: 1; }
 .nt-answers .q { padding: 8px 10px 7px; }
 .nt-answers .q-top { margin-bottom: 5px; gap: 6px; }
-.nt-answers .q-stem { display: none; }
+/* 多项对应的人名 / 正误判断的陈述句要留在作答卡里，否则只剩题号，跟原文对不上 */
+.nt-answers .q-stem {
+  margin: 1px 0 8px;
+  font-family: var(--en); font-size: 14px; font-weight: 500;
+  line-height: 1.45; color: var(--ink);
+}
+/* 正误判断的陈述句较长，收小一点；True/False 横排，五张卡不至于太高 */
+.nt-tf .nt-answers .q-stem { font-family: var(--sans); font-size: 12.5px; font-weight: 400; line-height: 1.5; }
+.nt-tf .nt-answers .opts { flex-direction: row; gap: 8px; }
+.nt-tf .nt-answers .opt { padding: 3px 10px 3px 7px; }
 .nt-answers .opts.letter-opts { gap: 4px; }
 .nt-answers .opts.letter-opts .opt { padding: 3px 9px; font-size: 13.5px; }
 .nt-order .nt-answers .opts.letter-opts .opt { padding: 5px 13px; font-size: 15px; }

@@ -643,6 +643,7 @@ window.__PAPER__ = {
       "questions": [
         {
           "n": 41,
+          "stem": "Jay Dunwell",
           "options": ["A", "B", "C", "D", "E", "F", "G"],
           "answer": "E",
           "diff": "中",
@@ -650,6 +651,7 @@ window.__PAPER__ = {
         },
         {
           "n": 42,
+          "stem": "Jason Stenquist",
           "options": ["A", "B", "C", "D", "E", "F", "G"],
           "answer": "A",
           "diff": "易",
@@ -657,6 +659,7 @@ window.__PAPER__ = {
         },
         {
           "n": 43,
+          "stem": "Birgit Klohs",
           "options": ["A", "B", "C", "D", "E", "F", "G"],
           "answer": "G",
           "diff": "中",
@@ -664,6 +667,7 @@ window.__PAPER__ = {
         },
         {
           "n": 44,
+          "stem": "Rob Spohr",
           "options": ["A", "B", "C", "D", "E", "F", "G"],
           "answer": "B",
           "diff": "易",
@@ -671,6 +675,7 @@ window.__PAPER__ = {
         },
         {
           "n": 45,
+          "stem": "Julie Parks",
           "options": ["A", "B", "C", "D", "E", "F", "G"],
           "answer": "F",
           "diff": "易",
