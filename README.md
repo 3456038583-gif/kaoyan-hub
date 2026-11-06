@@ -69,7 +69,7 @@ wrangler.jsonc        Cloudflare Workers 静态资源配置
 
 ## 构建与更新
 
-知识库、英语真题索引与政治题库由同级目录 `../build-tools/` 生成：
+知识库、英语真题索引与政治题库由同级目录 `../build-tools/` 生成（仓库 [kaoyan-build-tools](https://github.com/3456038583-gif/kaoyan-build-tools)）：
 
 ```bash
 # 重新生成 exam/index.html 与各套试卷页
