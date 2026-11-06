@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <meta charset="utf-8">
 <title>英一两刷答案速查</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -308,8 +309,59 @@ h1 {
   display: flex;
   align-items: center;
   gap: 14px;
+  flex-wrap: wrap;
   flex-shrink: 0;
   padding-bottom: 2px;
+}
+
+/* 计时器：完形、阅读每篇、新题型各一个，整卷用时取各段之和 */
+.qtimer {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  padding: 1px 2px 1px 7px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--mask);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.qtimer.is-run { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.qtimer-time { min-width: 38px; text-align: right; font-variant-numeric: tabular-nums; }
+.qtimer.is-run .qtimer-time { font-weight: 600; }
+.qtimer-btn {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: inherit;
+  font-family: var(--mono);
+  font-size: 9px;
+  line-height: 1;
+  cursor: pointer;
+}
+.qtimer-btn:hover { background: var(--surface); border-color: var(--line-strong); }
+.qtimer-btn.reset { font-size: 12px; }
+@media (max-width: 560px) {
+  .qtimer { font-size: 10.5px; padding-left: 5px; gap: 0; }
+  .qtimer-time { min-width: 34px; }
+  .qtimer-btn { width: 18px; height: 18px; }
+}
+
+.yearright { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.yearclock { margin: 0; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.yearclock b { font-size: 15px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.yearclock.is-run b { color: var(--accent); }
+@media (max-width: 560px) {
+  .yearright { align-items: flex-start; }
 }
 .range, .count {
   font-family: var(--mono);
@@ -1126,7 +1178,10 @@ footer .migrate .msg { font-size: 11.5px; opacity: .8; }
 
   <div class="yearhead">
     <h2><span id="yearNum">2021</span><small>年</small></h2>
-    <p class="note">点题号翻开答案 · 每组下方可记录答对题数</p>
+    <div class="yearright">
+      <p class="note">点题号翻开答案 · 每组下方可记录答对题数</p>
+      <p class="yearclock" title="本卷各段计时之和">本卷用时 <b id="yearTime">00:00</b></p>
+    </div>
   </div>
 
   <main id="groups" aria-live="polite"></main>
@@ -1261,6 +1316,143 @@ const SCORE_KEYS = ["cloze", "t1", "t2", "t3", "t4", "partB"];
 function saveScores() {
   try { localStorage.setItem(SCORE_KEY, JSON.stringify(SCORES)); } catch (e) {}
 }
+
+/* ── 计时器：完形、阅读每篇、新题型各一个，整卷用时取各段之和 ── */
+// 每项存累计毫秒 acc 和本轮起点 at（null = 暂停中）；页面关掉再打开按时间戳接着走
+const TIMER_KEY = "kaoyan-eng1-timers-v1";
+const TIMERS = {};
+
+(function loadTimers() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(TIMER_KEY) || "null");
+    if (!raw || typeof raw !== "object") return;
+    for (const [key, t] of Object.entries(raw)) {
+      if (!t || typeof t !== "object") continue;
+      const acc = Number(t.acc);
+      if (!Number.isFinite(acc) || acc < 0) continue;
+      const at = Number(t.at) || null;
+      const beat = Number(t.savedAt) || at;
+      const item = { acc: acc, at: at };
+      // 关掉页面很久才回来：没有心跳的那段时间不算进用时
+      if (item.at && Date.now() - beat > 120000) {
+        item.acc += Math.max(0, beat - item.at);
+        item.at = null;
+      }
+      TIMERS[key] = item;
+    }
+  } catch (e) {}
+})();
+
+function saveTimers() {
+  try {
+    const out = {};
+    for (const [key, t] of Object.entries(TIMERS)) {
+      if (!t.acc && !t.at) continue;
+      out[key] = { acc: Math.round(t.acc), at: t.at, savedAt: Date.now() };
+    }
+    localStorage.setItem(TIMER_KEY, JSON.stringify(out));
+  } catch (e) {}
+}
+
+function timerElapsed(t) { return t ? t.acc + (t.at ? Date.now() - t.at : 0) : 0; }
+function timerScope(key) { return String(key).split("|")[0]; }
+function timerKeyOf(year, part) { return currentSet + ":" + year + "|" + part; }
+function timerSum(scope) {
+  let sum = 0;
+  for (const key of Object.keys(TIMERS)) {
+    if (timerScope(key) === scope) sum += timerElapsed(TIMERS[key]);
+  }
+  return sum;
+}
+function fmtClock(ms) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  const p = v => String(v).padStart(2, "0");
+  return h ? h + ":" + p(m) + ":" + p(s) : p(m) + ":" + p(s);
+}
+
+function timerHTML(year, part) {
+  const key = timerKeyOf(year, part);
+  const t = TIMERS[key];
+  const run = !!(t && t.at);
+  return '<span class="qtimer' + (run ? " is-run" : "") + '" data-timer="' + key + '" title="本组用时：点 ▶ 开始，暂停期间不计时">' +
+    '<span class="qtimer-time">' + fmtClock(timerElapsed(t)) + "</span>" +
+    '<button class="qtimer-btn" type="button" data-timer-toggle aria-pressed="' + run + '">' + (run ? "❚❚" : "▶") + "</button>" +
+    '<button class="qtimer-btn reset" type="button" data-timer-reset title="重置为 00:00">↺</button>' +
+    "</span>";
+}
+
+function paintTimer(el) {
+  const key = el.dataset.timer;
+  const t = TIMERS[key];
+  const run = !!(t && t.at);
+  el.querySelector(".qtimer-time").textContent = fmtClock(timerElapsed(t));
+  el.classList.toggle("is-run", run);
+  const btn = el.querySelector("[data-timer-toggle]");
+  btn.textContent = run ? "❚❚" : "▶";
+  btn.setAttribute("aria-pressed", String(run));
+}
+
+function paintTimers() {
+  for (const el of PAGE.querySelectorAll("[data-timer]")) paintTimer(el);
+  const year = yearBySet[currentSet];
+  const scope = currentSet + ":" + year;
+  const out = document.getElementById("yearTime");
+  if (out) {
+    out.textContent = fmtClock(timerSum(scope));
+    const clock = out.closest(".yearclock");
+    if (clock) {
+      clock.classList.toggle("is-run", Object.keys(TIMERS).some(k => timerScope(k) === scope && TIMERS[k].at));
+    }
+  }
+}
+
+function startTimer(key) {
+  const t = TIMERS[key] || (TIMERS[key] = { acc: 0, at: null });
+  if (t.at) return;
+  // 同一份卷同时只走一个计时器，否则整卷用时会把重叠的部分算两遍
+  const scope = timerScope(key);
+  for (const [k, o] of Object.entries(TIMERS)) {
+    if (k !== key && timerScope(k) === scope && o.at) {
+      o.acc += Date.now() - o.at;
+      o.at = null;
+    }
+  }
+  t.at = Date.now();
+  saveTimers();
+  paintTimers();
+}
+function pauseTimer(key) {
+  const t = TIMERS[key];
+  if (!t || !t.at) return;
+  t.acc += Date.now() - t.at;
+  t.at = null;
+  saveTimers();
+  paintTimers();
+}
+function resetTimer(key) {
+  if (!TIMERS[key]) return;
+  delete TIMERS[key];
+  saveTimers();
+  paintTimers();
+}
+function toggleTimer(key) {
+  const t = TIMERS[key];
+  if (t && t.at) pauseTimer(key); else startTimer(key);
+}
+
+setInterval(function () {
+  if (!PAGE.querySelector("[data-timer]")) return;
+  paintTimers();
+}, 1000);
+// 运行中每 5 秒落一次心跳，刷新后能判断是「还在用」还是「关了页面」
+setInterval(function () {
+  for (const key of Object.keys(TIMERS)) {
+    if (TIMERS[key].at) { saveTimers(); break; }
+  }
+}, 5000);
 
 function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
 
@@ -1639,7 +1831,7 @@ const SET_COUNT = document.getElementById("setCount");
 let currentSet = "r1";
 const yearBySet = { r1: "2021", r2: "2021" };
 
-function buildGroup(sec, title, start, answers, cls, part, desc) {
+function buildGroup(sec, title, start, answers, cls, part, desc, timer) {
   const tiles = Array.from(answers).map((a, i) => {
     const n = start + i;
     return '<button class="q" type="button" data-a="' + a + '" aria-label="第 ' + n + ' 题，点击查看答案">' +
@@ -1653,6 +1845,7 @@ function buildGroup(sec, title, start, answers, cls, part, desc) {
       '<div class="gmeta">' +
         '<span class="range">' + start + "—" + (start + total - 1) + '</span>' +
         '<span class="count">0 / ' + total + '</span>' +
+        (timer || '') +
         '<button class="gtoggle" type="button">全部显示</button>' +
       '</div>' +
     '</div>' +
@@ -1744,16 +1937,17 @@ function readMeta(year, index) {
 
 function render(year) {
   const d = DATA[currentSet][year];
-  let html = buildGroup("Use of English", "完形填空", 1, d.cloze, "cloze", "cloze", clozeMeta(year));
+  let html = buildGroup("Use of English", "完形填空", 1, d.cloze, "cloze", "cloze", clozeMeta(year), timerHTML(year, "cloze"));
   html += '<p class="part-label">Section II · 阅读理解 Part A</p>';
   d.texts.forEach((answers, i) => {
-    html += buildGroup("Text " + (i + 1), "第 " + (i + 1) + " 篇", 21 + i * 5, answers, "read", "t" + (i + 1), readMeta(year, i));
+    html += buildGroup("Text " + (i + 1), "第 " + (i + 1) + " 篇", 21 + i * 5, answers, "read", "t" + (i + 1), readMeta(year, i), timerHTML(year, "t" + (i + 1)));
   });
   html += '<p class="part-label">Section II · Part B</p>';
-  html += buildGroup("Part B", "新题型", 41, d.partB, "read", "partB", partBMeta(year));
+  html += buildGroup("Part B", "新题型", 41, d.partB, "read", "partB", partBMeta(year), timerHTML(year, "partB"));
   PAGE.innerHTML = html;
   YEAR_NUM.textContent = year;
   applyScores(year);
+  paintTimers();
 }
 
 function updateGroup(group) {
@@ -2352,6 +2546,14 @@ SUM_BODY.addEventListener("click", event => {
 });
 
 PAGE.addEventListener("click", event => {
+  const timerBtn = event.target.closest("[data-timer-toggle], [data-timer-reset]");
+  if (timerBtn) {
+    const box = timerBtn.closest("[data-timer]");
+    if (!box) return;
+    if (timerBtn.hasAttribute("data-timer-reset")) resetTimer(box.dataset.timer);
+    else toggleTimer(box.dataset.timer);
+    return;
+  }
   const tile = event.target.closest(".q");
   if (tile) {
     setTile(tile, !tile.classList.contains("on"));

@@ -72,16 +72,16 @@ wrangler.jsonc        Cloudflare Workers 静态资源配置
 
 ```bash
 # 重新生成 exam/index.html 与各套试卷页
-node ~/File_no_iCloud/kaoyan-site-tools/build-exam.mjs
+node ~/File_no_iCloud/kaoyan-website/kaoyan-site-tools/build-exam.mjs
 
 # 重新生成 politics/ 与政治题库（读 PDF + OCR 缓存）
-python3 ~/File_no_iCloud/kaoyan-site-tools/build-politics-site.py
+python3 ~/File_no_iCloud/kaoyan-website/kaoyan-site-tools/build-politics-site.py
 
 # 重新生成 knowledge base（读取 Obsidian 仓库）
-node ~/File_no_iCloud/kaoyan-site-tools/build-library.mjs
+node ~/File_no_iCloud/kaoyan-website/kaoyan-site-tools/build-library.mjs
 
 # 部署
-cd ~/File_no_iCloud/kaoyan-math-site-full
+cd ~/File_no_iCloud/kaoyan-website/kaoyan-math-site-full
 NODE_OPTIONS=--dns-result-order=ipv4first npx wrangler@latest deploy
 ```
 
