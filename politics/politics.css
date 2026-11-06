@@ -194,7 +194,6 @@ body.show-score .scorebar.psfloat { display: flex; }
     max-width: 168px;
     padding: 7px 9px 6px;
     border-radius: 9px;
-    opacity: .96;
   }
   .psf-top > b { font-size: 15px; }
   .psf-top > span { font-size: 9px; }
