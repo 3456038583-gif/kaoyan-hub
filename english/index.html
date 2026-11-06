@@ -350,6 +350,47 @@ h1 {
 }
 .qtimer-btn:hover { background: var(--surface); border-color: var(--line-strong); }
 .qtimer-btn.reset { font-size: 12px; }
+
+/* 计时器放大浮层：点时间数字弹出，大字 + 开始/暂停/重置 */
+.qtimer-time, .yearclock b { cursor: zoom-in; }
+.tzoom { position: fixed; inset: 0; z-index: 96; display: grid; place-items: center; padding: 20px; }
+.tzoom[hidden] { display: none; }
+.tzoom-mask { position: absolute; inset: 0; background: rgba(12, 18, 15, .46); }
+.tzoom-card {
+  position: relative; display: grid; justify-items: center; gap: 12px;
+  min-width: 272px; padding: 20px 30px 18px;
+  border: 1px solid var(--line-strong); border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 26px 64px -30px rgba(12, 20, 16, .62);
+}
+.tzoom-lab {
+  margin: 0; max-width: 320px; font-family: var(--sans); font-size: 12px;
+  color: var(--muted); letter-spacing: .04em; text-align: center;
+}
+.tzoom-time {
+  margin: 0; font-family: var(--mono); font-size: 54px; line-height: 1.06;
+  font-weight: 600; color: var(--ink); letter-spacing: .01em;
+  font-variant-numeric: tabular-nums;
+}
+.tzoom.is-run .tzoom-time { color: var(--accent); }
+.tzoom-btns { display: flex; gap: 8px; }
+.tzoom-btn {
+  padding: 7px 16px; min-width: 62px;
+  border: 1px solid var(--line-strong); border-radius: 8px;
+  background: var(--surface); color: var(--ink);
+  font-family: var(--sans); font-size: 13px; line-height: 1.4; cursor: pointer;
+  transition: border-color .15s, color .15s, background .15s;
+}
+.tzoom-btn:hover { border-color: var(--accent); color: var(--accent); }
+.tzoom-btn.main.is-on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.tzoom-btn.ghost { color: var(--muted); }
+.tzoom-btn[hidden] { display: none; }
+body.tzoom-open { overflow: hidden; }
+@media (max-width: 640px) {
+  .tzoom-card { min-width: 0; max-width: 92vw; padding: 16px 20px 15px; gap: 10px; }
+  .tzoom-time { font-size: 40px; }
+  .tzoom-lab { font-size: 11.5px; }
+}
 @media (max-width: 560px) {
   .qtimer { font-size: 10.5px; padding-left: 5px; gap: 0; }
   .qtimer-time { min-width: 34px; }
@@ -367,9 +408,9 @@ h1 {
 /* 右下角客观题得分卡：完形 / 阅读（分篇 + 合计）/ 新题型 */
 .efloat {
   position: fixed; right: 18px; bottom: 18px; z-index: 40;
-  display: grid; gap: 4px; min-width: 158px;
-  padding: 10px 13px 9px;
-  border: 1px solid var(--line); border-radius: 12px;
+  display: grid; gap: 5px; min-width: 188px;
+  padding: 12px 15px 11px;
+  border: 1px solid var(--line); border-radius: 13px;
   background: var(--surface);
   box-shadow: 0 12px 30px -18px rgba(20, 30, 25, .55);
   font-family: var(--mono);
@@ -377,14 +418,14 @@ h1 {
 }
 .efloat[hidden] { display: none; }
 .efloat.has-score { border-color: var(--accent); }
-.ef-top { display: flex; align-items: baseline; gap: 4px; }
-.ef-top span { font-family: var(--sans); font-size: 10px; letter-spacing: .06em; color: var(--muted); }
-.ef-top b { font-size: 21px; line-height: 1.15; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ef-top { display: flex; align-items: baseline; gap: 5px; }
+.ef-top span { font-family: var(--sans); font-size: 11px; letter-spacing: .06em; color: var(--muted); }
+.ef-top b { font-size: 26px; line-height: 1.15; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
 .efloat.has-score .ef-top b { color: var(--accent); }
-.ef-top i { font-style: normal; font-size: 10.5px; color: var(--muted); }
-.ef-line { display: flex; align-items: baseline; gap: 4px; font-size: 10.5px; color: var(--muted); }
+.ef-top i { font-style: normal; font-size: 11.5px; color: var(--muted); }
+.ef-line { display: flex; align-items: baseline; gap: 5px; font-size: 12px; color: var(--muted); }
 .ef-line span { font-family: var(--sans); }
-.ef-line b { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ef-line b { margin-left: auto; font-size: 14px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
 .ef-line.has b, .ef-read b { color: var(--ink); }
 .ef-line i { font-style: normal; }
 .ef-read { margin-top: 1px; cursor: pointer; user-select: none; }
@@ -396,46 +437,49 @@ h1 {
 .efloat.is-fold .ef-caret { transform: rotate(-90deg); }
 .efloat.is-fold .ef-sub { display: none; }
 .ef-sub { display: grid; gap: 1px; margin: 1px 0 1px 2px; padding-left: 9px; border-left: 1px solid var(--line); }
-.ef-sub .ef-line { font-size: 9.5px; }
-.ef-sub .ef-line b { font-size: 10.5px; }
+.ef-sub .ef-line { font-size: 11px; }
+.ef-sub .ef-line b { font-size: 12.5px; }
 .ef-done {
   display: flex; align-items: baseline; gap: 3px;
-  margin-top: 1px; padding-top: 4px; border-top: 1px dashed var(--line);
-  font-size: 10.5px; color: var(--muted);
+  margin-top: 2px; padding-top: 5px; border-top: 1px dashed var(--line);
+  font-size: 12px; color: var(--muted);
 }
 .ef-done span { font-family: var(--sans); }
-.ef-done b { font-size: 12px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.ef-done b { font-size: 14px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
 .ef-done i { font-style: normal; }
-.ef-tick { font-style: normal; font-size: 11px; font-weight: 700; color: var(--series-3); }
-.ef-miss { display: flex; flex-wrap: wrap; gap: 3px 4px; align-items: baseline; font-size: 9.5px; color: var(--muted); }
+.ef-tick { font-style: normal; font-size: 12.5px; font-weight: 700; color: var(--series-3); }
+.ef-miss { display: flex; flex-wrap: wrap; gap: 3px 5px; align-items: baseline; font-size: 11px; color: var(--muted); }
 .ef-miss:empty { display: none; }
 .ef-mlabel { font-family: var(--sans); }
 .ef-miss a {
-  font-family: var(--sans); font-size: 9.5px; line-height: 1.6;
-  padding: 0 5px; border: 1px solid var(--line); border-radius: 3px;
+  font-family: var(--sans); font-size: 11px; line-height: 1.65;
+  padding: 0 6px; border: 1px solid var(--line); border-radius: 3px;
   color: var(--muted); text-decoration: none; cursor: pointer;
 }
 .ef-miss a:hover { color: var(--accent); border-color: var(--accent); }
 .ef-allok { color: var(--series-3); font-family: var(--sans); }
-.ef-bar { height: 3px; border-radius: 2px; background: var(--mask); overflow: hidden; }
+.ef-bar { height: 4px; border-radius: 2px; background: var(--mask); overflow: hidden; }
 .ef-bar i { display: block; height: 100%; border-radius: 2px; background: var(--accent); transition: width .3s ease; }
 
 @media (max-width: 640px) {
   /* 给页脚留出空间，滚到底时「导入成绩」那几个按钮不会被卡片压住 */
-  body { padding-bottom: 208px; }
+  body { padding-bottom: 236px; }
   .efloat {
-    right: 8px; bottom: 8px; min-width: 126px; max-width: 168px;
-    gap: 2px; padding: 7px 9px 6px; border-radius: 9px;
+    right: 8px; bottom: 8px; min-width: 152px; max-width: 196px;
+    gap: 3px; padding: 8px 11px 7px; border-radius: 10px;
   }
-  .ef-top b { font-size: 15px; }
-  .ef-top span { font-size: 9px; }
-  .ef-line { font-size: 9px; }
-  .ef-line b { font-size: 10.5px; }
-  .ef-sub .ef-line { font-size: 8.5px; }
-  .ef-sub .ef-line b { font-size: 9.5px; }
-  .ef-done { font-size: 9px; }
-  .ef-done b { font-size: 10.5px; }
-  .ef-miss a { font-size: 9px; padding: 0 4px; }
+  .ef-top { gap: 4px; }
+  .ef-top b { font-size: 19px; }
+  .ef-top span { font-size: 10px; }
+  .ef-top i { font-size: 10px; }
+  .ef-line { font-size: 10.5px; gap: 4px; }
+  .ef-line b { font-size: 12.5px; }
+  .ef-sub .ef-line { font-size: 10px; }
+  .ef-sub .ef-line b { font-size: 11.5px; }
+  .ef-done { font-size: 10.5px; }
+  .ef-done b { font-size: 12.5px; }
+  .ef-miss { font-size: 10px; }
+  .ef-miss a { font-size: 10px; padding: 0 5px; }
 }
 @media print { .efloat { display: none !important; } }
 .range, .count {
@@ -1450,12 +1494,15 @@ function fmtClock(ms) {
   return h ? h + ":" + p(m) + ":" + p(s) : p(m) + ":" + p(s);
 }
 
+const PART_LABEL = { cloze: "完形填空", t1: "阅读 第 1 篇", t2: "阅读 第 2 篇", t3: "阅读 第 3 篇", t4: "阅读 第 4 篇", partB: "新题型" };
+function partLabel(part) { return PART_LABEL[part] || part; }
+
 function timerHTML(year, part) {
   const key = timerKeyOf(year, part);
   const t = TIMERS[key];
   const run = !!(t && t.at);
   return '<span class="qtimer' + (run ? " is-run" : "") + '" data-timer="' + key + '" title="本组用时：点 ▶ 开始，暂停期间不计时">' +
-    '<span class="qtimer-time">' + fmtClock(timerElapsed(t)) + "</span>" +
+    '<span class="qtimer-time" data-timer-zoom="' + key + '" data-zoom-label="' + year + ' 年 · ' + partLabel(part) + '" title="点一下放大">' + fmtClock(timerElapsed(t)) + "</span>" +
     '<button class="qtimer-btn" type="button" data-timer-toggle aria-pressed="' + run + '">' + (run ? "❚❚" : "▶") + "</button>" +
     '<button class="qtimer-btn reset" type="button" data-timer-reset title="重置为 00:00">↺</button>' +
     "</span>";
@@ -1551,13 +1598,89 @@ function paintEFloat() {
   box.classList.toggle("has-score", total > 0);
 }
 
+/* ── 计时器放大：点时间数字弹出一个大号浮层，放远了也看得清 ── */
+let zoomKey = null;
+let zoomEl = null;
+const ZOOM_HTML =
+  '<div class="tzoom-mask" data-tzoom-close></div>' +
+  '<div class="tzoom-card" role="dialog" aria-modal="true" aria-label="计时器">' +
+    '<p class="tzoom-lab"></p>' +
+    '<p class="tzoom-time">00:00</p>' +
+    '<div class="tzoom-btns">' +
+      '<button class="tzoom-btn main" type="button" data-tzoom-toggle>开始</button>' +
+      '<button class="tzoom-btn" type="button" data-tzoom-reset>重置</button>' +
+      '<button class="tzoom-btn ghost" type="button" data-tzoom-close>关闭</button>' +
+    '</div>' +
+  '</div>';
+
+function mountZoom() {
+  if (zoomEl) return zoomEl;
+  zoomEl = document.createElement("div");
+  zoomEl.className = "tzoom";
+  zoomEl.hidden = true;
+  zoomEl.innerHTML = ZOOM_HTML;
+  zoomEl.addEventListener("click", function (e) {
+    if (e.target.closest("[data-tzoom-close]")) { closeZoom(); return; }
+    if (!zoomKey || zoomKey.indexOf("sum:") === 0) return;
+    if (e.target.closest("[data-tzoom-toggle]")) toggleTimer(zoomKey);
+    else if (e.target.closest("[data-tzoom-reset]")) resetTimer(zoomKey);
+  });
+  document.body.appendChild(zoomEl);
+  return zoomEl;
+}
+
+function paintZoom() {
+  if (!zoomEl || zoomEl.hidden || !zoomKey) return;
+  const sum = zoomKey.indexOf("sum:") === 0;
+  const t = sum ? null : TIMERS[zoomKey];
+  const run = !!(t && t.at);
+  zoomEl.querySelector(".tzoom-time").textContent =
+    fmtClock(sum ? timerSum(zoomKey.slice(4)) : timerElapsed(TIMERS[zoomKey]));
+  zoomEl.classList.toggle("is-run", run);
+  const tog = zoomEl.querySelector("[data-tzoom-toggle]");
+  const rst = zoomEl.querySelector("[data-tzoom-reset]");
+  tog.hidden = sum;
+  rst.hidden = sum;
+  tog.textContent = run ? "暂停" : "开始";
+  tog.classList.toggle("is-on", run);
+}
+
+function openZoom(key, label) {
+  if (!key) return;
+  mountZoom();
+  zoomKey = key;
+  zoomEl.querySelector(".tzoom-lab").textContent = label || "";
+  zoomEl.hidden = false;
+  document.body.classList.add("tzoom-open");
+  paintZoom();
+}
+
+function closeZoom() {
+  if (!zoomEl) return;
+  zoomEl.hidden = true;
+  zoomKey = null;
+  document.body.classList.remove("tzoom-open");
+}
+
+document.addEventListener("click", function (e) {
+  const z = e.target.closest("[data-timer-zoom]");
+  if (!z || !z.dataset.timerZoom) return;
+  openZoom(z.dataset.timerZoom, z.dataset.zoomLabel || "");
+});
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape" && zoomEl && !zoomEl.hidden) closeZoom();
+});
+
 function paintTimers() {
+  paintZoom();
   for (const el of PAGE.querySelectorAll("[data-timer]")) paintTimer(el);
   const year = yearBySet[currentSet];
   const scope = currentSet + ":" + year;
   const out = document.getElementById("yearTime");
   if (out) {
     out.textContent = fmtClock(timerSum(scope));
+    out.dataset.timerZoom = "sum:" + scope;
+    out.dataset.zoomLabel = year + " 年 · 本卷总用时";
     const clock = out.closest(".yearclock");
     if (clock) {
       clock.classList.toggle("is-run", Object.keys(TIMERS).some(k => timerScope(k) === scope && TIMERS[k].at));

@@ -104,6 +104,14 @@
     </div>`;
   }
 
+  /* 译文按段落紧跟在对应英文段落下面，展开时一段一段对照，不会把文章顶到看不见 */
+  function zhParaHtml(zh) {
+    if (!zh) return '';
+    // 译文里的 {{41}} / [[41]] 是原文空位，渲染成小徽标
+    const body = esc(zh).replace(/\{\{(\d+)\}\}|\[\[\s*(\d+)\s*\]\]/g, (_, a, b) => `<span class="zh-blank">${a || b}</span>`);
+    return `<div class="zh">${body}</div>`;
+  }
+
   function parasHtml(paras) {
     return (paras || [])
       .map((p) => {
@@ -111,28 +119,9 @@
         // 段落排序题的空位独占一行（整段就是 {{41}}），标成 slot-line 便于放大居中
         const solo = /^\s*\{\{\d+\}\}\s*$/.test(raw);
         const en = esc(raw).replace(/\{\{(\d+)\}\}/g, (_, n) => `<span class="blank" data-n="${n}">${n}</span>`);
-        return `<p${solo ? ' class="slot-line"' : ''}>${en}</p>`;
+        return `<p${solo ? ' class="slot-line"' : ''}>${en}</p>${zhParaHtml(p.zh)}`;
       })
       .join('');
-  }
-
-  /* 全文译文：默认收起，点标题右侧的「全文译文」才展开 */
-  function zhBlock(s) {
-    if (s.kind === 'translation') return '';
-    const ps = (s.paras || []).filter((p) => p && p.zh);
-    if (!ps.length) return '';
-    const rows = ps
-      .map((p, i) => {
-        // 译文里的 {{41}} / [[41]] 是原文空位，渲染成小徽标
-        const zh = esc(p.zh).replace(/\{\{(\d+)\}\}|\[\[\s*(\d+)\s*\]\]/g,
-          (_, a, b) => `<span class="zh-blank">${a || b}</span>`);
-        return `<p><span class="zh-i">${i + 1}</span>${zh}</p>`;
-      })
-      .join('');
-    return `<div class="tr-box" hidden>
-      <div class="tr-box-head"><b>全文译文</b><span>${ps.length} 段 · 点击「收起译文」可隐藏</span></div>
-      ${rows}
-    </div>`;
   }
 
   /* 翻译：把要译的句子在原文里划出来（和试卷一样），不再重复列句子 */
@@ -274,7 +263,6 @@
       ${secSubmit}
       ${s.direction ? `<div class="direction">${esc(s.direction)}</div>` : ''}
       ${body}
-      ${zhBlock(s)}
     </section>`;
   }
 
@@ -531,10 +519,8 @@
     const trBtn = e.target.closest('[data-tr]');
     if (trBtn) {
       const sec = trBtn.closest('.sec');
-      const box = $('.tr-box', sec);
-      if (!box) return;
-      const on = box.hasAttribute('hidden');
-      if (on) box.removeAttribute('hidden'); else box.setAttribute('hidden', '');
+      if (!sec || !sec.querySelector('.passage .zh')) return;
+      const on = !sec.classList.contains('show-tr');
       sec.classList.toggle('show-tr', on);
       trBtn.classList.toggle('on', on);
       trBtn.setAttribute('aria-expanded', on ? 'true' : 'false');

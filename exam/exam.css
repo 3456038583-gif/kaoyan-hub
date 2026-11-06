@@ -280,14 +280,22 @@ button { font: inherit; color: inherit; }
 }
 .passage p { margin: 0 0 13px; text-indent: 1.6em; }
 .passage p:last-child { margin-bottom: 0; }
+/* 段落对照译文：点「全文译文」后，每段中文紧贴在该段英文下面 */
 .passage .zh {
   display: none;
-  font-family: var(--sans); font-size: 13.5px; line-height: 1.85;
-  color: var(--muted); text-indent: 0;
-  margin: 10px 0 16px; padding: 10px 12px;
-  background: var(--surface-2); border-radius: 3px;
+  margin: -6px 0 15px;
+  padding: 8px 12px 9px;
+  font-family: var(--sans); font-size: 13.5px; line-height: 1.92;
+  color: var(--ink); opacity: .9; text-indent: 0;
+  background: var(--surface-2);
+  border-left: 2px solid var(--gold);
+  border-radius: 0 4px 4px 0;
 }
-body.show-zh .passage .zh { display: block; }
+body.show-zh .passage .zh,
+.sec.show-tr .passage .zh { display: block; }
+@media (max-width: 720px) {
+  .passage .zh { font-size: 13px; margin: -4px 0 13px; padding: 7px 10px 8px; }
+}
 .passage .blank {
   display: inline-flex; align-items: center; justify-content: center;
   min-width: 2.4em; height: 1.55em; padding: 0 .35em; margin: 0 .12em;
