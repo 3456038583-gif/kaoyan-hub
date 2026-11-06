@@ -408,7 +408,7 @@ body.tzoom-open { overflow: hidden; }
 /* 右下角客观题得分卡：完形 / 阅读（分篇 + 合计）/ 新题型 */
 .efloat {
   position: fixed; right: 18px; bottom: 18px; z-index: 40;
-  display: grid; gap: 5px; min-width: 188px;
+  display: grid; gap: 5px; min-width: 208px; max-width: 268px;
   padding: 12px 15px 11px;
   border: 1px solid var(--line); border-radius: 13px;
   background: var(--surface);
@@ -425,9 +425,22 @@ body.tzoom-open { overflow: hidden; }
 .ef-top i { font-style: normal; font-size: 11.5px; color: var(--muted); }
 .ef-line { display: flex; align-items: baseline; gap: 5px; font-size: 12px; color: var(--muted); }
 .ef-line span { font-family: var(--sans); }
-.ef-line b { margin-left: auto; font-size: 14px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ef-line b { margin-left: auto; min-width: 20px; text-align: right; font-size: 14px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
 .ef-line.has b, .ef-read b { color: var(--ink); }
 .ef-line i { font-style: normal; }
+/* 行尾一列：这一组（完形/每篇/新题型）用了多久，跟计时器同步刷新 */
+.ef-t {
+  flex: 0 0 auto;
+  font-style: normal;
+  font-size: 11px;
+  min-width: 37px;
+  text-align: right;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.01em;
+  opacity: .9;
+}
+.ef-sub .ef-t { min-width: 33px; font-size: 10.5px; }
 .ef-read { margin-top: 1px; cursor: pointer; user-select: none; }
 .ef-read:hover b { color: var(--accent); }
 .ef-caret {
@@ -465,7 +478,7 @@ body.tzoom-open { overflow: hidden; }
   /* 给页脚留出空间，滚到底时「导入成绩」那几个按钮不会被卡片压住 */
   body { padding-bottom: 236px; }
   .efloat {
-    right: 8px; bottom: 8px; min-width: 152px; max-width: 196px;
+    right: 8px; bottom: 8px; min-width: 176px; max-width: 212px;
     gap: 3px; padding: 8px 11px 7px; border-radius: 10px;
   }
   .ef-top { gap: 4px; }
@@ -473,9 +486,11 @@ body.tzoom-open { overflow: hidden; }
   .ef-top span { font-size: 10px; }
   .ef-top i { font-size: 10px; }
   .ef-line { font-size: 10.5px; gap: 4px; }
-  .ef-line b { font-size: 12.5px; }
+  .ef-line b { font-size: 12.5px; min-width: 17px; }
   .ef-sub .ef-line { font-size: 10px; }
   .ef-sub .ef-line b { font-size: 11.5px; }
+  .ef-t { font-size: 9.5px; min-width: 32px; }
+  .ef-sub .ef-t { min-width: 29px; font-size: 9px; }
   .ef-done { font-size: 10.5px; }
   .ef-done b { font-size: 12.5px; }
   .ef-miss { font-size: 10px; }
@@ -1531,6 +1546,16 @@ const EF_PARTS = [
 const EF_FULL = 60;   // 客观题满分：完形 10 + 阅读 40 + 新题型 10
 const EF_READ_FULL = 40;
 
+/* 每组（完形 / 每篇阅读 / 新题型）各自的用时 */
+function efPartMs(part) {
+  return timerElapsed(TIMERS[timerKeyOf(yearBySet[currentSet], part)]);
+}
+function efReadMs() {
+  let sum = 0;
+  for (const p of EF_PARTS) if (p.read) sum += efPartMs(p.key);
+  return sum;
+}
+
 function efRecord() {
   const year = yearBySet[currentSet];
   return (SCORES[currentSet] && SCORES[currentSet][year]) || {};
@@ -1576,6 +1601,7 @@ function paintEFloat() {
   const line = (p) =>
     '<div class="ef-line' + (isNum(rec[p.key]) ? " has" : "") + '">' +
       '<span>' + p.label + '</span><b>' + num(got(p)) + '</b><i>/ ' + p.full + '</i>' +
+      '<em class="ef-t" data-ef-t="' + p.key + '">' + fmtClock(efPartMs(p.key)) + '</em>' +
     '</div>';
 
   box.innerHTML =
@@ -1583,6 +1609,7 @@ function paintEFloat() {
     line(EF_PARTS[0]) +
     '<div class="ef-line ef-read' + (readDone === 4 ? " has" : "") + '" data-ef-fold="1" title="点一下收起/展开四篇明细">' +
       '<em class="ef-caret">▾</em><span>阅读</span><b>' + (readDone ? fmt(readScore) : "—") + '</b><i>/ ' + EF_READ_FULL + '</i>' +
+      '<em class="ef-t" data-ef-t="read">' + fmtClock(efReadMs()) + '</em>' +
     '</div>' +
     '<div class="ef-sub">' + EF_PARTS.filter((p) => p.read).map(line).join("") + '</div>' +
     line(EF_PARTS[5]) +
@@ -1671,9 +1698,19 @@ document.addEventListener("keydown", function (e) {
   if (e.key === "Escape" && zoomEl && !zoomEl.hidden) closeZoom();
 });
 
+function paintEFloatTimes() {
+  const box = document.getElementById("eFloat");
+  if (!box || box.hidden) return;
+  for (const el of box.querySelectorAll("[data-ef-t]")) {
+    const k = el.dataset.efT;
+    el.textContent = fmtClock(k === "read" ? efReadMs() : efPartMs(k));
+  }
+}
+
 function paintTimers() {
   paintZoom();
   for (const el of PAGE.querySelectorAll("[data-timer]")) paintTimer(el);
+  paintEFloatTimes();
   const year = yearBySet[currentSet];
   const scope = currentSet + ":" + year;
   const out = document.getElementById("yearTime");
