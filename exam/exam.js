@@ -270,6 +270,11 @@
 
   const navItems = P.sections.map((s) => `<a href="#sec-${esc(s.id)}" data-sec="${esc(s.id)}">${esc(s.nav || s.title)}</a>`).join('');
 
+  /* 原卷 PDF：由解析 PDF 的文件名推出（y1-2021-sol.pdf → y1-2021-paper.pdf） */
+  function paperPdf(p) {
+    return p && p.sol ? String(p.sol).replace(/-sol\.pdf$/, '-paper.pdf') : '';
+  }
+
   /* ---------- 试卷切换器 ---------- */
   const PAPERS = window.__PAPERS__ || [];
   const curSet = (/-(y[12])$/.exec(P.id) || [, 'y1'])[1];
@@ -284,6 +289,7 @@
         </div>
         <div class="ph-meta">
           ${(P.meta || []).map((m) => `<span class="chip">${esc(m)}</span>`).join('')}
+          ${paperPdf(P) ? `<a class="chip gold" href="${paperPdf(P)}" download>原卷 PDF ↓</a>` : ''}
           ${P.sol ? `<a class="chip gold" href="${P.sol}" target="_blank" rel="noopener">原卷解析 PDF ↗</a>` : ''}
         </div>
       </div>
