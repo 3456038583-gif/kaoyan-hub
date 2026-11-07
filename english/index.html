@@ -314,7 +314,7 @@ h1 {
   padding-bottom: 2px;
 }
 
-/* 计时器：完形、阅读每篇、新题型各一个，整卷用时取各段之和 */
+/* 计时器：整卷 / 完形 / 阅读每篇 + 阅读合计 / 新题型；整卷用时取各段之和（互斥运行，不会重复计） */
 .qtimer {
   display: inline-flex;
   align-items: center;
@@ -350,6 +350,11 @@ h1 {
 }
 .qtimer-btn:hover { background: var(--surface); border-color: var(--line-strong); }
 .qtimer-btn.reset { font-size: 12px; }
+.qtimer-lab { font-family: var(--sans); font-size: 10px; color: var(--muted); margin-right: 2px; }
+/* 卷头整卷计时：贴在「本卷用时」下面 */
+.yearclock-all { margin: 6px 0 0; display: flex; justify-content: flex-end; }
+.yearclock-all .qtimer { font-size: 12.5px; padding: 3px 4px 3px 9px; border-radius: 8px; }
+.yearclock-all .qtimer-time { font-size: 12.5px; min-width: 46px; }
 
 /* 计时器放大浮层：点时间数字弹出，大字 + 开始/暂停/重置 */
 .qtimer-time, .yearclock b { cursor: zoom-in; }
@@ -1316,6 +1321,7 @@ footer .migrate .msg { font-size: 11.5px; opacity: .8; }
     <div class="yearright">
       <p class="note">点题号翻开答案 · 每组下方可记录答对题数</p>
       <p class="yearclock" title="本卷各段计时之和">本卷用时 <b id="yearTime">00:00</b></p>
+      <div class="yearclock-all" id="allTimerBox"></div>
     </div>
   </div>
 
@@ -1510,14 +1516,15 @@ function fmtClock(ms) {
   return h ? h + ":" + p(m) + ":" + p(s) : p(m) + ":" + p(s);
 }
 
-const PART_LABEL = { cloze: "完形填空", t1: "阅读 第 1 篇", t2: "阅读 第 2 篇", t3: "阅读 第 3 篇", t4: "阅读 第 4 篇", partB: "新题型" };
+const PART_LABEL = { all: "整套试卷", cloze: "完形填空", t1: "阅读 第 1 篇", t2: "阅读 第 2 篇", t3: "阅读 第 3 篇", t4: "阅读 第 4 篇", read: "阅读 · 四篇合计", partB: "新题型" };
 function partLabel(part) { return PART_LABEL[part] || part; }
 
-function timerHTML(year, part) {
+function timerHTML(year, part, label) {
   const key = timerKeyOf(year, part);
   const t = TIMERS[key];
   const run = !!(t && t.at);
-  return '<span class="qtimer' + (run ? " is-run" : "") + '" data-timer="' + key + '" title="本组用时：点 ▶ 开始，暂停期间不计时">' +
+  return '<span class="qtimer' + (run ? " is-run" : "") + '" data-timer="' + key + '" title="本组用时：点 ▶ 开始，暂停期间不计时；同一份卷同时只走一个计时器">' +
+    (label ? '<span class="qtimer-lab">' + label + '</span>' : "") +
     '<span class="qtimer-time" data-timer-zoom="' + key + '" data-zoom-label="' + year + ' 年 · ' + partLabel(part) + '" title="点一下放大">' + fmtClock(timerElapsed(t)) + "</span>" +
     '<button class="qtimer-btn" type="button" data-timer-toggle aria-pressed="' + run + '">' + (run ? "❚❚" : "▶") + "</button>" +
     '<button class="qtimer-btn reset" type="button" data-timer-reset title="重置为 00:00">↺</button>' +
@@ -1552,7 +1559,7 @@ function efPartMs(part) {
   return timerElapsed(TIMERS[timerKeyOf(yearBySet[currentSet], part)]);
 }
 function efReadMs() {
-  let sum = 0;
+  let sum = timerElapsed(TIMERS[timerKeyOf(yearBySet[currentSet], "read")]);
   for (const p of EF_PARTS) if (p.read) sum += efPartMs(p.key);
   return sum;
 }
@@ -1710,7 +1717,7 @@ function paintEFloatTimes() {
 
 function paintTimers() {
   paintZoom();
-  for (const el of PAGE.querySelectorAll("[data-timer]")) paintTimer(el);
+  for (const el of document.querySelectorAll("[data-timer]")) paintTimer(el);
   paintEFloatTimes();
   const year = yearBySet[currentSet];
   const scope = currentSet + ":" + year;
@@ -1761,7 +1768,7 @@ function toggleTimer(key) {
 }
 
 setInterval(function () {
-  if (!PAGE.querySelector("[data-timer]")) return;
+  if (!document.querySelector("[data-timer]")) return;
   paintTimers();
 }, 1000);
 // 运行中每 5 秒落一次心跳，刷新后能判断是「还在用」还是「关了页面」
@@ -2258,11 +2265,13 @@ function render(year) {
   let html = buildGroup("Use of English", "完形填空", 1, d.cloze, "cloze", "cloze", clozeMeta(year), timerHTML(year, "cloze"));
   html += '<p class="part-label">Section II · 阅读理解 Part A</p>';
   d.texts.forEach((answers, i) => {
-    html += buildGroup("Text " + (i + 1), "第 " + (i + 1) + " 篇", 21 + i * 5, answers, "read", "t" + (i + 1), readMeta(year, i), timerHTML(year, "t" + (i + 1)));
+    html += buildGroup("Text " + (i + 1), "第 " + (i + 1) + " 篇", 21 + i * 5, answers, "read", "t" + (i + 1), readMeta(year, i), timerHTML(year, "t" + (i + 1)) + timerHTML(year, "read", "阅读"));
   });
   html += '<p class="part-label">Section II · Part B</p>';
   html += buildGroup("Part B", "新题型", 41, d.partB, "read", "partB", partBMeta(year), timerHTML(year, "partB"));
   PAGE.innerHTML = html;
+  const allBox = document.getElementById("allTimerBox");
+  if (allBox) allBox.innerHTML = timerHTML(year, "all", "整卷");
   YEAR_NUM.textContent = year;
   applyScores(year);
   paintEFloat();
