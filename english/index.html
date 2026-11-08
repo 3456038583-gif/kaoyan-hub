@@ -207,6 +207,36 @@ h1 {
   -webkit-overflow-scrolling: touch;
 }
 .years::-webkit-scrollbar { display: none; }
+/* 年份条 + 右端的小按钮（点开才显示卷头那行「这卷做完没」与完成进度） */
+.yearbar { display: flex; align-items: center; gap: 8px; }
+.yearbar .years { flex: 1; min-width: 0; }
+.yprog-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 26px;
+  padding: 0 8px 0 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.yprog-btn svg { width: 11px; height: 11px; transition: transform .2s ease; }
+.yprog-btn:hover { background: var(--mask); color: var(--ink); border-color: var(--line-strong); }
+.yprog-btn[aria-expanded="true"] {
+  background: var(--mask);
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+.yprog-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+.page[data-view="summary"] .yprog-btn,
+.page[data-view="overview"] .yprog-btn { display: none; }
 .year {
   flex: 0 0 auto;
   display: inline-flex;
@@ -303,6 +333,7 @@ h1 {
 .yearstat .ystat-mark input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .yearstat.is-done .ystat-state { font-weight: 600; }
 .yearstat .ystat-sum { font-variant-numeric: tabular-nums; }
+.yearstat[hidden] { display: none; }
 
 .yearhead {
   display: flex;
@@ -1430,9 +1461,14 @@ footer .migrate .msg { font-size: 11.5px; opacity: .8; }
         <button class="viewbtn" id="infoBtn" type="button">真题概况</button>
       </div>
     </div>
-    <nav class="years" id="years" aria-label="选择年份"></nav>
+    <div class="yearbar">
+      <nav class="years" id="years" aria-label="选择年份"></nav>
+      <button class="yprog-btn" type="button" id="yearStatBtn" aria-expanded="false" aria-controls="yearStat" title="显示 / 隐藏「这卷做完没」与完成进度">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 6.5 8 10l3.5-3.5"/></svg>
+        <span>进度</span>
+      </button>
+    </div>
   </div>
-
   <div class="yearhead">
     <h2><span id="yearNum">2021</span><small>年</small></h2>
     <div class="yearright">
@@ -1742,10 +1778,32 @@ function paintYearMarks() {
   }
 }
 
+/* 卷面标题右侧那行默认收起，点年份条右端的「进度」才展开（默认不占位置） */
+const YEAR_STAT_OPEN_KEY = "kaoyanEnglish.yearStatOpen.v1";
+let yearStatOpenMem = null;
+function yearStatOpen() {
+  if (yearStatOpenMem !== null) return yearStatOpenMem;
+  try { return localStorage.getItem(YEAR_STAT_OPEN_KEY) === "1"; } catch (e) { return false; }
+}
+function setYearStatOpen(open) {
+  yearStatOpenMem = !!open;
+  try { localStorage.setItem(YEAR_STAT_OPEN_KEY, open ? "1" : "0"); } catch (e) {
+    // 隐私模式下存不了，按本次打开的状态凑合
+  }
+  paintYearStat();
+}
+
 /* 卷面标题右侧那行：这一卷做完了没 + 这一套的完成进度 */
 function paintYearStat() {
   const box = document.getElementById("yearStat");
   if (!box) return;
+  const open = yearStatOpen();
+  box.hidden = !open;
+  const btn = document.getElementById("yearStatBtn");
+  if (btn) {
+    btn.setAttribute("aria-expanded", String(open));
+    btn.title = open ? "收起这一行的完成情况" : "显示「这卷做完没」与完成进度";
+  }
   const set = currentSet;
   const years = Object.keys(DATA[set]).sort();
   const year = yearBySet[set];
@@ -3207,6 +3265,12 @@ YEARS_NAV.addEventListener("click", event => {
   const btn = event.target.closest(".year");
   if (btn) selectYear(btn.dataset.year);
 });
+
+// 年份条右端的「进度」按钮：展开 / 收起卷头那一行
+const YEAR_STAT_BTN = document.getElementById("yearStatBtn");
+if (YEAR_STAT_BTN) {
+  YEAR_STAT_BTN.addEventListener("click", () => setYearStatOpen(!yearStatOpen()));
+}
 
 const YEAR_DONE_BOX = document.getElementById("yearDone");
 if (YEAR_DONE_BOX) {
