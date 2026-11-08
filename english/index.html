@@ -209,26 +209,100 @@ h1 {
 .years::-webkit-scrollbar { display: none; }
 .year {
   flex: 0 0 auto;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
   min-width: 58px;
-  height: 34px;
+  height: 38px;
   padding: 0 12px;
   border: 1px solid transparent;
-  border-radius: 17px;
+  border-radius: 19px;
   background: transparent;
   color: var(--muted);
   font-family: var(--mono);
   font-size: 13px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
+  line-height: 1;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
+/* 年份下面那行小字：做完了打勾，没做完写还差几组（完形 + 四篇阅读 + 新题型） */
+.year .y-st {
+  font-size: 9px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--muted);
+  opacity: .9;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.year.is-done .y-st { font-size: 10px; font-weight: 600; color: var(--accent); opacity: 1; }
 .year:hover { background: var(--mask); color: var(--ink); }
 .year[aria-current="true"] {
   background: var(--ink);
   color: var(--paper);
   font-weight: 600;
 }
+.year[aria-current="true"] .y-st { color: currentColor; opacity: .7; }
+.year.is-done[aria-current="true"] .y-st { color: currentColor; opacity: .9; }
+
+/* 卷面标题右侧：这一卷做完了没（可手动勾选）+ 这一套的完成进度 */
+.yearstat {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+.yearstat .ystat-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 1px 8px 1px 4px;
+  margin-left: -4px;
+  border-radius: 999px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .15s, color .15s;
+}
+.yearstat.is-done .ystat-mark { background: var(--accent-soft); color: var(--accent); }
+.yearstat .ystat-mark input {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--surface);
+  cursor: pointer;
+  position: relative;
+  transition: background .15s, border-color .15s;
+}
+.yearstat .ystat-mark input:checked { background: var(--accent); border-color: var(--accent); }
+.yearstat .ystat-mark input:checked::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--accent-ink);
+  border-width: 0 1.6px 1.6px 0;
+  transform: rotate(45deg);
+}
+.yearstat .ystat-mark input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.yearstat.is-done .ystat-state { font-weight: 600; }
+.yearstat .ystat-sum { font-variant-numeric: tabular-nums; }
 
 .yearhead {
   display: flex;
@@ -408,6 +482,7 @@ body.tzoom-open { overflow: hidden; }
 .yearclock.is-run b { color: var(--accent); }
 @media (max-width: 560px) {
   .yearright { align-items: flex-start; }
+  .yearstat { justify-content: flex-start; font-size: 10.5px; gap: 2px 8px; }
 }
 
 /* 右下角客观题得分卡：完形 / 阅读（分篇 + 合计）/ 新题型 */
@@ -1361,6 +1436,13 @@ footer .migrate .msg { font-size: 11.5px; opacity: .8; }
   <div class="yearhead">
     <h2><span id="yearNum">2021</span><small>年</small></h2>
     <div class="yearright">
+      <p class="yearstat" id="yearStat" aria-live="polite">
+        <label class="ystat-mark" title="六组分数都记过会自动勾上；也可以自己手动勾选">
+          <input type="checkbox" id="yearDone">
+          <span class="ystat-state" id="yearStatText"></span>
+        </label>
+        <span class="ystat-sum" id="yearStatSum"></span>
+      </p>
       <p class="note">点题号翻开答案 · 每组下方可记录答对题数</p>
       <p class="yearclock" title="本卷各段计时之和">本卷用时 <b id="yearTime">00:00</b></p>
       <div class="yearclock-all" id="allTimerBox"></div>
@@ -1595,6 +1677,95 @@ const EF_PARTS = [
 ];
 const EF_FULL = 60;   // 客观题满分：完形 10 + 阅读 40 + 新题型 10
 const EF_READ_FULL = 40;
+
+/* ── 整卷「做完了」标记 ──
+   默认判据：六组分数（完形 / 四篇阅读 / 新题型）都记过就算做完。
+   纸上做的、这页没记分的情况，可以手动勾选覆盖。 */
+const ENG_DONE_KEY = "kaoyanEnglish.yearDone.v1";
+// 只存手动改过的：键是 "r1-2020"，true = 我确认做完了，false = 我确认还没做完
+const ENG_DONE = {};
+(function loadEngDone() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(ENG_DONE_KEY) || "null");
+    if (!raw || typeof raw !== "object") return;
+    for (const [k, v] of Object.entries(raw)) {
+      if (/^r[12]-\d{4}$/.test(k) && typeof v === "boolean") ENG_DONE[k] = v;
+    }
+  } catch (e) { /* 读坏了当作没手动标记过 */ }
+})();
+function saveEngDone() {
+  try { localStorage.setItem(ENG_DONE_KEY, JSON.stringify(ENG_DONE)); } catch (e) {}
+}
+// 还没记分的组（完形 / 四篇阅读 / 新题型）
+function engMissing(year, set) {
+  const rec = (SCORES[set] && SCORES[set][year]) || {};
+  return EF_PARTS.filter(p => !isNum(rec[p.key]));
+}
+function engYearDone(year, set) {
+  const v = ENG_DONE[set + "-" + year];
+  return typeof v === "boolean" ? v : engMissing(year, set).length === 0;
+}
+function setEngYearDone(year, set, done) {
+  ENG_DONE[set + "-" + year] = !!done;
+  saveEngDone();
+  paintYearStat();
+  paintYearMarks();
+}
+// 连续年份折成区间：2010—2018、2022、2025
+function engRangeText(list) {
+  const out = [];
+  for (let i = 0; i < list.length; i++) {
+    let j = i;
+    while (j + 1 < list.length && Number(list[j + 1]) === Number(list[j]) + 1) j++;
+    out.push(j > i ? list[i] + "—" + list[j] : list[i]);
+    i = j;
+  }
+  return out.join("、");
+}
+
+/* 年份按钮上的完成态：做完了打勾，没做完直接写还差几组 */
+function paintYearMarks() {
+  const set = currentSet;
+  for (const btn of YEARS_NAV.children) {
+    const st = btn.querySelector(".y-st");
+    if (!st) continue;
+    const y = btn.dataset.year;
+    const done = engYearDone(y, set);
+    const left = done ? 0 : engMissing(y, set).length;
+    st.textContent = done ? "✓" : left ? "差 " + left + " 组" : "待确认";
+    btn.classList.toggle("is-done", done);
+    btn.title = done
+      ? y + " 年 · 已做完"
+      : left
+        ? y + " 年 · 还差 " + left + " 组（完形 / 阅读 / 新题型）"
+        : y + " 年 · 六组分数都记过了，还没勾「已做完」";
+  }
+}
+
+/* 卷面标题右侧那行：这一卷做完了没 + 这一套的完成进度 */
+function paintYearStat() {
+  const box = document.getElementById("yearStat");
+  if (!box) return;
+  const set = currentSet;
+  const years = Object.keys(DATA[set]).sort();
+  const year = yearBySet[set];
+  const done = engYearDone(year, set);
+  const left = done ? 0 : engMissing(year, set).length;
+  const boxEl = document.getElementById("yearDone");
+  const txtEl = document.getElementById("yearStatText");
+  const sumEl = document.getElementById("yearStatSum");
+  const doneYears = years.filter(y => engYearDone(y, set));
+  const rest = years.filter(y => !engYearDone(y, set));
+
+  box.classList.toggle("is-done", done);
+  if (boxEl) boxEl.checked = done;
+  if (txtEl) txtEl.textContent = done ? "已做完" : left ? "还没做完 · 差 " + left + " 组" : "还没勾「已做完」";
+  if (sumEl) {
+    const head = "完成 " + doneYears.length + "/" + years.length + " 年";
+    const tail = !rest.length ? " · 全部做完" : doneYears.length ? " · 剩 " + engRangeText(rest) : " · 还没开始";
+    sumEl.textContent = head + tail;
+  }
+}
 
 /* 每组（完形 / 每篇阅读 / 新题型）各自的用时 */
 function efPartMs(part) {
@@ -2320,6 +2491,8 @@ function commitScore(bar, value) {
   saveScores();
   paintBar(bar, value);
   paintEFloat();
+  paintYearStat();
+  paintYearMarks();
 }
 
 function clozeMeta(year) {
@@ -2363,6 +2536,8 @@ function render(year) {
   YEAR_NUM.textContent = year;
   applyScores(year);
   paintEFloat();
+  paintYearStat();
+  paintYearMarks();
   paintTimers();
 }
 
@@ -2396,11 +2571,12 @@ function buildYears(selected) {
     btn.type = "button";
     btn.className = "year";
     btn.dataset.year = year;
-    btn.textContent = year;
+    btn.innerHTML = '<span class="y-num">' + year + '</span><span class="y-st"></span>';
     btn.setAttribute("aria-label", year + " 年");
     YEARS_NAV.appendChild(btn);
   }
   markYear(selected);
+  paintYearMarks();
 }
 
 function persist() {
@@ -3032,6 +3208,13 @@ YEARS_NAV.addEventListener("click", event => {
   if (btn) selectYear(btn.dataset.year);
 });
 
+const YEAR_DONE_BOX = document.getElementById("yearDone");
+if (YEAR_DONE_BOX) {
+  YEAR_DONE_BOX.addEventListener("change", () => {
+    setEngYearDone(yearBySet[currentSet], currentSet, YEAR_DONE_BOX.checked);
+  });
+}
+
 document.querySelector(".seg").addEventListener("click", event => {
   const btn = event.target.closest(".segbtn");
   if (btn) setSet(btn.dataset.set);
@@ -3060,7 +3243,7 @@ window.addEventListener("resize", () => {
 const MIG_VERSION = 1;
 const MIG_BANNER = "kaoyanEng.sync.banner";
 const MIG_HUB = new URLSearchParams(location.search).get("hub") || "https://kaoyan.feikntn111.us.ci/english/";
-const MIG_KEYS = [SCORE_KEY, "kaoyan-set", "kaoyan-y1-year", "kaoyan-y2-year"];
+const MIG_KEYS = [SCORE_KEY, ENG_DONE_KEY, "kaoyan-set", "kaoyan-y1-year", "kaoyan-y2-year"];
 
 const migB64 = str => {
   const bytes = new TextEncoder().encode(str);
@@ -3122,6 +3305,17 @@ function migApply(pack) {
     const v = data[k];
     if (typeof v === "string" && !localStorage.getItem(k)) { localStorage.setItem(k, v); prefs++; }
   }
+  try {
+    const incoming = data[ENG_DONE_KEY] ? JSON.parse(data[ENG_DONE_KEY]) : null;
+    if (incoming && typeof incoming === "object") {
+      const cur = JSON.parse(localStorage.getItem(ENG_DONE_KEY) || "{}") || {};
+      let n = 0;
+      for (const [k, v] of Object.entries(incoming)) {
+        if (/^r[12]-\d{4}$/.test(k) && typeof v === "boolean" && cur[k] !== v) { cur[k] = v; n++; }
+      }
+      if (n) { localStorage.setItem(ENG_DONE_KEY, JSON.stringify(cur)); prefs += n; }
+    }
+  } catch (e) { /* 跳过坏数据 */ }
   return { scores: scores, prefs: prefs };
 }
 
