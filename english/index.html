@@ -20,6 +20,8 @@
   --accent-soft: #f0dfda;
   --accent-ink: #ffffff;
   --seal-shadow: rgba(22, 32, 27, 0.16);
+  --done: #16a34a;   /* 年份做完了的对勾：亮绿色 */
+  --done-on-pill: #6ee7a5;
 
   /* 成绩走势：三个模块的固定配色（不随一刷/二刷强调色变化） */
   --series-1: #2a78d6;
@@ -48,6 +50,8 @@
     --accent-soft: #33201c;
     --accent-ink: #17110f;
     --seal-shadow: rgba(0, 0, 0, 0.4);
+    --done: #4ade80;
+    --done-on-pill: #15803d;
     --series-1: #3987e5;
     --series-2: #d95926;
     --series-3: #199e70;
@@ -70,6 +74,8 @@
   --accent: #e0735f;
   --accent-soft: #33201c;
   --accent-ink: #17110f;
+  --done: #4ade80;
+  --done-on-pill: #15803d;
   --seal-shadow: rgba(0, 0, 0, 0.4);
   --series-1: #3987e5;
   --series-2: #d95926;
@@ -88,7 +94,7 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 15px;
+  font-size: 15.5px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
@@ -103,7 +109,8 @@ body::before {
   background: var(--paper);
   z-index: 30;
 }
-.page { max-width: 760px; margin-inline: auto; }
+/* 版心：窗口越宽版心越大；同时给右下角的浮动得分卡留位置，别让卡片压到内容上 */
+.page { max-width: clamp(760px, calc(100% - 572px), 980px); margin-inline: auto; }
 
 .masthead {
   display: flex;
@@ -207,6 +214,19 @@ h1 {
   -webkit-overflow-scrolling: touch;
 }
 .years::-webkit-scrollbar { display: none; }
+/* 年份条放不下时才渐隐边缘：示意还能横向滑 */
+.years.is-scroll.at-start {
+  mask-image: linear-gradient(to right, #000 calc(100% - 56px), transparent);
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 56px), transparent);
+}
+.years.is-scroll.at-end {
+  mask-image: linear-gradient(to right, transparent 0, #000 56px);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 56px);
+}
+.years.is-scroll:not(.at-start):not(.at-end) {
+  mask-image: linear-gradient(to right, transparent 0, #000 56px, #000 calc(100% - 56px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 56px, #000 calc(100% - 56px), transparent 100%);
+}
 /* 年份条 + 右端的小按钮（点开才显示卷头那行「这卷做完没」与完成进度） */
 .yearbar { display: flex; align-items: center; gap: 8px; }
 .yearbar .years { flex: 1; min-width: 0; }
@@ -215,19 +235,19 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  height: 26px;
-  padding: 0 8px 0 6px;
+  height: 28px;
+  padding: 0 10px 0 7px;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--surface);
   color: var(--muted);
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: 11.5px;
   line-height: 1;
   cursor: pointer;
   transition: background .15s, color .15s, border-color .15s;
 }
-.yprog-btn svg { width: 11px; height: 11px; transition: transform .2s ease; }
+.yprog-btn svg { width: 12px; height: 12px; transition: transform .2s ease; }
 .yprog-btn:hover { background: var(--mask); color: var(--ink); border-color: var(--line-strong); }
 .yprog-btn[aria-expanded="true"] {
   background: var(--mask);
@@ -244,15 +264,15 @@ h1 {
   align-items: center;
   justify-content: center;
   gap: 2px;
-  min-width: 58px;
-  height: 38px;
+  min-width: 62px;
+  height: 40px;
   padding: 0 12px;
   border: 1px solid transparent;
-  border-radius: 19px;
+  border-radius: 20px;
   background: transparent;
   color: var(--muted);
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -261,7 +281,7 @@ h1 {
 }
 /* 年份下面那行小字：做完了打勾，没做完写还差几组（完形 + 四篇阅读 + 新题型） */
 .year .y-st {
-  font-size: 9px;
+  font-size: 9.5px;
   font-weight: 500;
   line-height: 1;
   color: var(--muted);
@@ -269,7 +289,7 @@ h1 {
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
-.year.is-done .y-st { font-size: 10px; font-weight: 600; color: var(--accent); opacity: 1; }
+.year.is-done .y-st { font-size: 10.5px; font-weight: 700; color: var(--done); opacity: 1; }
 .year:hover { background: var(--mask); color: var(--ink); }
 .year[aria-current="true"] {
   background: var(--ink);
@@ -277,7 +297,7 @@ h1 {
   font-weight: 600;
 }
 .year[aria-current="true"] .y-st { color: currentColor; opacity: .7; }
-.year.is-done[aria-current="true"] .y-st { color: currentColor; opacity: .9; }
+.year.is-done[aria-current="true"] .y-st { color: var(--done-on-pill); opacity: 1; }
 
 /* 卷面标题右侧：这一卷做完了没（可手动勾选）+ 这一套的完成进度 */
 .yearstat {
@@ -2635,7 +2655,18 @@ function buildYears(selected) {
   }
   markYear(selected);
   paintYearMarks();
+  paintYearFade();
 }
+
+/* 年份条放不下时左右边缘渐隐，提示还能横向滑动 */
+function paintYearFade() {
+  const max = YEARS_NAV.scrollWidth - YEARS_NAV.clientWidth;
+  YEARS_NAV.classList.toggle("is-scroll", max > 1);
+  YEARS_NAV.classList.toggle("at-start", YEARS_NAV.scrollLeft <= 1);
+  YEARS_NAV.classList.toggle("at-end", YEARS_NAV.scrollLeft >= max - 1);
+}
+YEARS_NAV.addEventListener("scroll", paintYearFade, { passive: true });
+window.addEventListener("resize", paintYearFade);
 
 function persist() {
   try {
@@ -2654,6 +2685,7 @@ function selectYear(year, options) {
   const chip = YEARS_NAV.querySelector('[data-year="' + year + '"]');
   if (chip && opts.scroll !== false) {
     chip.scrollIntoView({ inline: "center", block: "nearest" });
+    paintYearFade();
   }
 }
 
@@ -2679,6 +2711,7 @@ function setSet(name) {
   persist();
   const chip = YEARS_NAV.querySelector('[data-year="' + year + '"]');
   if (chip) chip.scrollIntoView({ inline: "center", block: "nearest" });
+  paintYearFade();
   if (currentView === "summary") renderSummary();
 }
 
