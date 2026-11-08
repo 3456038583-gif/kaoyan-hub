@@ -479,9 +479,51 @@ body.tzoom-open { overflow: hidden; }
 .ef-bar { height: 4px; border-radius: 2px; background: var(--mask); overflow: hidden; }
 .ef-bar i { display: block; height: 100%; border-radius: 2px; background: var(--accent); transition: width .3s ease; }
 
+/* 整卡收起：右上角一个小箭头，收起来只剩客观题总分（手机上默认收起） */
+.ef-top { padding-right: 18px; }   /* 给右上角的收起按钮让位 */
+.ef-toggle {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  opacity: .45;
+  cursor: pointer;
+  transition: opacity .15s, background .15s, color .15s;
+}
+.ef-toggle:hover, .ef-toggle:focus-visible { opacity: 1; color: var(--ink); background: var(--mask); }
+.ef-toggle svg { display: block; transition: transform .2s ease; }
+.efloat.is-tucked {
+  gap: 0;
+  min-width: 0;
+  max-width: none;
+  padding: 7px 30px 7px 12px;
+  border-radius: 999px;
+}
+.efloat.is-tucked .ef-line,
+.efloat.is-tucked .ef-sub,
+.efloat.is-tucked .ef-done,
+.efloat.is-tucked .ef-miss,
+.efloat.is-tucked .ef-bar { display: none; }
+.efloat.is-tucked .ef-toggle svg { transform: rotate(180deg); }
+.efloat.is-tucked .ef-top { padding-right: 0; }
+.efloat.is-tucked .ef-top b { font-size: 16px; }
+
 @media (max-width: 640px) {
   /* 给页脚留出空间，滚到底时「导入成绩」那几个按钮不会被卡片压住 */
   body { padding-bottom: 236px; }
+  /* 卡片收起来以后不用再留那么大的空 */
+  body.efold { padding-bottom: 112px; }
+  .efloat.is-tucked .ef-top span { font-size: 10px; }
+  .efloat.is-tucked .ef-top b { font-size: 15px; }
+  .efloat.is-tucked .ef-top i { font-size: 10px; }
   .efloat {
     right: 8px; bottom: 8px; min-width: 176px; max-width: 212px;
     gap: 3px; padding: 8px 11px 7px; border-radius: 10px;
@@ -1569,11 +1611,55 @@ function efRecord() {
   return (SCORES[currentSet] && SCORES[currentSet][year]) || {};
 }
 
+/* 整卡收起：手机上默认收成一条小胶囊（只剩客观题总分），手动切过就记住 */
+const EF_FOLD_KEY = "kaoyanEnglish.eFold.v1";
+function efFolded() {
+  let v = null;
+  try { v = localStorage.getItem(EF_FOLD_KEY); } catch (e) {}
+  if (v === "1") return true;
+  if (v === "0") return false;
+  return window.innerWidth <= 640;
+}
+function setEFFolded(fold) {
+  try { localStorage.setItem(EF_FOLD_KEY, fold ? "1" : "0"); } catch (e) {}
+}
+function efToggleHTML() {
+  const f = efFolded();
+  const label = f ? "展开客观题得分卡" : "收起客观题得分卡";
+  return '<button class="ef-toggle" type="button" data-ef-toggle aria-expanded="' + (f ? "false" : "true") + '" aria-label="' + label + '" title="' + label + '">' +
+    '<svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M2.5 7.6 6 4.1 9.5 7.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+}
+function applyEFold(box) {
+  const f = efFolded();
+  box.classList.toggle("is-tucked", f);
+  document.body.classList.toggle("efold", f);
+  const btn = box.querySelector("[data-ef-toggle]");
+  if (btn) {
+    const label = f ? "展开客观题得分卡" : "收起客观题得分卡";
+    btn.setAttribute("aria-expanded", String(!f));
+    btn.setAttribute("aria-label", label);
+    btn.setAttribute("title", label);
+  }
+}
+function toggleEFold(box) {
+  setEFFolded(!box.classList.contains("is-tucked"));
+  applyEFold(box);
+}
+
 /* 用户点未完成的组名 → 滚到那一组，并聚焦分数框 */
 (function bindEFloat() {
   const box = document.getElementById("eFloat");
   if (!box) return;
   box.addEventListener("click", (e) => {
+    if (e.target.closest("[data-ef-toggle]")) {
+      toggleEFold(box);
+      return;
+    }
+    /* 收起状态下点整块就是展开，展开时才认下面的跳转 */
+    if (box.classList.contains("is-tucked")) {
+      toggleEFold(box);
+      return;
+    }
     if (e.target.closest("[data-ef-fold]")) {
       box.classList.toggle("is-fold");
       return;
@@ -1613,6 +1699,7 @@ function paintEFloat() {
     '</div>';
 
   box.innerHTML =
+    efToggleHTML() +
     '<div class="ef-top"><span>客观题</span><b>' + fmt(total) + '</b><i>/ ' + EF_FULL + ' 分</i></div>' +
     line(EF_PARTS[0]) +
     '<div class="ef-line ef-read' + (readDone === 4 ? " has" : "") + '" data-ef-fold="1" title="点一下收起/展开四篇明细">' +
@@ -1631,6 +1718,7 @@ function paintEFloat() {
     '<div class="ef-bar"><i style="width:' + Math.min(100, EF_FULL ? (total / EF_FULL) * 100 : 0).toFixed(1) + '%"></i></div>';
   box.hidden = false;
   box.classList.toggle("has-score", total > 0);
+  applyEFold(box);
 }
 
 /* ── 计时器放大：点时间数字弹出一个大号浮层，放远了也看得清 ── */
@@ -2394,6 +2482,7 @@ function setView(view) {
   else {
     const ef = document.getElementById("eFloat");
     if (ef) ef.hidden = true;
+    document.body.classList.remove("efold");
   }
   window.scrollTo(0, view === "answers" ? answersScroll : 0);
 }

@@ -1,5 +1,9 @@
 # 原卷 PDF 与 KaTeX 体积大且几乎不变，交给浏览器长期缓存；
 # 页面与脚本保持默认的每次校验，保证更新能及时生效。
+# 模拟卷单套 PDF（/pdfs/mock/）文件名不带哈希，重切后要能拿到新版，所以单独放宽到 7 天。
+/pdfs/mock/*
+  Cache-Control: public, max-age=604800
+
 /pdfs/*
   Cache-Control: public, max-age=31536000, immutable
 
