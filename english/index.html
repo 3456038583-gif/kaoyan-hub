@@ -324,6 +324,9 @@ h1 {
   transition: background .15s, color .15s;
 }
 .yearstat.is-done .ystat-mark { background: var(--accent-soft); color: var(--accent); }
+/* 分数记满时自动打勾：不用再点，所以不给手型光标、也不置灰 */
+.yearstat .ystat-mark.is-auto { cursor: default; }
+.yearstat .ystat-mark input:disabled { cursor: default; opacity: 1; }
 .yearstat .ystat-mark input {
   appearance: none;
   -webkit-appearance: none;
@@ -1493,7 +1496,7 @@ footer .migrate .msg { font-size: 11.5px; opacity: .8; }
     <h2><span id="yearNum">2021</span><small>年</small></h2>
     <div class="yearright">
       <p class="yearstat" id="yearStat" aria-live="polite">
-        <label class="ystat-mark" title="六组分数都记过会自动勾上；也可以自己手动勾选">
+        <label class="ystat-mark" title="六组分数都记过后会自动勾上；在纸上做过、这页没记分的可以手动补勾">
           <input type="checkbox" id="yearDone">
           <span class="ystat-state" id="yearStatText"></span>
         </label>
@@ -1735,17 +1738,17 @@ const EF_FULL = 60;   // 客观题满分：完形 10 + 阅读 40 + 新题型 10
 const EF_READ_FULL = 40;
 
 /* ── 整卷「做完了」标记 ──
-   默认判据：六组分数（完形 / 四篇阅读 / 新题型）都记过就算做完。
-   纸上做的、这页没记分的情况，可以手动勾选覆盖。 */
+   判据：六组分数（完形 / 四篇阅读 / 新题型）都记过就算做完，直接打勾，不用再手动确认。
+   在纸上做过、这页没记分的，可以手动补勾一个「已做完」。 */
 const ENG_DONE_KEY = "kaoyanEnglish.yearDone.v1";
-// 只存手动改过的：键是 "r1-2020"，true = 我确认做完了，false = 我确认还没做完
+// 只存手动补勾的（true），键是 "r1-2020"；分数记满的年份由自动判据给出，不占存储
 const ENG_DONE = {};
 (function loadEngDone() {
   try {
     const raw = JSON.parse(localStorage.getItem(ENG_DONE_KEY) || "null");
     if (!raw || typeof raw !== "object") return;
     for (const [k, v] of Object.entries(raw)) {
-      if (/^r[12]-\d{4}$/.test(k) && typeof v === "boolean") ENG_DONE[k] = v;
+      if (/^r[12]-\d{4}$/.test(k) && v === true) ENG_DONE[k] = true;
     }
   } catch (e) { /* 读坏了当作没手动标记过 */ }
 })();
@@ -1758,11 +1761,15 @@ function engMissing(year, set) {
   return EF_PARTS.filter(p => !isNum(rec[p.key]));
 }
 function engYearDone(year, set) {
-  const v = ENG_DONE[set + "-" + year];
-  return typeof v === "boolean" ? v : engMissing(year, set).length === 0;
+  // 分数记满就一定打勾；手动补勾只做「加法」，不会把已记满的卷子退回未完成
+  return ENG_DONE[set + "-" + year] === true || engMissing(year, set).length === 0;
+}
+function engAutoYearDone(year, set) {
+  return engMissing(year, set).length === 0;
 }
 function setEngYearDone(year, set, done) {
-  ENG_DONE[set + "-" + year] = !!done;
+  // 取消勾选只撤销「手动补勾」；分数记满的年份仍然算做完
+  if (done) ENG_DONE[set + "-" + year] = true; else delete ENG_DONE[set + "-" + year];
   saveEngDone();
   paintYearStat();
   paintYearMarks();
@@ -1779,7 +1786,7 @@ function engRangeText(list) {
   return out.join("、");
 }
 
-/* 年份按钮上的完成态：做完了打勾，没做完直接写还差几组 */
+/* 年份按钮上的完成态：六组分数记满就直接打勾，没做完写还差几组 */
 function paintYearMarks() {
   const set = currentSet;
   for (const btn of YEARS_NAV.children) {
@@ -1788,13 +1795,11 @@ function paintYearMarks() {
     const y = btn.dataset.year;
     const done = engYearDone(y, set);
     const left = done ? 0 : engMissing(y, set).length;
-    st.textContent = done ? "✓" : left ? "差 " + left + " 组" : "待确认";
+    st.textContent = done ? "✓" : "差 " + left + " 组";
     btn.classList.toggle("is-done", done);
     btn.title = done
       ? y + " 年 · 已做完"
-      : left
-        ? y + " 年 · 还差 " + left + " 组（完形 / 阅读 / 新题型）"
-        : y + " 年 · 六组分数都记过了，还没勾「已做完」";
+      : y + " 年 · 还差 " + left + " 组（完形 / 阅读 / 新题型）";
   }
 }
 
@@ -1828,6 +1833,7 @@ function paintYearStat() {
   const years = Object.keys(DATA[set]).sort();
   const year = yearBySet[set];
   const done = engYearDone(year, set);
+  const auto = engAutoYearDone(year, set);
   const left = done ? 0 : engMissing(year, set).length;
   const boxEl = document.getElementById("yearDone");
   const txtEl = document.getElementById("yearStatText");
@@ -1836,8 +1842,21 @@ function paintYearStat() {
   const rest = years.filter(y => !engYearDone(y, set));
 
   box.classList.toggle("is-done", done);
-  if (boxEl) boxEl.checked = done;
-  if (txtEl) txtEl.textContent = done ? "已做完" : left ? "还没做完 · 差 " + left + " 组" : "还没勾「已做完」";
+  if (boxEl) {
+    boxEl.checked = done;
+    // 六组分数记满时自动打勾，不用再点，所以置为不可点（勾仍是实心的）
+    boxEl.disabled = auto;
+    const mark = boxEl.closest(".ystat-mark");
+    if (mark) {
+      mark.classList.toggle("is-auto", auto);
+      mark.title = auto
+        ? "这一卷六组分数都记过了，已自动打勾"
+        : done
+          ? "手动补勾的「已做完」，可以取消"
+          : "六组分数都记过后会自动勾上；在纸上做过、这页没记分的可以手动补勾";
+    }
+  }
+  if (txtEl) txtEl.textContent = done ? "已做完" : "还没做完 · 差 " + left + " 组";
   if (sumEl) {
     const head = "完成 " + doneYears.length + "/" + years.length + " 年";
     const tail = !rest.length ? " · 全部做完" : doneYears.length ? " · 剩 " + engRangeText(rest) : " · 还没开始";
