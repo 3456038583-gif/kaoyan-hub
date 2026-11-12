@@ -856,6 +856,95 @@ body.show-score .scorebar { display: flex; }
   font-size: 13px; color: var(--accent); font-weight: 600;
 }
 
+/* ---------- 新题型·排序：左栏通读全部段落，右栏只放试卷上的排列顺序 ---------- */
+.nt-order { grid-template-columns: minmax(0, 1.5fr) minmax(330px, .62fr); }
+/* 选项段落挪到主栏后可以放开写：字大一行、行距松一点，不再挤在 300px 的窄栏里 */
+.nt-opts-wide { padding: 20px 24px 22px; }
+.nt-opts-wide h3 { margin: 0 0 12px; }
+.nt-opts-wide .item {
+  display: flex; align-items: flex-start; gap: 11px;
+  padding: 14px 0; border-top: 1px dashed var(--line);
+  font-size: 16.5px; line-height: 1.85;
+}
+.nt-opts-wide .item:first-of-type { border-top: 0; padding-top: 2px; }
+.nt-opts-wide .item .k {
+  flex: none; width: 1.45em; padding-top: .22em; text-align: center;
+  font-family: var(--mono); font-size: 13.5px; font-weight: 600; color: var(--accent);
+}
+.nt-opts-wide .item .item-txt { flex: 1; min-width: 0; }
+.nt-opts-wide .item.is-given .k { color: var(--gold); }
+.item-tag {
+  flex: none; margin-top: .45em; padding: 0 6px; border-radius: 3px;
+  font-family: var(--mono); font-size: 10.5px; line-height: 1.7;
+  color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 55%, var(--line));
+  white-space: nowrap;
+}
+
+/* 右侧答题顺序条 */
+.nt-sheet {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 4px;
+  padding: 14px 16px 14px;
+}
+.nt-sheet-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.nt-sheet-head h3 { margin: 0; }
+.nt-sheet-head .q-sol { margin-left: auto; }
+.nt-seq { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.seq-slot { position: relative; }
+.seq-row {
+  display: flex; align-items: center; gap: 9px; width: 100%;
+  padding: 2px 0; background: none; border: 0; cursor: pointer; text-align: left;
+}
+.seq-n {
+  flex: none; padding: 1px 7px; border-radius: 3px;
+  font-family: var(--mono); font-size: 12px; font-weight: 600;
+  color: var(--accent); background: var(--accent-soft);
+}
+.seq-row .blank {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  height: 2.45em; margin: 0;
+  font-family: var(--mono); font-size: 17px; font-weight: 600;
+  color: var(--accent); background: var(--accent-soft);
+  border: 1.5px solid color-mix(in srgb, var(--accent) 42%, var(--line));
+  border-radius: 6px; cursor: pointer;
+  transition: border-color .15s, background .15s, color .15s;
+}
+.seq-row:hover .blank { border-color: var(--accent); }
+/* 未作答时只显示一个横杠，颜色压下去，别抢作答后的字母 */
+.seq-row .blank { color: var(--muted); }
+.seq-slot.open .seq-row .blank { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.seq-row .blank.done { color: #fff; background: var(--accent); border-color: var(--accent); }
+@media (prefers-color-scheme: dark) { .seq-row .blank.done { color: #0e1411; } }
+.seq-row .blank.mark { color: var(--red); background: var(--red-soft); border-color: var(--red); }
+.seq-row .blank.ans { color: var(--green); background: var(--green-soft); border-color: var(--green); }
+.seq-caret { flex: none; font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
+.seq-slot.open .seq-caret { color: var(--accent); }
+.seq-given { display: flex; align-items: center; gap: 8px; padding: 1px 0 1px 2px; }
+.seq-k {
+  flex: none; width: 2.1em; padding: 2px 0; text-align: center;
+  font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--gold);
+  border: 1px solid color-mix(in srgb, var(--gold) 55%, var(--line));
+  border-radius: 4px; background: color-mix(in srgb, var(--gold) 8%, transparent);
+}
+.seq-tag { font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
+.seq-picks {
+  display: none; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px;
+  padding: 4px 0 8px 33px;
+}
+.seq-slot.open .seq-picks { display: grid; }
+.seq-picks .opt { justify-content: center; padding: 5px 0; border-radius: 3px; }
+.seq-picks .opt .k { width: 2em; height: 2em; margin-top: 0; font-size: 12.5px; }
+.nt-sheet-tip {
+  margin: 12px 0 0; padding-top: 9px; border-top: 1px dashed var(--line);
+  font-size: 11.5px; line-height: 1.7; color: var(--muted);
+}
+@media (max-width: 980px) {
+  .nt-order { grid-template-columns: minmax(0, 1fr); }
+  .nt-opts-wide { padding: 16px 16px 16px; }
+  .nt-opts-wide .item { font-size: 16px; padding: 12px 0; }
+  .nt-order .nt-sheet { margin-top: 4px; }
+}
+
+
 /* ---------- 翻译：左原文（划线）+ 右作答卡 ---------- */
 .tr {
   display: grid;

@@ -171,6 +171,74 @@
     ${s.topic ? `<p class="sec-topic"><b>主题</b>${esc(s.topic)}</p>` : ''}`;
   }
 
+  /* 段落排序题：左栏通读全部段落（A–H 全文），右栏只放试卷上的排列顺序
+     （41 · [A] · 42 · [E] · 43 · [H] · 44 · 45）——点空框就地展开 A–H，
+     不用在「原文空位」和「右侧答题卡」之间来回找 */
+  function orderBody(s) {
+    const items = s.items || [];
+    const qs = s.questions || [];
+    const bare = (x) => String(x || '').replace(/^\[[A-H]\]\s*/, '').replace(/\s+/g, ' ').trim();
+    /* 已给定位置的段落，很多年没写 [X] 前缀，就按正文前 36 字回查选项库取字母 */
+    const keyOf = (txt) => {
+      const probe = bare(txt).slice(0, 36);
+      const hit = items.find((it) => bare(it.text).slice(0, 36) === probe);
+      if (hit) return hit.key;
+      const m = String(txt).match(/^\[([A-H])\]/);
+      return m ? m[1] : '';
+    };
+    const given = new Set();
+    const rows = (s.paras || [])
+      .map((p) => {
+        const raw = String(p.en || '').trim();
+        const slot = /^\{\{(\d+)\}\}$/.exec(raw);
+        if (!slot) {
+          const k = keyOf(raw);
+          if (k) given.add(k);
+          return `<li class="seq-given"><b class="seq-k">${esc(k || '·')}</b><span class="seq-tag">试卷已给定</span></li>`;
+        }
+        const n = slot[1];
+        const q = qs.find((x) => String(x.n) === n) || {};
+        const keys = q.options && q.options.length ? q.options : items.map((it) => it.key);
+        return `<li class="seq-slot" data-n="${esc(n)}">
+          <button class="seq-row" type="button" aria-expanded="false">
+            <span class="seq-n">${esc(n)}</span>
+            <span class="blank" data-n="${esc(n)}">${esc(n)}</span>
+            ${q.diff ? `<span class="q-diff" data-d="${esc(q.diff)}">${esc(q.diff)}</span>` : ''}
+            <span class="seq-caret" aria-hidden="true">选</span>
+          </button>
+          <div class="seq-picks">${keys
+            .map((k) => `<span class="opt seq-pick" data-n="${esc(n)}" data-k="${esc(k)}"><span class="k">${esc(k)}</span></span>`)
+            .join('')}</div>
+        </li>`;
+      })
+      .join('');
+    const itemHtml = items
+      .map((it) => {
+        const on = given.has(it.key);
+        return `<div class="item${on ? ' is-given' : ''}" data-k="${esc(it.key)}"><b class="k">${esc(it.key)}</b><span class="item-txt">${esc(it.text)}</span>${on ? '<span class="item-tag">已给定</span>' : ''}</div>`;
+      })
+      .join('');
+    const lastPage = qs.reduce((a, q) => (q.solPage && (!a || q.solPage < a) ? q.solPage : a), 0);
+    return `<div class="nt nt-order">
+      <div class="nt-main">
+        <div class="nt-opts nt-opts-wide">
+          <h3>选项 A–${esc((items.slice(-1)[0] || {}).key || 'G')} · 段落顺序是打乱的</h3>
+          ${itemHtml}
+        </div>
+      </div>
+      <aside class="nt-side">
+        <div class="nt-sheet">
+          <div class="nt-sheet-head">
+            <h3>试卷顺序</h3>
+            ${lastPage ? `<a class="q-sol" href="${P.sol}#page=${lastPage}" target="_blank" rel="noopener">解析 p.${lastPage}</a>` : ''}
+          </div>
+          <ol class="nt-seq">${rows}</ol>
+          <p class="nt-sheet-tip">点方框就地选字母；标「试卷已给定」的是原卷上已经排好的段落，不用作答。</p>
+        </div>
+      </aside>
+    </div>`;
+  }
+
   function renderSection(s) {
     let body = '';
     if (s.kind === 'cloze') {
@@ -194,8 +262,12 @@
         : /七选五/.test(t) ? ' nt-insert' : ' nt-match';
       // 正误判断（T/F）的陈述句较长，单独给一个类，作答卡里字号收小
       const isTF = (s.questions || []).some((q) => (q.options || []).join('') === 'TF');
-      // 左文右栏：右边是作答卡 + 选项库，随页面滚动固定在视口内，文章再长也能对照
-      body = `<div class="nt${ntCls}${isTF ? ' nt-tf' : ''}">
+      if (ntCls === ' nt-order') {
+        // 排序题：段落本身就是选项，左栏通读全部段落，右栏只留试卷上的排列顺序
+        body = orderBody(s);
+      } else {
+        // 左文右栏：右边是作答卡 + 选项库，随页面滚动固定在视口内，文章再长也能对照
+        body = `<div class="nt${ntCls}${isTF ? ' nt-tf' : ''}">
         <div class="nt-main">
           <div class="passage nt-passage">${parasHtml(s.paras)}</div>
         </div>
@@ -204,6 +276,7 @@
           ${items ? `<div class="nt-opts"><h3>选项 A–${esc((s.items || []).slice(-1)[0].key || 'G')}</h3>${items}</div>` : ''}
         </aside>
       </div>`;
+      }
     } else if (s.kind === 'translation') {
       const qs = s.questions || [];
       const multi = qs.filter((q) => q.stem && q.stem.length > 20).length > 1;
@@ -421,12 +494,27 @@
         : (ready ? `提交本部分（已答 ${ready}/${qs.length}）` : '提交本部分');
     });
     $$('.blank').forEach((b) => {
-      const p = picks[b.dataset.n];
-      const m = qMeta[b.dataset.n];
+      const n = b.dataset.n;
+      const p = picks[n];
+      const m = qMeta[n];
       const sub = !!(m && submittedSec[m.sec]);
+      /* 排序题的方框就是答题卡：提交/显示答案后没填的空直接把正解填进去 */
+      const sheet = b.closest('.nt-sheet');
+      const showAns = !!sheet && !p && m && (allRevealed || sub) ? m.answer : '';
       b.classList.toggle('done', !!p && !(sub && p !== m.answer));
       b.classList.toggle('mark', !!(sub && p && p !== m.answer));
-      b.textContent = p || b.dataset.n;
+      b.classList.toggle('ans', !!showAns);
+      b.textContent = p || showAns || (sheet ? '—' : n);
+    });
+    /* 排序题方框展开的字母条，状态跟作答卡保持一致 */
+    $$('.seq-pick').forEach((o) => {
+      const n = o.dataset.n, k = o.dataset.k, m = qMeta[n];
+      if (!m) return;
+      const p = picks[n];
+      const rev = allRevealed || !!submittedSec[m.sec];
+      o.classList.toggle('pick', !rev && p === k);
+      o.classList.toggle('right', rev && m.answer === k);
+      o.classList.toggle('wrong', rev && p === k && m.answer !== k);
     });
     const st = scoreStat();
     $('#scDone').textContent = String(st.done);
@@ -560,7 +648,9 @@
       return;
     }
     const opt = e.target.closest('.opt');
-    if (opt && !document.body.classList.contains('show-ans') && !opt.closest('.q').classList.contains('revealed')) {
+    if (opt && !document.body.classList.contains('show-ans')) {
+      const card = opt.closest('.q');
+      if (card && card.classList.contains('revealed')) return;
       const n = opt.dataset.n;
       const m = qMeta[n];
       if (m && submittedSec[m.sec]) return;   // 已提交的题型锁定，先点「重做」
@@ -568,6 +658,27 @@
       else picks[n] = opt.dataset.k;
       save();
       paint();
+      // 排序题选完就把字母条收起来，视线回到顺序条
+      const slot = opt.closest('.seq-slot');
+      if (slot) {
+        slot.classList.remove('open');
+        const row = slot.querySelector('.seq-row');
+        if (row) row.setAttribute('aria-expanded', 'false');
+      }
+      return;
+    }
+    /* 排序题：点顺序条上的空框，就地展开 A–H */
+    const seqRow = e.target.closest('.seq-row');
+    if (seqRow) {
+      const slot = seqRow.closest('.seq-slot');
+      const open = !slot.classList.contains('open');
+      $$('.seq-slot.open').forEach((x) => {
+        x.classList.remove('open');
+        const r = x.querySelector('.seq-row');
+        if (r) r.setAttribute('aria-expanded', 'false');
+      });
+      slot.classList.toggle('open', open);
+      seqRow.setAttribute('aria-expanded', String(open));
       return;
     }
     const blank = e.target.closest('.blank');
