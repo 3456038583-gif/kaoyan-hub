@@ -100,6 +100,7 @@
       <div class="q-top"><span class="q-num">${q.n}</span>${diffBadge(q)}${ansVal}${rateBadge(q)}<span class="q-verdict"></span><span class="q-tools">${ansBtn}${solLink(q)}</span></div>
       ${q.stem ? `<p class="q-stem">${esc(q.stem)}</p>` : ''}
       ${optsHtml(q)}
+      ${q.note ? `<div class="q-note"><b>订正</b> ${esc(q.note)}</div>` : ''}
       ${q.ref ? `<div class="q-ref"><b>参考译文</b>${esc(q.ref)}</div>` : ''}
     </div>`;
   }

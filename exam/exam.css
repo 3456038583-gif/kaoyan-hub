@@ -399,6 +399,16 @@ body.show-ans .q-ref,
 body.show-zh .q-ref,
 .q.revealed .q-ref { display: block; }
 
+/* 答案订正说明：只有带 note 字段的题才出现 */
+.q-note {
+  margin-top: 9px; padding: 7px 10px;
+  border-left: 2px solid var(--accent);
+  background: var(--accent-soft);
+  font-size: 12px; line-height: 1.7; color: var(--muted);
+  border-radius: 0 3px 3px 0;
+}
+.q-note b { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: .02em; }
+
 /* ---------- 完形 / 新题型：固定一屏，左右各自内部滚动 ---------- */
 .duo.cloze, .duo.newtype {
   grid-template-columns: minmax(0, 1fr) minmax(0, .94fr);

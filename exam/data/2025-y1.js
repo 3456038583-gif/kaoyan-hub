@@ -558,9 +558,10 @@ window.__PAPER__ = {
             "was urged to form an enforcement task force",
             "failed to win support from local authorities"
           ],
-          "answer": "C",
+          "answer": "A",
           "diff": "难",
-          "solPage": 3
+          "solPage": 3,
+          "note": "官方参考答案为 A。此前的随卷解析把这题误标成 C（原文只说协会自己成立了 ACE，并无“被敦促”一说），现已订正。"
         },
         {
           "n": 34,
