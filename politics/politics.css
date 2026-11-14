@@ -211,3 +211,41 @@ body.show-score .scorebar.psfloat { display: flex; }
   .opt { font-size: 14.5px; }
   .essay-body p { text-indent: 0; }
 }
+
+/* ---------- 逐题解析（客观题）：默认收起，显示答案或提交后展开 ---------- */
+.q-ana {
+  display: none;
+  margin: 10px 0 2px;
+  padding: 10px 12px 11px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 6px 6px 0;
+  font-size: 13.5px;
+  line-height: 1.78;
+  color: var(--ink);
+  text-align: justify;
+}
+.q-ana > b {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: var(--accent);
+}
+.q.revealed .q-ana,
+.q.submitted .q-ana,
+body.show-ans .q-ana { display: block; }
+@media (max-width: 720px) {
+  .q-ana { font-size: 13px; line-height: 1.72; padding: 9px 10px 10px; }
+}
+
+/* ---------- 顶部套卷条：真题 / 肖八 切换 ---------- */
+.eb-lab {
+  flex: 0 0 auto; align-self: center;
+  margin: 0 2px 0 6px; padding: 0 2px;
+  font-size: 11.5px; font-weight: 600; letter-spacing: .06em;
+  color: var(--muted);
+}
+.eb-yr.eb-back { min-width: 40px; color: var(--muted); }
+.eb-yr.eb-back:hover { color: var(--accent); }

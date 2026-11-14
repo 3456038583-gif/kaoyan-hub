@@ -118,6 +118,7 @@
       </div>
       ${q.stem ? `<p class="q-stem">${esc(q.stem)}</p>` : ''}
       <div class="opts">${opts}</div>
+      ${q.ana ? `<div class="q-ana"><b>解析</b>${esc(q.ana)}</div>` : ''}
       <div class="q-foot">
         <button class="q-submit" type="button" data-n="${q.n}" disabled>提交</button>
         <button class="q-redo" type="button" data-n="${q.n}" hidden>重做</button>

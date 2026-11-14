@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>2027 肖秀荣八套卷（六） · 考研资料总库</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="2027 肖秀荣八套卷（六）：16 道单选、17 道多选、5 道材料分析，逐题作答并附官方解析，可自动算分。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/exam/exam.css">
+<link rel="stylesheet" href="/politics/politics.css">
+<script src="/countdown.js" defer></script>
+</head>
+<body>
+<nav class="sitebar" aria-label="站点导航">
+  <a class="sb-brand" href="/">考研资料总库</a>
+  <div class="sb-links">
+    <a href="/math/">数学真题</a>
+    <a href="/exam/">英语真题</a>
+    <a href="/politics/" class="on">政治真题</a>
+    <a href="/english/">英语速查</a>
+    <a href="/library/">知识库</a>
+  </div>
+</nav>
+<div class="ex-bar"><div class="ex-bar-in">
+  <div class="eb-years" aria-label="套卷"><a class="eb-yr eb-back" href="/politics/" title="回到历年真题">真题</a><span class="eb-lab">肖八</span><a class="eb-yr" href="/politics/xiao8-1" data-id="xiao8-1" title="2027 肖秀荣八套卷（一）">一</a><a class="eb-yr" href="/politics/xiao8-2" data-id="xiao8-2" title="2027 肖秀荣八套卷（二）">二</a><a class="eb-yr" href="/politics/xiao8-3" data-id="xiao8-3" title="2027 肖秀荣八套卷（三）">三</a><a class="eb-yr" href="/politics/xiao8-4" data-id="xiao8-4" title="2027 肖秀荣八套卷（四）">四</a><a class="eb-yr" href="/politics/xiao8-5" data-id="xiao8-5" title="2027 肖秀荣八套卷（五）">五</a><a class="eb-yr on" href="/politics/xiao8-6" data-id="xiao8-6" title="2027 肖秀荣八套卷（六）">六</a><a class="eb-yr" href="/politics/xiao8-7" data-id="xiao8-7" title="2027 肖秀荣八套卷（七）">七</a><a class="eb-yr" href="/politics/xiao8-8" data-id="xiao8-8" title="2027 肖秀荣八套卷（八）">八</a></div>
+  <div class="eb-side"><a class="eb-link" href="/politics/records.html">练习记录</a><a class="eb-link" href="/library/政治/">政治一页纸</a></div>
+</div></div>
+<div id="paper"></div>
+<script>
+(function () {
+  [].forEach.call(document.querySelectorAll('.eb-yr[data-id]'), function (a) {
+    try {
+      var s = JSON.parse(localStorage.getItem('kaoyan-politics:' + a.dataset.id) || '{}');
+      var n = Object.keys(s.picks || {}).length;
+      if (n) { a.classList.add('has'); a.title = a.title + ' · 已答 ' + n + ' 题'; }
+    } catch (e) {}
+  });
+})();
+</script>
+<script>window.__PAPERS__ = [{"id": "xiao8-1", "y": 2027}, {"id": "xiao8-2", "y": 2027}, {"id": "xiao8-3", "y": 2027}, {"id": "xiao8-4", "y": 2027}, {"id": "xiao8-5", "y": 2027}, {"id": "xiao8-6", "y": 2027}, {"id": "xiao8-7", "y": 2027}, {"id": "xiao8-8", "y": 2027}];</script>
+<script src="/politics/data/xiao8-6.js"></script>
+<script src="/politics/politics.js"></script>
+</body>
+</html>
