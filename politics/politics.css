@@ -6,23 +6,42 @@
 .po-set { margin-bottom: 22px; }
 
 /* 试卷页 */
+/* 中文题干比英文长，栏宽要给够，否则一行只剩十几个字 */
 .q-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
+  gap: 16px;
   align-items: start;
 }
-.q-list.essay-list { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.q-list.essay-list { grid-template-columns: minmax(0, 1fr); gap: 18px; }
 
-.q { scroll-margin-top: calc(var(--sb-h, 48px) + 62px); }
+.q { scroll-margin-top: calc(var(--sb-h, 48px) + 62px); padding: 18px 20px 16px; }
+.q-top { margin-bottom: 10px; }
 .q.has-pick { border-color: color-mix(in srgb, var(--accent) 34%, var(--line)); }
 .q.ok { border-color: var(--green); }
+.q-num { font-size: 13px; padding: 1px 8px; }
 .q-tag {
-  font-family: var(--mono); font-size: 10.5px; letter-spacing: .04em;
+  font-family: var(--mono); font-size: 11.5px; letter-spacing: .04em;
   color: var(--gold); border: 1px solid var(--line); border-radius: 3px;
-  padding: 0 5px;
+  padding: 0 6px;
 }
-.opts { margin-top: 2px; }
+
+/* 题干 / 选项：改回中文无衬线，字号上调 */
+.q-stem {
+  margin: 0 0 12px;
+  font-family: var(--sans); font-size: 17px; font-weight: 400;
+  line-height: 1.85; letter-spacing: .01em; color: var(--ink);
+}
+.opts { margin-top: 4px; gap: 4px; }
+.opt {
+  gap: 10px; padding: 6px 9px;
+  font-family: var(--sans); font-size: 16.5px; line-height: 1.72;
+}
+.opt .k { font-size: 13px; width: 1.6em; height: 1.6em; margin-top: .18em; }
+
+/* 卡片右上角的小标签：答案 / 答案值 */
+.q-ans { font-size: 12px; padding: 1px 8px; }
+.q-ansval { font-size: 12px; padding: 1px 7px; }
 .opt.miss {
   background: color-mix(in srgb, var(--green-soft) 60%, var(--surface));
   outline: 1px dashed var(--green);
@@ -31,11 +50,21 @@
 .opt.wrong { text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--red) 55%, transparent); }
 .q-multi .opt .k { border-radius: 3px; }
 
+/* 章节头 / 说明文字 */
+.sec-head h2 { font-size: 23px; }
+.sec-head .lbl,
+.sec-head .pts { font-size: 12.5px; }
+.direction {
+  font-size: 14px; line-height: 1.8;
+  padding: 11px 14px; margin-bottom: 20px;
+  border-left-width: 3px;
+}
+
 /* 分析题 */
-.q-essay { padding: 16px 18px 14px; }
+.q-essay { padding: 20px 22px 18px; }
 .essay-body p {
-  margin: 0 0 10px; font-size: 14.5px; line-height: 1.85;
-  text-indent: 1.5em;
+  margin: 0 0 13px; font-size: 16.5px; line-height: 1.95;
+  text-align: justify; text-indent: 1.5em;
 }
 .essay-body p:last-child { margin-bottom: 0; }
 .essay-body p:first-child { text-indent: 0; }
@@ -44,7 +73,7 @@
 .q-foot {
   display: flex; align-items: center; justify-content: center;
   gap: 9px 12px; flex-wrap: wrap;
-  margin-top: 12px; padding-top: 13px; border-top: 1px dashed var(--line);
+  margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line);
 }
 .q-submit, .q-redo {
   appearance: none; cursor: pointer; flex: none;
@@ -60,11 +89,11 @@
 .q-submit:disabled { color: var(--muted); border-color: var(--line); cursor: default; }
 .q-redo {
   min-width: 112px; min-height: 38px; padding: 7px 20px;
-  font-size: 13px; font-weight: 500; background: transparent;
+  font-size: 14px; font-weight: 500; background: transparent;
   color: var(--muted); border-color: var(--line);
 }
 .q-redo:hover { color: var(--accent); border-color: var(--accent); }
-.q-verdict { flex: 1 0 100%; text-align: center; font-size: 13px; color: var(--muted); }
+.q-verdict { flex: 1 0 100%; text-align: center; font-size: 14px; color: var(--muted); }
 .q-verdict.ok { color: var(--green); }
 .q-verdict.bad { color: var(--red); }
 .q-verdict.bad b { font-family: var(--mono); }
@@ -72,8 +101,8 @@
 /* 部分级提交按钮（标题右侧） */
 .sec-submit {
   appearance: none; cursor: pointer; margin: -4px 0 10px;
-  font-family: var(--mono); font-size: 11.5px; letter-spacing: .02em;
-  padding: 3px 12px; border-radius: 3px;
+  font-family: var(--mono); font-size: 12.5px; letter-spacing: .02em;
+  padding: 4px 13px; border-radius: 3px;
   border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
   color: var(--accent); background: transparent;
   transition: background .14s, color .14s, border-color .14s;
@@ -85,25 +114,26 @@
 
 /* 分析题参考答案（折叠，默认收起） */
 .essay-ans {
-  margin-top: 12px; border-top: 1px dashed var(--line);
-  padding-top: 10px;
+  margin-top: 14px; border-top: 1px dashed var(--line);
+  padding-top: 12px;
 }
 .essay-ans summary {
   cursor: pointer; list-style: none; width: max-content;
-  font-size: 12.5px; color: var(--gold);
+  font-size: 13.5px; color: var(--gold);
   border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--line));
-  border-radius: 3px; padding: 2px 10px;
+  border-radius: 3px; padding: 3px 12px;
   font-family: var(--mono); letter-spacing: .02em;
 }
 .essay-ans summary::-webkit-details-marker { display: none; }
 .essay-ans summary::before { content: '＋ '; }
 .essay-ans[open] summary::before { content: '－ '; }
 .essay-ans summary:hover { background: color-mix(in srgb, var(--gold) 10%, transparent); }
-.ea-body { margin-top: 10px; }
+.ea-body { margin-top: 12px; }
 .ea-body p {
-  margin: 0 0 9px; font-size: 14px; line-height: 1.8; color: var(--muted);
-  text-indent: 1.5em;
+  margin: 0 0 11px; font-size: 15.5px; line-height: 1.9; color: var(--ink);
+  text-align: justify; text-indent: 1.5em;
 }
+.ea-body p:first-child { text-indent: 0; }
 .ea-body p:last-child { margin-bottom: 0; }
 
 /* 统计面板补充 */
@@ -206,38 +236,44 @@ body.show-score .scorebar.psfloat { display: flex; }
 }
 
 @media (max-width: 720px) {
-  .q-list { grid-template-columns: minmax(0, 1fr); gap: 10px; }
-  .q { padding: 12px 13px 10px; }
-  .opt { font-size: 14.5px; }
-  .essay-body p { text-indent: 0; }
+  .q-list { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .q { padding: 15px 16px 13px; }
+  .q-stem { font-size: 16.5px; line-height: 1.8; }
+  .opt { font-size: 16px; line-height: 1.68; padding: 6px 8px; gap: 9px; }
+  .opt .k { font-size: 12.5px; }
+  .essay-body p { font-size: 16px; line-height: 1.9; text-indent: 0; }
+  .ea-body p { font-size: 15px; line-height: 1.85; text-indent: 0; }
+  .direction { font-size: 13.5px; padding: 10px 12px; }
+  .sec-head h2 { font-size: 21px; }
 }
 
 /* ---------- 逐题解析（客观题）：默认收起，显示答案或提交后展开 ---------- */
 .q-ana {
   display: none;
-  margin: 10px 0 2px;
-  padding: 10px 12px 11px;
+  margin: 12px 0 2px;
+  padding: 13px 15px 14px;
   border-left: 3px solid var(--accent);
   background: var(--accent-soft);
   border-radius: 0 6px 6px 0;
-  font-size: 13.5px;
-  line-height: 1.78;
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.9;
   color: var(--ink);
   text-align: justify;
 }
 .q-ana > b {
   display: block;
-  margin-bottom: 3px;
-  font-size: 11.5px;
+  margin-bottom: 5px;
+  font-size: 12.5px;
   font-weight: 600;
-  letter-spacing: .04em;
+  letter-spacing: .06em;
   color: var(--accent);
 }
 .q.revealed .q-ana,
 .q.submitted .q-ana,
 body.show-ans .q-ana { display: block; }
 @media (max-width: 720px) {
-  .q-ana { font-size: 13px; line-height: 1.72; padding: 9px 10px 10px; }
+  .q-ana { font-size: 14.5px; line-height: 1.85; padding: 11px 13px 12px; }
 }
 
 /* ---------- 顶部套卷条：真题 / 肖八 切换 ---------- */
