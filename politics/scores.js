@@ -130,7 +130,9 @@
 
     return '<article class="sl-card' + (a ? ' has' : '') + '" data-pid="' + p.pid + '">' +
       '<div class="sl-card-head">' +
-        '<div class="sl-name">' + esc(p.name) + '<span class="sl-tag">' + esc(p.tag) + '</span></div>' +
+        '<div class="sl-name">' + esc(p.name) + '<span class="sl-tag">' + esc(p.tag) + '</span>' +
+          (a ? '<span class="sl-done" aria-label="已记录">✓</span>' : '') +
+        '</div>' +
         '<span class="sl-head-tools">' +
           (p.href ? '<a class="sl-go" href="' + p.href + '">看试卷</a>' : '') +
           (p.custom ? '<button type="button" class="sl-delpaper" data-delpaper="' + p.cid + '" title="删除这套试卷">删除</button>' : '') +
@@ -150,7 +152,20 @@
     '</article>';
   }
 
+  /* 标签页上的「已写 / 总数」，直接回答还有哪些没写 */
+  function renderTabs() {
+    const groups = { real: REAL, mock: MOCK, custom: listOf('custom') };
+    $$('#slTabs button').forEach((b) => {
+      if (!b.dataset.label) b.dataset.label = b.textContent.trim();
+      const list = groups[b.dataset.g] || [];
+      const done = list.filter((p) => !!agg(p.pid)).length;
+      b.innerHTML = '<span>' + esc(b.dataset.label) + '</span>' +
+        '<i class="sl-tab-n' + (list.length && done === list.length ? ' all' : '') + '">' + done + '/' + list.length + '</i>';
+    });
+  }
+
   function renderList() {
+    renderTabs();
     const g = state.group;
     const list = listOf(g);
     let head = '';
