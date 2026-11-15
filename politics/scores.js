@@ -8,7 +8,8 @@
   const F_SINGLE = 16;                 // 单选 16 题 × 1 分
   const F_MULTI = 34;                  // 多选 17 题 × 2 分
   const F_ALL = F_SINGLE + F_MULTI;    // 选择题合计 50 分
-  const PASS = 40;                     // 参考线：选择题 40 分
+  const LINE_HI = 35;                  // 高分线：35 分以上算好
+  const LINE_MID = 30;                 // 中位线：30–34 一般，低于 30 偏低
   const KEY = 'kaoyan-politics-scorelog.v1';
 
   const $ = (s, r) => (r || document).querySelector(s);
@@ -218,16 +219,27 @@
         (ma - ra >= 2 ? '，模拟卷做得更顺，真题更接近考场手感。' : (ra - ma >= 2 ? '，真题反而更顺，说明模拟卷对你更难。' : '，两者差不多。')));
     }
 
-    const pass = logs.filter((l) => sum(l) >= PASS).length;
-    out.push('选择题 ' + PASS + ' 分以上 <b>' + pass + ' / ' + n + '</b> 套（' + Math.round((pass / n) * 100) + '%）。');
+    const hi = logs.filter((l) => sum(l) >= LINE_HI).length;
+    const mid = logs.filter((l) => sum(l) >= LINE_MID && sum(l) < LINE_HI).length;
+    const lo = logs.filter((l) => sum(l) < LINE_MID).length;
+    out.push('选择题 ' + LINE_HI + ' 分以上 <b>' + hi + '</b> 套，' +
+      LINE_MID + '–' + (LINE_HI - 1) + ' 分 <b>' + mid + '</b> 套，' +
+      '低于 ' + LINE_MID + ' 分 <b>' + lo + '</b> 套（共 ' + n + ' 套）。');
 
-    const low = logs.filter((l) => sum(l) < PASS).sort((a, b) => sum(a) - sum(b)).slice(0, 3);
+    const low = logs.filter((l) => sum(l) < LINE_MID).sort((a, b) => sum(a) - sum(b)).slice(0, 3);
     if (low.length) {
       const names = low.map((l) => esc(paperOf(l.p).name) + '（' + sum(l) + '）').join('、');
-      out.push('低于 ' + PASS + ' 分的是：' + names + '。');
+      out.push('低于 ' + LINE_MID + ' 分的是：' + names + '。');
     }
 
     return '<div class="sl-insight"><h3>小结</h3><ul>' + out.map((t) => '<li>' + t + '</li>').join('') + '</ul></div>';
+  }
+
+  /* 分数分档：≥35 算好（绿）、30–34 一般（金）、低于 30 偏低（红） */
+  function band(v) {
+    if (v >= LINE_HI) return 'ok';
+    if (v >= LINE_MID) return 'mid';
+    return 'low';
   }
 
   function barRow(label, val, full, cls) {
@@ -255,7 +267,7 @@
       const rows = g.list.map((p) => ({ p: p, a: agg(p.pid) })).filter((x) => x.a).sort((x, y) => y.a.best - x.a.best);
       if (!rows.length) return;
       bars += '<div class="sl-bars-group"><h4>' + g.title + '</h4>' +
-        rows.map((x) => barRow(x.p.name, x.a.best, F_ALL, x.a.best >= PASS ? 'ok' : 'low')).join('') +
+        rows.map((x) => barRow(x.p.name, x.a.best, F_ALL, band(x.a.best))).join('') +
         '</div>';
     });
 
@@ -263,16 +275,16 @@
       '<div class="sl-an-head"><h2>数据分析</h2><span>' + k.n + ' 次记录 · 平均 ' + fmtN(k.avg) + ' / 50</span></div>' +
       '<div class="sl-an-grid">' +
         '<div class="sl-an-card sl-an-chart"><h3>得分走势</h3><div class="sl-chart" id="slChart"></div>' +
-          '<p class="sl-an-note">横轴按记录时间排列，金色虚线是 ' + PASS + ' 分参考线。</p></div>' +
+          '<p class="sl-an-note">横轴按记录时间排列，绿色虚线是 ' + LINE_HI + ' 分、金色虚线是 ' + LINE_MID + ' 分参考线。</p></div>' +
         '<div class="sl-an-card"><h3>单选 / 多选</h3>' +
-          barRow('单选', k.ss, F_SINGLE, k.ss / F_SINGLE >= 0.75 ? 'ok' : 'low') +
-          barRow('多选', k.sm, F_MULTI, k.sm / F_MULTI >= 0.7 ? 'ok' : 'low') +
+          barRow('单选', k.ss, F_SINGLE, k.ss / F_SINGLE >= 0.75 ? 'ok' : 'mid') +
+          barRow('多选', k.sm, F_MULTI, k.sm / F_MULTI >= 0.7 ? 'ok' : 'mid') +
           '<div class="sl-split"><span>单选平均 ' + fmtN(k.ss) + ' / ' + F_SINGLE + '（' + pctN(k.ss / F_SINGLE) + '%）</span>' +
           '<span>多选平均 ' + fmtN(k.sm) + ' / ' + F_MULTI + '（' + pctN(k.sm / F_MULTI) + '%）</span></div>' +
         '</div>' +
       '</div>' +
       (bars ? '<div class="sl-an-card sl-an-bars"><div class="sl-bars-head"><h3>各套最好成绩</h3>' +
-        '<span class="sl-legend"><i class="ok"></i>' + PASS + ' 分以上<i class="low"></i>低于 ' + PASS + '</span></div>' + bars + '</div>' : '') +
+        '<span class="sl-legend"><i class="ok"></i>' + LINE_HI + ' 分以上<i class="mid"></i>' + LINE_MID + '–' + (LINE_HI - 1) + '<i class="low"></i>低于 ' + LINE_MID + '</span></div>' + bars + '</div>' : '') +
       insightHtml(k);
 
     drawChart(k.logs);
@@ -284,7 +296,7 @@
     if (!box) return;
     const w = box.clientWidth || 600;
     const h = w < 520 ? 172 : 214;
-    const pad = { l: 42, r: 18, t: 24, b: 26 };
+    const pad = { l: 42, r: 30, t: 24, b: 26 };
     const iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
     const n = logs.length;
     const xAt = (i) => (n <= 1 ? pad.l + iw / 2 : pad.l + (i / (n - 1)) * iw);
@@ -296,8 +308,12 @@
       g += '<line x1="' + pad.l + '" y1="' + y + '" x2="' + (pad.l + iw) + '" y2="' + y + '" stroke="var(--line-soft)" stroke-width="1"/>';
       g += '<text x="' + (pad.l - 7) + '" y="' + (+y + 3.5) + '" text-anchor="end" font-size="10" fill="var(--muted)" font-family="var(--mono)">' + v + '</text>';
     });
-    /* 40 分参考线 */
-    g += '<line x1="' + pad.l + '" y1="' + yAt(PASS).toFixed(1) + '" x2="' + (pad.l + iw) + '" y2="' + yAt(PASS).toFixed(1) + '" stroke="var(--gold)" stroke-width="1" stroke-dasharray="4 4" opacity=".75"/>';
+    /* 35 / 30 分两条参考线，右端标数字 */
+    [[LINE_HI, 'var(--green)'], [LINE_MID, 'var(--gold)']].forEach((r) => {
+      const y = yAt(r[0]);
+      g += '<line x1="' + pad.l + '" y1="' + y.toFixed(1) + '" x2="' + (pad.l + iw) + '" y2="' + y.toFixed(1) + '" stroke="' + r[1] + '" stroke-width="1.3" stroke-dasharray="4 3" opacity=".85"/>';
+      g += '<text x="' + (pad.l + iw + 5) + '" y="' + (y + 3.2).toFixed(1) + '" font-size="9.5" font-weight="600" fill="' + r[1] + '" font-family="var(--mono)">' + r[0] + '</text>';
+    });
 
     const pts = logs.map((l, i) => [xAt(i), yAt(sum(l))]);
     let d = '';

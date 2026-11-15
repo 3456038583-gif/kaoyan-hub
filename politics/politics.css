@@ -500,7 +500,8 @@ body.show-ans .q-ana { display: block; }
 .sl-bar { flex: 1 1 auto; height: 7px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
 .sl-bar > i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
 .sl-bar-row.ok .sl-bar > i { background: var(--green); }
-.sl-bar-row.low .sl-bar > i { background: var(--gold); }
+.sl-bar-row.mid .sl-bar > i { background: var(--gold); }
+.sl-bar-row.low .sl-bar > i { background: var(--red); }
 .sl-bar-val { flex: 0 0 auto; font-family: var(--mono); font-size: 13.5px; color: var(--ink); font-variant-numeric: tabular-nums; }
 .sl-bar-val i { font-style: normal; font-size: 11.5px; color: var(--muted); margin-left: 2px; }
 .sl-an-card .sl-bar-lab { flex-basis: 44px; }
@@ -517,7 +518,8 @@ body.show-ans .q-ana { display: block; }
 .sl-legend i { display: inline-block; width: 10px; height: 6px; border-radius: 2px; }
 .sl-legend i + i { margin-left: 6px; }
 .sl-legend i.ok { background: var(--green); }
-.sl-legend i.low { background: var(--gold); }
+.sl-legend i.mid { background: var(--gold); }
+.sl-legend i.low { background: var(--red); }
 
 .sl-bars-group + .sl-bars-group { margin-top: 16px; }
 .sl-bars-group h4 { margin: 0 0 6px; font-size: 13px; font-weight: 600; letter-spacing: .04em; color: var(--muted); }
