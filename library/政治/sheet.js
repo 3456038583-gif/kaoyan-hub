@@ -34,56 +34,32 @@
     }
   }
 
-  /* 侧栏拖宽：按住右缘分隔条拖动调整目录宽度，双击恢复默认；宽度记住 */
+  /* 侧栏折叠：默认显示，可隐藏，状态记在本地 */
   (function () {
     var layout = document.querySelector('.op-layout');
-    var rs = document.getElementById('opSideRs');
-    if (!layout || !rs) return;
-    var KEY = 'kaoyan-jieti-side-w.v1';
-    var MIN = 200, MAX = 520, DEF = 252;
-    var saved = parseInt(localStorage.getItem(KEY) || '', 10);
-    if (saved >= MIN && saved <= MAX) layout.style.setProperty('--op-side-w', saved + 'px');
-    function curW() {
-      var t = getComputedStyle(layout).gridTemplateColumns.split(/\s+/)[0];
-      return parseFloat(t) || DEF;
+    if (!layout) return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'nav-toggle';
+    document.body.appendChild(btn);
+    var K = 'kaoyan-jieti-nav.v1';
+    function apply(off, persist) {
+      layout.classList.toggle('nav-off', off);
+      btn.textContent = '☰ 目录';
+      btn.hidden = !off;
+      btn.setAttribute('aria-expanded', String(!off));
+      btn.title = off ? '显示左侧目录' : '隐藏左侧目录';
+      if (persist) { try { localStorage.setItem(K, off ? 'off' : 'on'); } catch (e) {} }
     }
-    var startX = 0, startW = 0, dragging = false;
-    rs.addEventListener('pointerdown', function (e) {
-      if (window.innerWidth <= 1080) return; /* 窄屏目录是折叠式的，不调宽 */
-      dragging = true; startX = e.clientX; startW = curW();
-      rs.setPointerCapture(e.pointerId);
-      document.body.classList.add('side-resizing');
-      e.preventDefault();
-    });
-    rs.addEventListener('pointermove', function (e) {
-      if (!dragging) return;
-      var w = Math.min(MAX, Math.max(MIN, Math.round(startW + e.clientX - startX)));
-      layout.style.setProperty('--op-side-w', w + 'px');
-    });
-    function stop() {
-      if (!dragging) return;
-      dragging = false;
-      document.body.classList.remove('side-resizing');
-      try { localStorage.setItem(KEY, String(curW())); } catch (e) {}
-    }
-    rs.addEventListener('pointerup', stop);
-    rs.addEventListener('pointercancel', stop);
-    rs.addEventListener('dblclick', function () {
-      layout.style.removeProperty('--op-side-w');
-      try { localStorage.removeItem(KEY); } catch (e) {}
-    });
+    var off = false;
+    try { off = localStorage.getItem(K) === 'off'; } catch (e) {}
+    apply(off, false);
+    btn.addEventListener('click', function () { apply(false, true); });
+    var hideBtn = document.querySelector('.op-side-hide');
+    if (hideBtn) hideBtn.addEventListener('click', function () { apply(true, true); });
   })();
 
-  var t = document.getElementById('ansToggle');
-  var grid = document.querySelector('.ans-grid');
-  if (t && grid) {
-    t.addEventListener('click', function () {
-      var hidden = grid.classList.toggle('ans-hidden');
-      t.textContent = hidden ? '显示答案' : '遮住答案';
-    });
-  }
-
-  /* 答题：单选点选项即判，多选选完点「对答案」，判定后展示答案与解析 */
+  /* 答题：单选/多选统一先选选项，点「提交」后判定并展开答案与解析 */
   (function () {
     var KEY = 'kaoyan-jieti-ans.v1';
     var cards = [].slice.call(document.querySelectorAll('.qcard[data-ans]'));
@@ -138,8 +114,9 @@
         q.classList.toggle('done-ok', right);
         q.classList.toggle('done-no', done && !right);
         if (sub) {
-          sub.hidden = !(multi && !done);
-          sub.textContent = sel.length ? '对答案（' + sel.length + '）' : '对答案';
+          sub.hidden = done;
+          sub.textContent = '提交';
+          sub.disabled = !sel.length;
         }
         if (redo) redo.hidden = !done;
       }
@@ -150,7 +127,8 @@
         res.innerHTML = '<p class="qline"><span class="qtag">正确答案</span><b class="qans">' + ans +
           '</b><span class="qtag">你的作答</span><b class="qans ' + (right ? 'qgood' : 'qbad') + '">' +
           (mine || '—') + '</b><span class="' + (right ? 'qgood' : 'qbad') + '">' +
-          (right ? '答对了' : '答错了') + '</span></p><div class="qexp"></div>';
+          (right ? '答对了' : '答错了') + '</span></p>'
+          + '<p class="qexp-h">解析</p><div class="qexp"></div>';
         var src = document.getElementById('a' + ('000' + no).slice(-3));
         var body = src && src.querySelector('.kbody');
         if (body) res.querySelector('.qexp').innerHTML = body.innerHTML;
@@ -174,11 +152,10 @@
           if (multi) {
             var i = sel.indexOf(k);
             if (i >= 0) sel.splice(i, 1); else sel.push(k);
-            paint();
           } else {
-            sel = [k];
-            commit();
+            sel = (sel[0] === k) ? [] : [k];
           }
+          paint();
         });
       });
       if (sub) sub.addEventListener('click', function () { if (!done && sel.length) commit(); });
@@ -220,7 +197,7 @@
         if (res) { res.hidden = true; res.innerHTML = ''; }
         if (redo) redo.hidden = true;
         var sub = q.querySelector('.qsub');
-        if (sub && q.dataset.type === 'multi') { sub.hidden = false; sub.textContent = '对答案'; }
+        if (sub) { sub.hidden = false; sub.textContent = '提交'; sub.disabled = true; }
       });
       stat();
     });
