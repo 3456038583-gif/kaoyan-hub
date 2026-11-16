@@ -6,9 +6,20 @@
 .op-page { background: var(--paper); }
 .op-page .sitebar { max-width: 1440px; padding-left: 20px; padding-right: 20px; }
 .op-wrap { max-width: 1440px; margin: 0 auto; padding: 0 20px 80px; }
-.op-layout { display: grid; grid-template-columns: 252px minmax(0, 1fr); gap: 26px; align-items: start; }
+.op-layout { display: grid; grid-template-columns: var(--op-side-w, 252px) minmax(0, 1fr); gap: 26px; align-items: start; }
 .op-main { min-width: 0; }
 .op-side { position: sticky; top: 14px; align-self: start; }
+/* 侧栏右缘分隔条：按住拖动可调宽目录列，双击恢复默认 */
+.op-side-rs {
+  position: absolute; top: 0; right: -20px; width: 14px; height: 100%; min-height: 90px;
+  cursor: col-resize; touch-action: none; z-index: 6;
+}
+.op-side-rs::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 3px;
+  transform: translateX(-50%); border-radius: 2px; background: transparent; transition: background .15s;
+}
+.op-side-rs:hover::after, body.side-resizing .op-side-rs::after { background: var(--accent, #3f6ba8); }
+body.side-resizing { cursor: col-resize; user-select: none; -webkit-user-select: none; }
 .op-side-in {
   max-height: calc(100vh - 28px); overflow: auto; overscroll-behavior: contain;
   background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px 10px 16px;
@@ -160,6 +171,7 @@ mark { padding: 0 1px; border-radius: 2px; color: inherit; }
 @media (max-width: 1080px) {
   .op-layout { grid-template-columns: 1fr; gap: 0; }
   .op-side { position: static; }
+  .op-side-rs { display: none; }
   .op-side-in { display: none; max-height: none; margin-top: 10px; }
   .op-side.open .op-side-in { display: block; }
   .op-side-btn {
@@ -183,7 +195,8 @@ mark { padding: 0 1px; border-radius: 2px; color: inherit; }
   line-height: 1.72; color: #1c211d; background: #fbfaf5; border: 1px solid #e4dfd1;
   border-radius: 9px; cursor: pointer; transition: border-color .14s, background .14s;
 }
-.opts .opt:hover:not(:disabled) { border-color: #b9c8bd; background: #fff; }
+/* hover 只对「未选中且未判定」的选项生效，否则光标停在已选项上会被盖掉、看起来像没选上 */
+.opts .opt:hover:not(:disabled):not(.sel):not(.tru):not(.err):not(.miss) { border-color: #b9c8bd; background: #fff; }
 .opts .opt .ok { font-family: var(--mono); font-size: 12px; font-weight: 600; color: #8b918a; }
 .opts .opt .ov { display: block; }
 .opts .opt.sel { border-color: #3f6ba8; background: #eef3fa; }

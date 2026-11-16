@@ -34,6 +34,46 @@
     }
   }
 
+  /* 侧栏拖宽：按住右缘分隔条拖动调整目录宽度，双击恢复默认；宽度记住 */
+  (function () {
+    var layout = document.querySelector('.op-layout');
+    var rs = document.getElementById('opSideRs');
+    if (!layout || !rs) return;
+    var KEY = 'kaoyan-jieti-side-w.v1';
+    var MIN = 200, MAX = 520, DEF = 252;
+    var saved = parseInt(localStorage.getItem(KEY) || '', 10);
+    if (saved >= MIN && saved <= MAX) layout.style.setProperty('--op-side-w', saved + 'px');
+    function curW() {
+      var t = getComputedStyle(layout).gridTemplateColumns.split(/\s+/)[0];
+      return parseFloat(t) || DEF;
+    }
+    var startX = 0, startW = 0, dragging = false;
+    rs.addEventListener('pointerdown', function (e) {
+      if (window.innerWidth <= 1080) return; /* 窄屏目录是折叠式的，不调宽 */
+      dragging = true; startX = e.clientX; startW = curW();
+      rs.setPointerCapture(e.pointerId);
+      document.body.classList.add('side-resizing');
+      e.preventDefault();
+    });
+    rs.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      var w = Math.min(MAX, Math.max(MIN, Math.round(startW + e.clientX - startX)));
+      layout.style.setProperty('--op-side-w', w + 'px');
+    });
+    function stop() {
+      if (!dragging) return;
+      dragging = false;
+      document.body.classList.remove('side-resizing');
+      try { localStorage.setItem(KEY, String(curW())); } catch (e) {}
+    }
+    rs.addEventListener('pointerup', stop);
+    rs.addEventListener('pointercancel', stop);
+    rs.addEventListener('dblclick', function () {
+      layout.style.removeProperty('--op-side-w');
+      try { localStorage.removeItem(KEY); } catch (e) {}
+    });
+  })();
+
   var t = document.getElementById('ansToggle');
   var grid = document.querySelector('.ans-grid');
   if (t && grid) {
