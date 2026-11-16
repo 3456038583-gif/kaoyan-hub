@@ -177,24 +177,24 @@ mark { padding: 0 1px; border-radius: 2px; color: inherit; }
 
 /* 答题（习题卡片） */
 .opts { display: grid; gap: 7px; margin: 12px 0 2px; }
-.opt {
+.opts .opt {
   display: grid; grid-template-columns: 1.4em minmax(0, 1fr); gap: 8px; align-items: baseline;
   margin: 0; padding: 8px 11px; text-align: left; font-family: var(--sans); font-size: inherit;
   line-height: 1.72; color: #1c211d; background: #fbfaf5; border: 1px solid #e4dfd1;
   border-radius: 9px; cursor: pointer; transition: border-color .14s, background .14s;
 }
-.opt:hover:not(:disabled) { border-color: #b9c8bd; background: #fff; }
-.opt .ok { font-family: var(--mono); font-size: 12px; font-weight: 600; color: #8b918a; }
-.opt .ov { display: block; }
-.opt.sel { border-color: #3f6ba8; background: #eef3fa; }
-.opt.sel .ok { color: #3f6ba8; }
-.opt.tru { border-color: #4b8f6c; background: #e9f4ed; }
-.opt.tru .ok { color: #2f6b46; }
-.opt.err { border-color: #bb5b4a; background: #faeceb; }
-.opt.err .ok { color: #a33a2c; }
-.opt.miss { border-color: #4b8f6c; border-style: dashed; background: #f6fbf8; }
-.opt.miss .ok { color: #2f6b46; }
-.opt:disabled { cursor: default; }
+.opts .opt:hover:not(:disabled) { border-color: #b9c8bd; background: #fff; }
+.opts .opt .ok { font-family: var(--mono); font-size: 12px; font-weight: 600; color: #8b918a; }
+.opts .opt .ov { display: block; }
+.opts .opt.sel { border-color: #3f6ba8; background: #eef3fa; }
+.opts .opt.sel .ok { color: #3f6ba8; }
+.opts .opt.tru { border-color: #4b8f6c; background: #e9f4ed; }
+.opts .opt.tru .ok { color: #2f6b46; }
+.opts .opt.err { border-color: #bb5b4a; background: #faeceb; }
+.opts .opt.err .ok { color: #a33a2c; }
+.opts .opt.miss { border-color: #4b8f6c; border-style: dashed; background: #f6fbf8; }
+.opts .opt.miss .ok { color: #2f6b46; }
+.opts .opt:disabled { cursor: default; }
 .qbtns { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
 .qbtns button {
   appearance: none; cursor: pointer; font-family: var(--sans); font-size: 12.5px;
