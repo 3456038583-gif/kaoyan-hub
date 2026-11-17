@@ -203,6 +203,7 @@
         if (sub) { sub.hidden = false; sub.textContent = '提交'; sub.disabled = true; }
       });
       stat();
+      window.dispatchEvent(new CustomEvent('quiz:reset'));
     });
 
     stat();

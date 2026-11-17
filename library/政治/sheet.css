@@ -191,14 +191,33 @@ mark { padding: 0 1px; border-radius: 2px; color: inherit; }
 .opts .opt:hover:not(:disabled) { border-color: #b9c8bd; background: #fff; }
 .opts .opt .ok { font-family: var(--mono); font-size: 13px; font-weight: 600; color: #8b918a; }
 .opts .opt .ov { display: block; }
-.opts .opt.sel { border-color: #3f6ba8; background: #eef3fa; }
-.opts .opt.sel .ok { color: #3f6ba8; }
+.opts .opt.sel,
+.opts .opt.sel:hover:not(:disabled) {
+  border-color: #3f6ba8; border-width: 2px; padding: 7px 10px;
+  background: #dfeafa; box-shadow: inset 0 0 0 1px #b9cdec;
+}
+.opts .opt.sel .ok { color: #2c5b96; }
+.opts .opt.sel .ov { font-weight: 500; color: #16324f; }
+.opts .opt.sel:hover:not(:disabled) { background: #d2e2f8; }
+.opts:not(.tf-opts) .opt.sel::after {
+  content: "已选"; grid-column: 2; justify-self: start; margin-top: 2px;
+  font-family: var(--sans); font-size: 11.5px; letter-spacing: .1em; color: #2c5b96;
+}
 .opts .opt.tru { border-color: #4b8f6c; background: #e9f4ed; }
 .opts .opt.tru .ok { color: #2f6b46; }
 .opts .opt.err { border-color: #bb5b4a; background: #faeceb; }
 .opts .opt.err .ok { color: #a33a2c; }
 .opts .opt.miss { border-color: #4b8f6c; border-style: dashed; background: #f6fbf8; }
 .opts .opt.miss .ok { color: #2f6b46; }
+.opts:not(.tf-opts) .opt.tru::after,
+.opts:not(.tf-opts) .opt.err::after,
+.opts:not(.tf-opts) .opt.miss::after {
+  grid-column: 2; justify-self: start; margin-top: 2px;
+  font-family: var(--sans); font-size: 11.5px; letter-spacing: .1em;
+}
+.opts:not(.tf-opts) .opt.tru::after { content: "正确"; color: #2f6b46; }
+.opts:not(.tf-opts) .opt.err::after { content: "你选的 · 错"; color: #a33a2c; }
+.opts:not(.tf-opts) .opt.miss::after { content: "漏选"; color: #2f6b46; }
 .opts .opt:disabled { cursor: default; }
 .qbtns { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
 .qbtns button {
