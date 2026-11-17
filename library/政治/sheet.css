@@ -142,8 +142,9 @@
 .qcard .kbody { border-top: 1px solid rgba(0, 0, 0, .04); }
 .acard .kbody { font-size: 13px; }
 
-/* 图标 */
-.ico { height: 1em; width: auto; vertical-align: -0.1em; }
+/* 图标（emoji / ✗✔）随正文字号等比放大：正文 span 由 PDF 尺寸 ×SIZE_K 内联放大，
+   .ln 基准字号仍是 15px，所以用 1.45em（含图片自身约 20% 留白）对齐放大后的正文，别再改回 1em */
+.ico { height: 1.45em; width: auto; vertical-align: -0.2em; }
 .big-fig { display: block; width: 100%; max-width: 100%; height: auto; margin: 6px 0 10px; }
 mark { padding: 0 1px; border-radius: 2px; color: inherit; }
 
