@@ -39,8 +39,12 @@
 .part-banner .pb-d { font-family: var(--sans); font-size: 14px; color: #6f766d; }
 #part-2 .part-banner { background: #f3f6fb; border-color: #dde4f0; }
 #part-2 .part-banner .pb-t { color: #2c3f5c; }
-#part-1 .card-grid { margin-bottom: 16px; }
-#part-1 .card-grid.solo { grid-template-columns: 1fr; }
+#part-1 .card-grid { margin-bottom: 16px; grid-template-columns: 1fr; }
+@media (min-width: 1120px) {
+  #part-1 .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #part-1 .card-grid > .kcard:only-child,
+  #part-1 .card-grid > .kcard:last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
 #part-1 .kcard { box-shadow: 0 1px 0 rgba(0, 0, 0, .02); }
 @media (max-width: 620px) {
   .part-banner { padding: 13px 15px; gap: 6px 10px; }
