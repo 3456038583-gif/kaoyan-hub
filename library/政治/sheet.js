@@ -61,7 +61,8 @@
 
   /* 答题：单选/多选统一先选选项，点「提交」后判定并展开答案与解析 */
   (function () {
-    var KEY = 'kaoyan-jieti-ans.v1';
+    var KEY = 'kaoyan-jieti-ans.v1' + (document.body.classList.contains('tf-page') ? ':tf' : '');
+    var LAB = { T: '正确', F: '错误' };
     var cards = [].slice.call(document.querySelectorAll('.qcard[data-ans]'));
     if (!cards.length) return;
     var store = {};
@@ -121,12 +122,14 @@
         if (redo) redo.hidden = !done;
       }
 
+      function fmt(a) { return a ? a.split('').map(function (c) { return LAB[c] || c; }).join('') : '—'; }
+
       function reveal() {
         var mine = sel.slice().sort().join('');
         var right = same(mine, ans);
-        res.innerHTML = '<p class="qline"><span class="qtag">正确答案</span><b class="qans">' + ans +
+        res.innerHTML = '<p class="qline"><span class="qtag">正确答案</span><b class="qans">' + fmt(ans) +
           '</b><span class="qtag">你的作答</span><b class="qans ' + (right ? 'qgood' : 'qbad') + '">' +
-          (mine || '—') + '</b><span class="' + (right ? 'qgood' : 'qbad') + '">' +
+          fmt(mine) + '</b><span class="' + (right ? 'qgood' : 'qbad') + '">' +
           (right ? '答对了' : '答错了') + '</span></p>'
           + '<p class="qexp-h">解析</p><div class="qexp"></div>';
         var src = document.getElementById('a' + ('000' + no).slice(-3));

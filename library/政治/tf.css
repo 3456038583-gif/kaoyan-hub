@@ -1,0 +1,20 @@
+@import url("sheet.css");
+
+/* 判断对错练习：叠在解题手册的卡片流上 */
+.tf-say { font-size: 19px; letter-spacing: .01em; }
+.tf-say span { line-height: 1.72; }
+.qexp { font-size: 18px; line-height: 1.78; }
+.opts.tf-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0 2px; }
+.tf-opts .opt {
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  padding: 11px 8px; font-size: 17px; font-family: var(--sans);
+}
+.tf-opts .opt .ok { font-family: var(--mono); font-size: 15px; color: #8b918a; }
+.tf-opts .opt.sel .ok { color: #3f6ba8; }
+.tf-opts .opt.tru .ok { color: #2f6b46; }
+.tf-opts .opt.err .ok { color: #a33a2c; }
+.tf-opts .opt.miss .ok { color: #2f6b46; }
+.ktag.t-book { color: #9a958a; border-style: dashed; }
+.tf-stat { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 4px; }
+.tf-stat b { font-family: var(--mono); font-size: 15px; }
+.tf-stat i { font-style: normal; font-size: 12px; color: var(--muted); }
