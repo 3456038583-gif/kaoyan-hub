@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>数据备份 · 考研资料总库</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="导出本机保存的全部学习记录，换设备后导回来接着用。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="export.css?v=20261119a">
+<script src="/countdown.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <a class="brand" href="/">考研资料总库</a>
+    <nav aria-label="站内导航">
+      <a href="/math/">数学真题</a>
+      <a href="/exam/">英语真题</a>
+      <a href="/politics/">政治真题</a>
+      <a href="/english/">英语速查</a>
+      <a href="/library/">知识库</a>
+      <a class="on" href="/export/" aria-current="page">数据备份</a>
+    </nav>
+  </header>
+
+  <header class="masthead">
+    <div class="seal" aria-hidden="true">备</div>
+    <div>
+      <p class="kicker">Backup &amp; Restore</p>
+      <h1>数据备份</h1>
+      <p class="sub">把本机记下的做题记录、分数、错题、自测进度导成一份文件，换设备时导回去接着用。</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="board" aria-labelledby="boardTitle">
+      <h2 class="sr-only" id="boardTitle">全站备份</h2>
+
+      <div class="board-stats">
+        <div class="bs"><span>板块</span><b id="stSec">—</b></div>
+        <div class="bs"><span>记录</span><b id="stRec">—</b></div>
+        <div class="bs"><span>占用</span><b id="stSize">—</b></div>
+        <div class="bs"><span>最近更新</span><b id="stLast">—</b></div>
+      </div>
+
+      <div class="board-actions">
+        <button type="button" class="act act-primary" id="btnAll">
+          <span class="act-t">导出全站数据</span>
+          <span class="act-d">单个 JSON · 含全部板块 · 可完整恢复</span>
+        </button>
+        <button type="button" class="act" id="btnCsv">
+          <span class="act-t">导出全站 CSV</span>
+          <span class="act-d">一张总表 · Excel 直接打开</span>
+        </button>
+        <button type="button" class="act act-ghost" id="btnImport">
+          <span class="act-t">从备份恢复</span>
+          <span class="act-d">选择之前导出的 JSON 文件</span>
+        </button>
+      </div>
+
+      <div class="board-foot">
+        <label class="chk">
+          <input type="checkbox" id="optPref">
+          <span>同时导出界面偏好（面板折叠、上次浏览位置）</span>
+        </label>
+        <p class="board-hint" id="boardHint">数据只存在这台设备的浏览器里，导出之前不会上传到任何地方。</p>
+      </div>
+
+      <input type="file" id="fileIn" accept=".json,application/json" hidden>
+    </section>
+
+    <div class="section-head">
+      <h2>按板块导出</h2>
+      <span class="sh-note">每块可单独备份，文件更小，恢复时也只影响这一块</span>
+    </div>
+
+    <div class="sec-list" id="secList"></div>
+
+    <section class="notes">
+      <h2>说明</h2>
+      <ul>
+        <li><b>换设备怎么用</b>：在旧设备点「导出全站数据」得到一份 JSON，把文件传到新设备，在新设备打开本页点「从备份恢复」，选中这个文件即可。</li>
+        <li><b>恢复是合并的</b>：默认只补本机缺的记录，不会覆盖已有的。想让文件完全取代本机数据，在恢复时勾选「覆盖同名数据」。</li>
+        <li><b>CSV 只用来查看</b>：总表方便丢进 Excel 排分数、画曲线，但不含完整结构，不能用来恢复。</li>
+        <li><b>不含界面偏好</b>：折叠状态、上次看到哪一年这类设置默认不导出，勾选上面的选项可以一并带上。</li>
+        <li><b>换了浏览器或清了缓存</b>：浏览器把数据存在本机，清缓存会一并清掉，建议隔一段时间备份一次。</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <span>备份文件只在本机生成，不会上传。</span>
+    <span class="fl">
+      <a href="/">返回总库</a>
+      <a href="https://github.com/3456038583-gif/kaoyan-hub">GitHub 仓库</a>
+    </span>
+  </footer>
+
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="export.js?v=20261119a" defer></script>
+</body>
+</html>
