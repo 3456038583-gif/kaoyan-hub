@@ -188,17 +188,24 @@
     <nav class="sec-nav" id="secNav">${navItems}</nav>
     <div class="paper-body">${P.sections.map(renderSection).join('')}</div>
     <div class="scorebar psfloat" id="scorebar">
-      <div class="psf-top">
-        <span>客观题</span><b id="scScore">0</b><i>/ <span id="scFull">${fmt(objFull)}</span> 分</i>
+      <div class="psf-head">
+        <div class="psf-top">
+          <span>客观题</span><b id="scScore">0</b><i>/ <span id="scFull">${fmt(objFull)}</span> 分</i>
+        </div>
+        <button class="psf-fold" id="psfFold" type="button" aria-expanded="true" aria-controls="psfBody" title="收起卡片">
+          <span class="psf-fold-t">收起</span><i class="psf-chev" aria-hidden="true">⌄</i>
+        </button>
       </div>
-      <div class="psf-lines" id="psfLines"></div>
-      <div class="psf-done">
-        <span>已完成</span><b id="scDone">0</b><i>/ <span id="scAll">0</span> 题</i>
-        <em class="psf-tick" id="psfTick" hidden>✓</em>
+      <div class="psf-body" id="psfBody">
+        <div class="psf-lines" id="psfLines"></div>
+        <div class="psf-done">
+          <span>已完成</span><b id="scDone">0</b><i>/ <span id="scAll">0</span> 题</i>
+          <em class="psf-tick" id="psfTick" hidden>✓</em>
+        </div>
+        <div class="psf-miss" id="psfMiss"></div>
+        <div class="psf-bar"><i id="psfBar"></i></div>
+        <span id="scPct" class="sb-pct"></span>
       </div>
-      <div class="psf-miss" id="psfMiss"></div>
-      <div class="psf-bar"><i id="psfBar"></i></div>
-      <span id="scPct" class="sb-pct"></span>
     </div>
     <div class="stat-mask" id="statMask" hidden>
       <div class="stat-panel" role="dialog" aria-modal="true" aria-label="本卷统计">
@@ -210,6 +217,33 @@
       </div>
     </div>
   `;
+
+  /* 右下角卡片：可收起，状态记在本机（换页、换年份都保持） */
+  const FOLD_KEY = 'kaoyanPolitics.float.min.v1';
+  const psfCard = $('#scorebar'), psfFold = $('#psfFold');
+  function setFold(min, remember) {
+    if (!psfCard || !psfFold) return;
+    psfCard.classList.toggle('min', min);
+    document.body.classList.toggle('score-min', min);
+    psfFold.setAttribute('aria-expanded', String(!min));
+    psfFold.title = min ? '展开卡片' : '收起卡片';
+    const lab = $('.psf-fold-t', psfFold);
+    if (lab) lab.textContent = min ? '展开' : '收起';
+    if (remember) { try { localStorage.setItem(FOLD_KEY, min ? '1' : '0'); } catch (e) {} }
+  }
+  if (psfCard && psfFold) {
+    let folded = false;
+    try { folded = localStorage.getItem(FOLD_KEY) === '1'; } catch (e) {}
+    setFold(folded, false);
+    psfFold.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setFold(!psfCard.classList.contains('min'), true);
+    });
+    /* 收起后整块都能点开，不用专门瞄准按钮 */
+    psfCard.addEventListener('click', (e) => {
+      if (psfCard.classList.contains('min') && !e.target.closest('a')) setFold(false, true);
+    });
+  }
 
   const btnAns = $('#btnAns'), btnClear = $('#btnClear');
   const psToggle = $('#psToggle'), psMenu = $('#psMenu');

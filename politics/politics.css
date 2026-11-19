@@ -171,6 +171,35 @@ body.show-score .scorebar.psfloat {
 body.show-score .scorebar.psfloat { display: flex; }
 .scorebar.psfloat.has-score { border-color: var(--accent); }
 
+/* 卡片抬头：分数 + 收起按钮 */
+.psf-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.psf-fold {
+  display: inline-flex; align-items: center; gap: 3px;
+  margin: -2px -3px 0 0; padding: 2px 5px;
+  border: 0; border-radius: 5px; background: transparent;
+  font-family: var(--sans); font-size: 11px; line-height: 1.5;
+  color: var(--muted); cursor: pointer;
+  transition: color .15s, background .15s;
+}
+.psf-fold:hover { color: var(--accent); background: rgba(20, 30, 25, .055); }
+.psf-fold:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.psf-chev { font-style: normal; font-size: 10px; line-height: 1; transition: transform .2s ease; }
+.psf-body { display: flex; flex-direction: column; align-items: stretch; gap: 5px; }
+
+/* 收起态：缩成一颗只报分数的小胶囊 */
+.scorebar.psfloat.min {
+  min-width: 0;
+  padding: 7px 11px 6px 13px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.scorebar.psfloat.min .psf-body { display: none; }
+.scorebar.psfloat.min .psf-head { align-items: center; }
+.scorebar.psfloat.min .psf-chev { transform: rotate(180deg); }
+.scorebar.psfloat.min .psf-top > b { font-size: 20px; }
+.scorebar.psfloat.min:hover { border-color: var(--accent); }
+.scorebar.psfloat.min:active { transform: translateY(1px); }
+
 .psf-top { display: flex; align-items: baseline; gap: 5px; }
 .psf-top > span { font-family: var(--sans); font-size: 11px; letter-spacing: .06em; color: var(--muted); }
 .psf-top > b { font-family: var(--mono); font-size: 26px; line-height: 1.15; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -233,6 +262,8 @@ body.show-score .scorebar.psfloat { display: flex; }
   .psf-miss { font-size: 10px; }
   .psf-miss a { font-size: 10px; min-width: 17px; }
   body.show-score .sec:last-child { padding-bottom: 126px; }
+  /* 卡片收起后，底部不必再留那么高，避免一整条空白 */
+  body.score-min.show-score .sec:last-child { padding-bottom: 58px; }
 }
 
 @media (max-width: 720px) {
