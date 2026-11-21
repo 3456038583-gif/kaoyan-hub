@@ -101,6 +101,51 @@
     $('#scorebar').classList.toggle('has-score', st.score > 0);
   }
 
+  /* ---------- 单题复制：转成纯文本，方便贴进笔记或丢给 AI ---------- */
+  const KIND_TAG = { single: '单选', multi: '多选', essay: '分析题' };
+  function qCopy(q, kind, withAns) {
+    const head = `${P.title} · 第 ${q.n} 题${KIND_TAG[kind] ? `（${KIND_TAG[kind]}）` : ''}`;
+    const out = [head, ''];
+    if (kind === 'essay') {
+      (q.paras || [q.stem || '']).forEach((p) => out.push(p));
+      if (withAns && (q.ans || []).length) {
+        out.push('', '【参考答案】');
+        (q.ans || []).forEach((p) => out.push(p));
+      }
+    } else {
+      if (q.stem) out.push(q.stem, '');
+      (q.options || []).forEach((t, i) => out.push(`ABCDEFGH`[i] + '. ' + t));
+      if (withAns && q.answer) {
+        out.push('', `【答案】${q.answer}`);
+        if (q.ana) out.push(`【解析】${q.ana}`);
+      }
+    }
+    return out.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n';
+  }
+
+  async function copyText(text) {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch (e) { /* 权限被拒时走下面的兜底 */ }
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, ta.value.length);
+      const ok = document.execCommand('copy');
+      ta.remove();
+      return ok;
+    } catch (e) {
+      return false;
+    }
+  }
+
   /* ---------- 渲染 ---------- */
   function qHtml(q, kind) {
     const showAns = !!q.answer;
@@ -114,7 +159,7 @@
         <span class="q-num">${q.n}</span>
         ${multi ? '<span class="q-tag">多选</span>' : ''}
         ${showAns ? `<span class="q-ansval">答案 <b>${esc(q.answer)}</b></span>` : ''}
-        <span class="q-tools">${showAns ? `<button class="q-ans" type="button" data-n="${q.n}">答案</button>` : ''}</span>
+        <span class="q-tools">${showAns ? `<button class="q-ans" type="button" data-n="${q.n}">答案</button>` : ''}<button class="q-copy" type="button" data-copy="${q.n}" title="复制本题（已显示答案时一并复制）">复制</button></span>
       </div>
       ${q.stem ? `<p class="q-stem">${esc(q.stem)}</p>` : ''}
       <div class="opts">${opts}</div>
@@ -134,7 +179,7 @@
       ? `<details class="essay-ans"><summary>参考答案</summary><div class="ea-body">${ans}</div></details>`
       : '';
     return `<div class="q q-essay" id="q-${q.n}" data-n="${q.n}">
-      <div class="q-top"><span class="q-num">${q.n}</span><span class="q-tag">分析题 · 10 分</span></div>
+      <div class="q-top"><span class="q-num">${q.n}</span><span class="q-tag">分析题 · 10 分</span><span class="q-tools"><button class="q-copy" type="button" data-copy="${q.n}" title="复制本题（参考答案展开时一并复制）">复制</button></span></div>
       <div class="essay-body">${paras}</div>
       ${ansHtml}
     </div>`;
@@ -391,6 +436,31 @@
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') statMask.hidden = true; });
 
   root.addEventListener('click', (e) => {
+    const copyBtn = e.target.closest('.q-copy');
+    if (copyBtn) {
+      e.preventDefault();
+      const el = copyBtn.closest('.q');
+      const n = copyBtn.dataset.copy;
+      const q = allQ.find((x) => String(x.n) === String(n));
+      if (!q) return;
+      const kind = (qMeta[n] && qMeta[n].kind) || 'essay';
+      /* 答案按当前可见状态决定带不带：收起时复制的是干净题面，方便自测 */
+      const withAns = kind === 'essay'
+        ? !!$('details.essay-ans[open]', el)
+        : (el.classList.contains('revealed') || document.body.classList.contains('show-ans') || !!submitted[n]);
+      copyBtn.disabled = true;
+      copyText(qCopy(q, kind, withAns)).then((ok) => {
+        copyBtn.disabled = false;
+        copyBtn.textContent = ok ? '已复制 ✓' : '复制失败';
+        copyBtn.classList.toggle('ok', ok);
+        clearTimeout(copyBtn._t);
+        copyBtn._t = setTimeout(() => {
+          copyBtn.textContent = '复制';
+          copyBtn.classList.remove('ok');
+        }, 1800);
+      });
+      return;
+    }
     const ansBtn = e.target.closest('.q-ans');
     if (ansBtn) {
       ansBtn.closest('.q').classList.toggle('revealed');
