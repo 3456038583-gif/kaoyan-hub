@@ -2,6 +2,19 @@
 (function () {
   const P = window.__PPAPER__;
   if (!P) return;
+  /* 解析补丁：来自《历年真题详解》解析包，单独存 data/ana-YYYY.js
+     （生成脚本重写 data/YYYY.js 时不会丢），这里只补空缺，不覆盖已有内容 */
+  (function mergeAna() {
+    const dict = (window.__PANA__ || {})[String(P.year)] || {};
+    (P.sections || []).forEach((s) => (s.questions || []).forEach((q) => {
+      const e = dict[q.n];
+      if (!e) return;
+      if (e.ana && !q.ana) q.ana = e.ana;
+      /* 分析题：站内原有的参考答案是残缺片段（从句子中间起头），
+         解析包里是完整版，直接采用；包内没有时才保留站内原样 */
+      if (e.ans && e.ans.length) q.ans = e.ans;
+    }));
+  })();
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => [...(r || document).querySelectorAll(s)];
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));

@@ -308,6 +308,7 @@ body.show-score .scorebar.psfloat { display: flex; }
   line-height: 1.9;
   color: var(--ink);
   text-align: justify;
+  white-space: pre-line;   /* 解析正文按段落存了 \n\n，保留分段 */
 }
 .q-ana > b {
   display: block;
