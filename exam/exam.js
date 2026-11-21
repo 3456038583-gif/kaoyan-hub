@@ -159,13 +159,125 @@
     </div>`;
   }
 
+  /* ---------- 复制原文与选项 ----------
+     纯文本落盘，粘到微信、笔记或 AI 里都是干净的自然段落：
+     正文在前、题目在后，选项按 A B C D 起行，不带答案。 */
+  const plainEn = (t) =>
+    String(t || '')
+      .replace(/\{\{(\d+)\}\}|\[\[\s*(\d+)\s*\]\]/g, (_, a, b) => '__' + (a || b) + '__')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  function plainQuestions(qs, kind) {
+    const blocks = (qs || [])
+      .map((q) => {
+        const opts = q.options || [];
+        /* 选项本身就是字母（新题型 A–G）时不重复文本，正文/选项库里已有 */
+        const letterOpts = opts.length > 2 && opts.every((o) => /^[A-H]$/.test(o));
+        const isTF = opts.length === 2 && /^[TF]$/.test(q.answer || '');
+        const labels = q.labels || (letterOpts ? opts : isTF ? ['T', 'F'] : 'ABCD');
+        const texts = letterOpts ? opts.map(() => '') : isTF ? ['True', 'False'] : opts;
+        /* 英语二的翻译是整段译，没有题干，空着「____」看不出在问什么 */
+        const head = q.stem
+          ? `${q.n}. ${q.stem}`
+          : kind === 'translation'
+            ? `${q.n}. 将上文整段译成中文`
+            : `${q.n}. ____`;
+        const lines = texts.map((t, i) => (t ? `${labels[i]}. ${t}` : '')).filter(Boolean);
+        /* 只有题干、没有选项的题（人物匹配的人名）紧凑排，免得一屏只放得下几行 */
+        return { t: [head].concat(lines).join('\n'), tight: !lines.length };
+      });
+    return blocks.reduce((all, b, i) => {
+      if (!i) return b.t;
+      return all + (b.tight && blocks[i - 1].tight ? '\n' : '\n\n') + b.t;
+    }, '');
+  }
+
+  /* 题目只有字母、文本在选项库里时，标题行要说清楚「从哪些字母里选」 */
+  function qBlock(head, qs, kind) {
+    if (!qs || !qs.length) return [];
+    const allLetter = qs.every(
+      (q) => (q.options || []).length > 2 && (q.options || []).every((o) => /^[A-H]$/.test(o))
+    );
+    const keys = allLetter ? (qs[0].options || []).join(' / ') : '';
+    return [allLetter ? `【题目】为每题从 ${keys} 中选一个` : head, plainQuestions(qs, kind), ''];
+  }
+
+  function copyPayload(s) {
+    const out = [];
+    const title = [P.title, s.title].filter(Boolean).join(' · ');
+    if (title) out.push(title, '');
+
+    /* 段落排序题：正文段落本身是选项，先给段落库，再给试卷上的排列顺序 */
+    if (/排序/.test(s.title || '') && (s.items || []).length) {
+      out.push('【段落】');
+      s.items.forEach((it) => out.push(`${it.key}. ${String(it.text || '').replace(/\s+/g, ' ').trim()}`));
+      out.push('');
+      const seq = (s.paras || [])
+        .map((p) => {
+          const raw = String(p.en || '').trim();
+          const slot = /^\{\{(\d+)\}\}$/.exec(raw);
+          if (slot) return `(${slot[1]})`;
+          const k = raw.match(/^\[([A-H])\]/);
+          return k ? k[1] : '';
+        })
+        .filter(Boolean);
+      if (seq.length) {
+        out.push('【试卷顺序】', seq.join(' → '), '');
+      }
+      out.push(...qBlock('【题目】', s.questions, s.kind));
+      return out.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n';
+    }
+
+    const body = (s.paras || []).map((p) => plainEn(p.en)).filter(Boolean).join('\n\n');
+    if (body) out.push(body, '');
+
+    /* 选项库（七选五、小标题、匹配）：段落正文里只有空位，选项单独列在尾部 */
+    if ((s.items || []).length) {
+      out.push('【选项】');
+      s.items.forEach((it) => out.push(`${it.key}. ${String(it.text || '').replace(/\s+/g, ' ').trim()}`));
+      out.push('');
+    }
+
+    out.push(...qBlock('【题目】', s.questions, s.kind));
+    return out.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n';
+  }
+
+  async function copyText(text) {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch (e) { /* 权限被拒时走下面的兜底 */ }
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, ta.value.length);
+      const ok = document.execCommand('copy');
+      ta.remove();
+      return ok;
+    } catch (e) {
+      return false;
+    }
+  }
+
   function secHead(s) {
     // 翻译板块本身就有逐句参考译文，不再重复挂「全文译文」
     const hasZh = s.kind !== 'translation' && (s.paras || []).some((p) => p && p.zh);
+    // 有正文或有选项库的板块才给复制入口；写作只有题目要求，没得复制
+    const canCopy = (s.paras || []).length > 0 || (s.items || []).length > 0;
     return `<div class="sec-head">
       <span class="lbl">${esc(s.label || '')}</span>
       <h2>${esc(s.title)}</h2>
-      ${hasZh ? '<button class="sec-btn sec-tr" type="button" data-tr="1" aria-expanded="false">全文译文</button>' : ''}
+      ${hasZh || canCopy ? `<span class="sec-acts">
+        ${hasZh ? '<button class="sec-btn sec-tr" type="button" data-tr="1" aria-expanded="false">全文译文</button>' : ''}
+        ${canCopy ? `<button class="sec-btn sec-copy" type="button" data-copy="${esc(s.id)}" title="复制本篇的原文与全部选项（不含答案）">复制本篇</button>` : ''}
+      </span>` : ''}
       ${s.points ? `<span class="pts">${s.points} 分</span>` : ''}
     </div>
     ${s.topic ? `<p class="sec-topic"><b>主题</b>${esc(s.topic)}</p>` : ''}`;
@@ -611,6 +723,22 @@
       bodyEl.hidden = !open;
       modelBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
       modelBtn.classList.toggle('on', open);
+      return;
+    }
+    const copyBtn = e.target.closest('[data-copy]');
+    if (copyBtn) {
+      const sec = P.sections.find((x) => String(x.id) === copyBtn.dataset.copy);
+      if (!sec) return;
+      const label = copyBtn.textContent;
+      copyText(copyPayload(sec)).then((ok) => {
+        copyBtn.textContent = ok ? '已复制 ✓' : '复制失败';
+        copyBtn.classList.toggle('on', ok);
+        clearTimeout(copyBtn._t);
+        copyBtn._t = setTimeout(() => {
+          copyBtn.textContent = label;
+          copyBtn.classList.remove('on');
+        }, 1800);
+      });
       return;
     }
     const trBtn = e.target.closest('[data-tr]');

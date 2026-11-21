@@ -526,6 +526,9 @@ body.show-score .scorebar { display: flex; }
 .sec-btn:disabled { cursor: default; opacity: .55; }
 .sec-btn:disabled:hover { color: var(--muted); border-color: var(--line); }
 
+/* 板块标题右侧的按钮组：桌面端与标题同排，窄屏时整组换到下一行 */
+.sec-head .sec-acts { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
 /* 「提交本部分」：紧贴板块标题下方，与政治真题的提交按钮同款（小巧、醒目） */
 .sec-submit {
   appearance: none; cursor: pointer; margin: -6px 0 14px;
@@ -1043,4 +1046,13 @@ body.show-score .scorebar { display: flex; }
 @media (max-width: 720px) {
   body.show-score .sec:last-child { padding-bottom: 62px; }
   body.show-score .scorebar { right: 10px; bottom: 10px; padding: 8px 11px; font-size: 11.5px; }
+}
+
+@media (max-width: 720px) {
+  /* 手机屏上标题（如「阅读 · Text 1 · 驴的驯化史」）几乎占满一行，
+     按钮若跟着挤在标题右边会把一行撑成三行，这里让标题独占、按钮整组下移 */
+  .sec-head h2 { flex: 1 0 100%; order: 2; }
+  .sec-head .lbl { order: 1; }
+  .sec-head .sec-acts { order: 3; }
+  .sec-head .pts { order: 4; }
 }
