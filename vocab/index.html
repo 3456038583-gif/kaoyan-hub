@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>考研英语词汇 · 2027 红宝书 · 考研资料总库</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="2027 考研英语红宝书全部词汇：必考词、基础词、超纲词共 6529 词，逐词标注音标、真题词频、牛津释义、词根词缀与真题例句，支持中英文全文搜索与卡片背诵。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/vocab/vocab.css?v=20261122a">
+<script src="/countdown.js" defer></script>
+</head>
+<body class="vocab-page">
+<nav class="sitebar" aria-label="站点导航">
+  <a class="sb-brand" href="/">考研资料总库</a>
+  <div class="sb-links">
+    <a href="/math/">数学真题</a>
+    <a href="/exam/">英语真题</a>
+    <a href="/politics/">政治真题</a>
+    <a href="/english/">英语速查</a>
+    <a href="/vocab/" class="on">英语词汇</a>
+    <a href="/library/">知识库</a>
+    <a href="/export/">数据备份</a>
+  </div>
+</nav>
+
+<div class="vwrap">
+
+  <header class="vhead">
+    <p class="kick">RED BOOK 2027 · VOCABULARY</p>
+    <h1>考研英语词汇</h1>
+    <p class="vsub">2027 红宝书（必考词 + 基础词 + 超纲词）全文录入：音标、真题词频、牛津释义、词根词缀、真题例句，每条例句标注年份与出处。</p>
+    <div class="vstats" id="vstats"></div>
+  </header>
+
+  <div class="vtool">
+    <div class="vsearch">
+      <svg class="vs-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m15.6 15.6 4.9 4.9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="搜单词 / 中文释义 / 单元，如 abandon、放弃、Unit 12" aria-label="搜索单词">
+      <kbd class="vkbd">/</kbd>
+      <button class="vclear" id="qclear" type="button" aria-label="清空" hidden>×</button>
+    </div>
+    <div class="vmode">
+      <button class="vbtn primary" id="studyBtn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15.5H6.5A2.5 2.5 0 0 0 4 21z" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+        背单词
+      </button>
+      <button class="vbtn" id="deepBtn" type="button" aria-pressed="false" title="连例句原文一起搜（首次需载入词库，约几秒）">深搜例句</button>
+    </div>
+  </div>
+
+  <div class="vfilters">
+    <div class="vrow" id="groupRow" role="group" aria-label="分册"></div>
+    <div class="vrow" id="letterRow" role="group" aria-label="首字母"></div>
+    <div class="vrow">
+      <select id="unitSel" aria-label="单元"><option value="">全部单元</option></select>
+      <select id="freqSel" aria-label="词频">
+        <option value="">全部词频</option>
+        <option value="hit">真题出现过</option>
+        <option value="hot">高频（≥3★）</option>
+        <option value="zero">暂未考过</option>
+      </select>
+      <select id="sortSel" aria-label="排序">
+        <option value="book">按书中顺序</option>
+        <option value="freq">按真题词频</option>
+        <option value="az">按字母 A→Z</option>
+      </select>
+      <span class="vcount" id="vcount"></span>
+    </div>
+  </div>
+
+  <div class="vbody">
+    <section class="vlist" id="list" aria-label="单词列表" aria-live="polite"></section>
+    <aside class="vdetail" id="detail" aria-label="词条详情">
+      <div class="vempty">
+        <p class="ve-t">选一个词</p>
+        <p class="ve-s">点左侧任意词，或直接在上方搜索。按 <kbd>/</kbd> 随时聚焦搜索框。</p>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="vfoot">
+    <span>词汇内容来自《2027 考研英语红宝书 · 真题例句版》，释义经牛津 / 剑桥核对；真题例句均标注年份与出处。</span>
+    <span class="vfl">
+      <a href="/">返回总库</a>
+      <a href="javascript:void(0)" id="aboutBtn">词汇表说明</a>
+      <a href="/export/">数据备份</a>
+    </span>
+  </footer>
+</div>
+
+<div class="vsheet-mask" id="mask" hidden></div>
+
+<!-- 背单词 -->
+<section class="vstudy" id="study" hidden aria-label="背单词">
+  <header class="vs-head">
+    <span class="vs-prog" id="vsProg">0 / 0</span>
+    <span class="vs-scope" id="vsScope"></span>
+    <button class="vs-close" id="vsClose" type="button" aria-label="退出背单词">×</button>
+  </header>
+  <div class="vs-bar"><i id="vsBar"></i></div>
+  <div class="vs-card" id="vsCard"></div>
+  <div class="vs-acts" id="vsActs">
+    <button class="vbtn ghost" id="vsAgain" type="button">不认识 <small>1</small></button>
+    <button class="vbtn" id="vsReveal" type="button">显示释义 <small>空格</small></button>
+    <button class="vbtn primary" id="vsKnow" type="button">认识 <small>2</small></button>
+  </div>
+</section>
+
+<dialog class="vabout" id="aboutDlg">
+  <form method="dialog"><button class="va-x" aria-label="关闭">×</button></form>
+  <h2>词汇表说明</h2>
+  <div class="va-body" id="aboutBody"></div>
+</dialog>
+
+<audio id="vaudio" preload="none" hidden></audio>
+
+<script src="/vocab/data/index.js?v=20261122a"></script>
+<script src="/vocab/vocab.js?v=20261122a"></script>
+</body>
+</html>

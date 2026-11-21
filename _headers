@@ -25,3 +25,11 @@
 
 /library/search.json
   Cache-Control: no-cache
+
+# 单词发音：文件名由单词派生、内容不会变，可长期缓存
+/vocab/audio/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# 词库分片：文件名固定，靠 ?v= 版本号更新，放宽到一天
+/vocab/data/*
+  Cache-Control: public, max-age=86400
