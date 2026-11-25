@@ -1,0 +1,339 @@
+/* 板块外壳：二级吸顶条（板块标签在年份之上，与数学真题一致）
+   英语真题 / 英语速查 / 政治真题 共用这一份，改这里三处同时生效。
+   配色靠 <html data-view="…"> 切换：y1 蓝、y2 绿、pol 青；速查用 data-set="r1/r2"。 */
+
+/* ---------- 各板块的主题色 ---------- */
+html[data-view="y1"] { --accent: #2f5d8a; --accent-soft: #e6edf4; --accent-ink: #fff; }
+html[data-view="y2"] { --accent: #2e6b52; --accent-soft: #e3efe8; --accent-ink: #fff; }
+html[data-view="pol"] { --accent: #2f6f6a; --accent-soft: #e2efec; --accent-ink: #fff; }
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"])[data-view="y1"] { --accent: #8fb4d6; --accent-soft: #22303b; --accent-ink: #0b1319; }
+  html:not([data-theme="light"])[data-view="y2"] { --accent: #6fbb97; --accent-soft: #16281f; --accent-ink: #0b1319; }
+  html:not([data-theme="light"])[data-view="pol"] { --accent: #74c0b8; --accent-soft: #182a28; --accent-ink: #0b1319; }
+}
+
+/* ---------- 吸顶条 ---------- */
+.pbar {
+  position: sticky;
+  top: var(--sb-h, 48px);
+  z-index: 40;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  padding-inline: max(16px, env(safe-area-inset-left, 0px));
+}
+.pbar-in { max-width: var(--max, 1200px); margin-inline: auto; }
+@media (max-width: 720px) {
+  .pbar { padding-inline: 15px; }
+}
+
+/* ---------- 板块标签行 ---------- */
+.pmods {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-block: 10px 8px;
+}
+.pmods::-webkit-scrollbar { display: none; }
+.pmodgroup { display: flex; align-items: center; gap: 4px; }
+/* 工具区靠右，用细线隔开，避免被当成「板块」本身 */
+.pmodgroup--tools { margin-left: auto; }
+.pmodgroup--tools::before {
+  content: "";
+  width: 1px;
+  height: 18px;
+  margin: 0 8px 0 6px;
+  background: var(--line);
+  flex: 0 0 auto;
+}
+/* 速查模式（一刷/二刷）和真题之间也留一道浅一点的隔断 */
+.pmodgroup--modes { margin-left: 4px; }
+.pmodgroup--modes::before {
+  content: "";
+  width: 1px;
+  height: 18px;
+  margin: 0 7px 0 4px;
+  background: var(--line);
+  flex: 0 0 auto;
+}
+
+.pmod {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--sans, inherit);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  padding: 7px 13px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background .15s, color .15s, border-color .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.pmod:hover { background: var(--mask, var(--surface-2, #efece2)); color: var(--ink); }
+.pmod:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pmod.on,
+.pmod[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink, #fff);
+  font-weight: 600;
+}
+.pmod .cnt {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 10px;
+  opacity: .72;
+  margin-left: 5px;
+  font-variant-numeric: tabular-nums;
+}
+.pmod[aria-pressed="true"] .cnt,
+.pmod.on .cnt { opacity: .85; }
+/* 工具区里的按钮：没有底色，只有文字，比板块轻一档 */
+.pmod--tool { font-weight: 500; padding-inline: 9px; }
+.pmod--tool:hover { background: transparent; color: var(--accent); }
+/* 当前所在的工具页（成绩台账 / 肖八模拟 / 练习记录） */
+.pmod--tool.is-active { color: var(--accent); font-weight: 600; box-shadow: inset 0 -1.5px 0 currentColor; border-radius: 0; }
+.pmod-stat {
+  flex: 0 0 auto;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  padding-inline: 6px 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 年份行 ---------- */
+.pbar-years {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 9px;
+  min-width: 0;
+}
+.pyears {
+  display: flex;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.pyears::-webkit-scrollbar { display: none; }
+/* 年份条放不下时才渐隐边缘：示意还能横向滑 */
+.pyears.is-scroll.at-start {
+  mask-image: linear-gradient(to right, #000 calc(100% - 56px), transparent);
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 56px), transparent);
+}
+.pyears.is-scroll.at-end {
+  mask-image: linear-gradient(to right, transparent 0, #000 56px);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 56px);
+}
+.pyears.is-scroll:not(.at-start):not(.at-end) {
+  mask-image: linear-gradient(to right, transparent 0, #000 56px, #000 calc(100% - 56px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 56px, #000 calc(100% - 56px), transparent 100%);
+}
+
+.pyear {
+  position: relative;
+  flex: 0 0 auto;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 56px;
+  height: 40px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 20px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 13.5px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+/* 年份下面那行小字：题数 / 已答几题 / 做完了打勾 */
+.pyear .y-st {
+  font-size: 9.5px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--muted);
+  opacity: .9;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.pyear.is-done .y-st { font-size: 10.5px; font-weight: 700; color: var(--done, #16a34a); opacity: 1; }
+.pyear:hover { background: var(--mask, var(--surface-2, #efece2)); color: var(--ink); }
+.pyear.on,
+.pyear[aria-current="page"],
+.pyear[aria-current="true"] {
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+}
+.pyear.on .y-st,
+.pyear[aria-current="page"] .y-st,
+.pyear[aria-current="true"] .y-st { color: currentColor; opacity: .7; }
+.pyear.is-done.on .y-st,
+.pyear.is-done[aria-current="page"] .y-st,
+.pyear.is-done[aria-current="true"] .y-st { color: var(--done-on-pill, #6ee7a5); opacity: 1; }
+.pyear.off { opacity: .35; cursor: default; }
+/* 已答过的年份右上角一个小金点 */
+.pyear.has::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold, #b5842f);
+}
+.pyear.on.has::after,
+.pyear[aria-current="page"].has::after { background: var(--gold, #b5842f); }
+
+/* 年份条右端的小按钮（「进度」） */
+.pbar-prog {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 28px;
+  padding: 0 10px 0 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 11.5px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.pbar-prog[hidden] { display: none; }
+.pbar-prog svg { width: 12px; height: 12px; transition: transform .2s ease; }
+.pbar-prog:hover { background: var(--mask, var(--surface-2)); color: var(--ink); border-color: var(--line-strong, var(--line)); }
+.pbar-prog[aria-expanded="true"] {
+  background: var(--mask, var(--surface-2));
+  border-color: var(--line-strong, var(--line));
+  color: var(--ink);
+}
+.pbar-prog[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+/* ---------- 试卷 / 解析 PDF：先预览，再决定下载 ---------- */
+/* 原来是指向 PDF 的链接（点一下就下载），现在改成按钮，交给 pdfview.js 弹预览 */
+.chip--pdf {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font: inherit;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 11px;
+  line-height: 1.6;
+}
+.chip--pdf:hover { border-color: var(--accent); color: var(--accent); }
+.pdfsheet {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(12, 16, 13, .55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: max(10px, env(safe-area-inset-top, 0px)) 10px 10px;
+}
+.pdfsheet[hidden] { display: none; }
+.pdfpanel {
+  width: min(1100px, 100%);
+  background: var(--surface);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .4);
+}
+.pdfpanel:focus { outline: none; }
+.pdfbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  flex-wrap: wrap;
+}
+.pdfbar .ptitle {
+  font-size: 12.5px;
+  font-weight: 600;
+  flex: 1 1 160px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pdfbar .pbtn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  padding: 0 11px;
+  border: 1px solid var(--line-strong, var(--line));
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--sans, inherit);
+  font-size: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.pdfbar .pbtn:hover { border-color: var(--accent); color: var(--accent); }
+.pdfbar .pbtn--dl { background: var(--accent); border-color: var(--accent); color: var(--accent-ink, #fff); font-weight: 600; }
+.pdfbar .pbtn--dl:hover { opacity: .88; color: var(--accent-ink, #fff); }
+.pdfbar .pclose {
+  flex: 0 0 auto;
+  border: 1px solid var(--line-strong, var(--line));
+  background: transparent;
+  color: var(--ink);
+  border-radius: 7px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+.pdfbar .pclose:hover { border-color: var(--red, #a33a2c); color: var(--red, #a33a2c); }
+.pdfpanel iframe { flex: 1; width: 100%; border: 0; background: #525659; }
+.pdfpanel .pfoot {
+  display: none;
+  padding: 8px 12px;
+  border-top: 1px solid var(--line);
+  font-size: 11.5px;
+  color: var(--muted);
+}
+@media (max-width: 640px) {
+  .pdfbar .ptitle { flex-basis: 100%; order: -1; }
+  .pdfbar .pbtn { flex: 1 1 0; justify-content: center; }
+  .pdfsheet { padding: 0; }
+  .pdfpanel { border-radius: 0; width: 100%; }
+}

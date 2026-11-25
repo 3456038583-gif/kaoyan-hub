@@ -38,8 +38,8 @@
   --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
 :root[data-set="r2"] {
-  --accent: #2d5a73;
-  --accent-soft: #dce7ec;
+  --accent: #6d4c7d;
+  --accent-soft: #eee6f2;
   --accent-ink: #ffffff;
 }
 @media (prefers-color-scheme: dark) {
@@ -63,9 +63,9 @@
     color-scheme: dark;
   }
   :root[data-set="r2"]:not([data-theme="light"]) {
-    --accent: #6fb3cc;
-    --accent-soft: #16262c;
-    --accent-ink: #0c1417;
+    --accent: #c4a3d4;
+    --accent-soft: #2a1f30;
+    --accent-ink: #150e19;
   }
 }
 :root[data-theme="dark"] {
@@ -88,9 +88,9 @@
   color-scheme: dark;
 }
 :root[data-theme="dark"][data-set="r2"] {
-  --accent: #6fb3cc;
-  --accent-soft: #16262c;
-  --accent-ink: #0c1417;
+  --accent: #c4a3d4;
+  --accent-soft: #2a1f30;
+  --accent-ink: #150e19;
 }
 
 * { box-sizing: border-box; }
@@ -260,8 +260,8 @@ h1 {
   color: var(--ink);
 }
 .yprog-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
-.page[data-view="summary"] .yprog-btn,
-.page[data-view="overview"] .yprog-btn { display: none; }
+.page[data-view="summary"] .pbar-prog,
+.page[data-view="overview"] .pbar-prog { display: none; }
 .year {
   flex: 0 0 auto;
   display: inline-flex;
@@ -1451,20 +1451,32 @@ footer .migrate .msg { font-size: 11.5px; opacity: .8; }
 }
 </style>
 <link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/exam/shell.css?v=20261126a">
 <style>
 /* 站内导航在这个 760px 版式里的间距 */
 .page > .sitebar { margin-bottom: 18px; }
+/* 速查也走统一的板块条：标签行 + 年份行，不再用原来的分段控件 */
+.page > .navwrap { margin-bottom: 0; }
 </style>
 
+<script>
+/* 英语速查已并入「英语真题」板块：直接访问 /english/ 时回到板块默认页（英语真题）。
+   带 ?set=r1|r2 的是板块里的速查标签，带 # 的是数据迁移片段，两种情况都不跳。 */
+(function () {
+  try {
+    if (location.search || location.hash) return;
+    location.replace('/exam/');
+  } catch (e) {}
+})();
+</script>
 <script src="/countdown.js" defer></script>
 <div class="page">
   <nav class="sitebar">
     <a class="sb-brand" href="/">考研资料总库</a>
     <span class="sb-links">
       <a href="/math/">数学真题</a>
-      <a href="/exam/">英语真题</a>
+      <a class="on" href="/exam/">英语真题</a>
       <a href="/politics/">政治真题</a>
-      <a class="on" href="/english/">英语一速查</a>
       <a href="/vocab/">英语词汇</a>
       <a href="/library/">知识库</a>
     <a href="/export/">数据备份</a>
@@ -1480,21 +1492,25 @@ footer .migrate .msg { font-size: 11.5px; opacity: .8; }
   </header>
 
   <div class="navwrap">
-    <div class="setrow">
-      <div class="seg" role="group" aria-label="选择资料">
-        <button class="segbtn" type="button" data-set="r1" aria-pressed="true">一刷</button>
-        <button class="segbtn" type="button" data-set="r2" aria-pressed="false">二刷</button>
+    <div class="pmods" aria-label="板块">
+      <div class="pmodgroup">
+        <a class="pmod" href="/exam/">英语一真题</a>
+        <a class="pmod" href="/exam/2026-y2">英语二真题</a>
       </div>
-      <span class="infoonly" id="infoHint">真题数据 · 英语（一）</span>
-      <div class="setmeta">
-        <span class="setcount" id="setCount">21 套 · 2006—2026</span>
-        <button class="viewbtn" id="viewBtn" type="button">成绩汇总</button>
-        <button class="viewbtn" id="infoBtn" type="button">真题概况</button>
+      <div class="pmodgroup pmodgroup--modes">
+        <button class="pmod" type="button" data-set="r1" aria-pressed="true">一刷速查</button>
+        <button class="pmod" type="button" data-set="r2" aria-pressed="false">二刷速查</button>
+      </div>
+      <div class="pmodgroup pmodgroup--tools">
+        <span class="pmod-stat setcount" id="setCount">21 套 · 2006—2026</span>
+        <span class="infoonly pmod-stat" id="infoHint">真题数据 · 英语（一）</span>
+        <button class="pmod pmod--tool" id="viewBtn" type="button">成绩汇总</button>
+        <button class="pmod pmod--tool" id="infoBtn" type="button">真题概况</button>
       </div>
     </div>
-    <div class="yearbar">
-      <nav class="years" id="years" aria-label="选择年份"></nav>
-      <button class="yprog-btn" type="button" id="yearStatBtn" aria-expanded="false" aria-controls="yearStat" title="显示 / 隐藏「这卷做完没」与完成进度">
+    <div class="pbar-years">
+      <div class="pyears" id="years" aria-label="选择年份"></div>
+      <button class="pbar-prog" type="button" id="yearStatBtn" aria-expanded="false" aria-controls="yearStat" title="显示 / 隐藏「这卷做完没」与完成进度">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 6.5 8 10l3.5-3.5"/></svg>
         <span>进度</span>
       </button>
@@ -2674,7 +2690,7 @@ function buildYears(selected) {
   for (const year of Object.keys(DATA[currentSet]).sort()) {
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "year";
+    btn.className = "pyear";
     btn.dataset.year = year;
     btn.innerHTML = '<span class="y-num">' + year + '</span><span class="y-st"></span>';
     btn.setAttribute("aria-label", year + " 年");
@@ -2721,11 +2737,16 @@ function setSet(name) {
   currentSet = name;
   const s = SETS[name];
   document.documentElement.setAttribute("data-set", name);
+  try {
+    const url = new URL(location.href);
+    url.searchParams.set("set", name);
+    history.replaceState(null, "", url);
+  } catch (e) {}
   SEAL.textContent = s.seal;
   TITLE.textContent = s.title;
   KICKER.textContent = s.kicker;
   SET_COUNT.textContent = s.count;
-  for (const btn of document.querySelectorAll(".segbtn")) {
+  for (const btn of document.querySelectorAll(".pmod[data-set]")) {
     btn.setAttribute("aria-pressed", btn.dataset.set === name ? "true" : "false");
   }
   let year = yearBySet[name];
@@ -3322,7 +3343,7 @@ document.addEventListener("pointerdown", event => {
 }, true);
 
 YEARS_NAV.addEventListener("click", event => {
-  const btn = event.target.closest(".year");
+  const btn = event.target.closest(".pyear");
   if (btn) selectYear(btn.dataset.year);
 });
 
@@ -3339,15 +3360,17 @@ if (YEAR_DONE_BOX) {
   });
 }
 
-document.querySelector(".seg").addEventListener("click", event => {
-  const btn = event.target.closest(".segbtn");
+document.querySelector(".pmods").addEventListener("click", event => {
+  const btn = event.target.closest(".pmod[data-set]");
   if (btn) setSet(btn.dataset.set);
 });
 
 let initialSet = "r1";
 try {
+  const fromUrl = new URLSearchParams(location.search).get("set");
   const storedSet = localStorage.getItem("kaoyan-set");
-  if (SETS[storedSet]) initialSet = storedSet;
+  if (SETS[fromUrl]) initialSet = fromUrl;
+  else if (SETS[storedSet]) initialSet = storedSet;
   const storedYear = localStorage.getItem("kaoyan-" + initialSet + "-year");
   if (DATA[initialSet][storedYear]) yearBySet[initialSet] = storedYear;
 } catch (e) {}

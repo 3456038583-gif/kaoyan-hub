@@ -1,14 +1,19 @@
 {
-  "version": "1.0.0",
-  "build": 1,
+  "version": "1.0.1",
+  "build": 2,
   "date": "2026-11-25",
-  "file": "KaoyanHub-1.0.0-arm64.dmg",
-  "size": 202410977,
+  "file": "KaoyanHub-1.0.1-arm64.dmg",
+  "size": 202422372,
   "minMacOS": "11.0",
   "arch": "arm64",
-  "url": "https://github.com/3456038583-gif/kaoyan-hub/releases/download/v1.0.0/KaoyanHub-1.0.0-arm64.dmg",
-  "page": "https://github.com/3456038583-gif/kaoyan-hub/releases/tag/v1.0.0",
+  "url": "https://github.com/3456038583-gif/kaoyan-hub/releases/download/v1.0.1/KaoyanHub-1.0.1-arm64.dmg",
+  "page": "https://github.com/3456038583-gif/kaoyan-hub/releases/tag/v1.0.1",
   "notes": [
+    {
+      "version": "1.0.1",
+      "date": "2026-11-25",
+      "note": "英语速查并入英语真题板块：板块标签置于年份之上，四个板块各配色；试卷 PDF 改为先预览再下载；政治页统一为同一套板块条"
+    },
     {
       "version": "1.0.0",
       "date": "2026-11-25",

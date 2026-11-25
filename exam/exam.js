@@ -475,8 +475,8 @@
         </div>
         <div class="ph-meta">
           ${(P.meta || []).map((m) => `<span class="chip">${esc(m)}</span>`).join('')}
-          ${paperPdf(P) ? `<a class="chip gold" href="${paperPdf(P)}" download>原卷 PDF ↓</a>` : ''}
-          ${P.sol ? `<a class="chip gold" href="${P.sol}" target="_blank" rel="noopener">原卷解析 PDF ↗</a>` : ''}
+          ${paperPdf(P) ? `<button class="chip gold chip--pdf" type="button" data-pdf="${paperPdf(P)}" data-pdf-title="${esc(P.title)} · 原卷">原卷 PDF</button>` : ''}
+          ${P.sol ? `<button class="chip gold chip--pdf" type="button" data-pdf="${P.sol}" data-pdf-title="${esc(P.title)} · 解析">原卷解析 PDF</button>` : ''}
         </div>
       </div>
       <div class="ph-actions" style="margin-top:10px">
