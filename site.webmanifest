@@ -1,0 +1,14 @@
+{
+  "name": "考研资料总库",
+  "short_name": "考研总库",
+  "description": "数学 / 英语 / 政治真题、英语词汇与知识库",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f4ee",
+  "theme_color": "#0d2a4a",
+  "icons": [
+    { "src": "/img/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/img/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/img/icons/app.png", "sizes": "1024x1024", "type": "image/png" }
+  ]
+}

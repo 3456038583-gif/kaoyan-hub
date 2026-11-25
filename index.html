@@ -9,6 +9,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet"></noscript>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/img/icons/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0d2a4a">
 <script>
 /* 旧书签（/?year=2024&subj=1、/#q-2024-1-3 等）直接转到数学站 */
 (function () {
@@ -172,6 +177,14 @@ h1 {
   box-shadow: 0 10px 24px -18px rgba(20, 30, 25, .5);
 }
 .card:hover::after { opacity: 1; transform: translateX(3px); }
+.card .ctop { display: flex; align-items: center; gap: 11px; }
+.cico {
+  width: 46px; height: 46px;
+  flex: none;
+  display: block;
+  transition: transform .18s;
+}
+.card:hover .cico { transform: translateY(-1px) scale(1.045); }
 .card .tag {
   font-family: var(--mono);
   font-size: 10.5px;
@@ -313,6 +326,7 @@ footer .fl { display: flex; flex-wrap: wrap; gap: 16px; }
       <a href="/vocab/">英语词汇</a>
       <a href="/library/">知识库</a>
       <a href="/export/">数据备份</a>
+      <a href="/mac/">macOS 版</a>
     </nav>
   </header>
 
@@ -328,37 +342,37 @@ footer .fl { display: flex; flex-wrap: wrap; gap: 16px; }
   <main>
     <div class="cards">
       <a class="card" href="/math/">
-        <span class="tag">Mathematics</span>
+        <div class="ctop"><img class="cico" src="/img/icons/s/math.png" alt="" width="46" height="46" loading="lazy" decoding="async"><span class="tag">Mathematics</span></div>
         <h2>数学真题</h2>
         <p>2010—2026 年数一 / 数二 / 数三原卷与解析，逐题 LaTeX 还原，按年份、题型、难度筛选，PDF 在线翻阅。</p>
         <div class="meta"><span>17 年</span><span>121 份 PDF</span><span>逐题还原</span></div>
       </a>
       <a class="card" href="/library/">
-        <span class="tag">Knowledge Base</span>
+        <div class="ctop"><img class="cico" src="/img/icons/s/search.png" alt="" width="46" height="46" loading="lazy" decoding="async"><span class="tag">Knowledge Base</span></div>
         <h2>知识库</h2>
         <p>高数、线代、概率论的知识框架与解题方法，旁及英语作文模板与政治一页纸手册，支持全文搜索与按科目筛选。</p>
         <div class="meta"><span><b data-stat="notes">259</b> 篇笔记</span><span>全文搜索</span><span>三科切换</span></div>
       </a>
       <a class="card" href="/exam/">
-        <span class="tag">English</span>
+        <div class="ctop"><img class="cico" src="/img/icons/s/english-exam.png" alt="" width="46" height="46" loading="lazy" decoding="async"><span class="tag">English</span></div>
         <h2>英语真题</h2>
         <p>英语一 2006—2026、英语二 2010—2026 真题逐题还原，每题标注难度，文章配全文精翻，附原卷解析 PDF。</p>
         <div class="meta"><span>38 套</span><span>逐题还原</span><span>全文精翻</span></div>
       </a>
       <a class="card" href="/vocab/">
-        <span class="tag">Vocabulary</span>
+        <div class="ctop"><img class="cico" src="/img/icons/s/vocab.png" alt="" width="46" height="46" loading="lazy" decoding="async"><span class="tag">Vocabulary</span></div>
         <h2>英语词汇</h2>
         <p>2027 红宝书全部词汇：必考词、基础词、超纲词逐词录入音标、真题词频、牛津释义、词根词缀与真题例句，中英文全文搜索，可卡片背诵、收生词本。</p>
         <div class="meta"><span>6,529 词</span><span>2 万条例句</span><span>可搜索 / 背诵</span></div>
       </a>
       <a class="card" href="/politics/">
-        <span class="tag">Politics</span>
+        <div class="ctop"><img class="cico" src="/img/icons/s/politics.png" alt="" width="46" height="46" loading="lazy" decoding="async"><span class="tag">Politics</span></div>
         <h2>政治真题</h2>
         <p>2010—2026 年考研政治真题，单选 / 多选 / 材料分析三类题型逐题还原，点选即判、自动算分；另收 2027 肖秀荣八套卷，逐题附官方解析。</p>
         <div class="meta"><span>17 年 + 肖八 8 套</span><span>客观题自动判分</span><span>逐题解析</span></div>
       </a>
       <a class="card" href="/english/">
-        <span class="tag">English I</span>
+        <div class="ctop"><img class="cico" src="/img/icons/s/folder.png" alt="" width="46" height="46" loading="lazy" decoding="async"><span class="tag">English I</span></div>
         <h2>英语速查</h2>
         <p>一刷 2006—2026、二刷 2007—2025 的阅读答案与成绩记录，可在页面上直接记分并查看汇总。</p>
         <div class="meta"><span>一刷 / 二刷</span><span>成绩记录</span></div>

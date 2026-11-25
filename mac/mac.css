@@ -1,0 +1,259 @@
+/* macOS 下载页 */
+
+/* 本站主题变量：site.css 只带 sitebar，其余页面各自声明（与首页保持一致） */
+:root {
+  --paper: #f5f4ee;
+  --surface: #fffdf8;
+  --ink: #1b211d;
+  --muted: #6d746c;
+  --line: #e0dfd4;
+  --line-soft: #eceae1;
+  --accent: #2f5d8a;
+  --accent-soft: #e6edf4;
+  --gold: #b5842f;
+  --red: #a33a2c;
+  --serif: "Noto Serif SC", "Songti SC", "STSong", serif;
+  --sans: "Noto Sans SC", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --max: 1000px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #161916;
+    --surface: #1d211d;
+    --ink: #e9e8e1;
+    --muted: #9aa197;
+    --line: #2e332e;
+    --line-soft: #262b26;
+    --accent: #8fb4d6;
+    --accent-soft: #22303b;
+    --gold: #d2a453;
+    --red: #d98a7c;
+  }
+}
+
+.mac-page {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  line-height: 1.6;
+}
+
+.mwrap {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 20px 64px;
+}
+
+/* ---------- 首屏 ---------- */
+.mhero {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  padding: 46px 0 38px;
+  border-bottom: 1px solid var(--line);
+}
+.micon {
+  width: 132px; height: 132px;
+  flex: none;
+  display: block;
+  filter: drop-shadow(0 14px 26px rgba(13, 42, 74, .22));
+}
+.mtxt { min-width: 0; }
+.mkicker {
+  margin: 0 0 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .2em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+.mtxt h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(30px, 4.6vw, 40px);
+  font-weight: 700;
+  letter-spacing: .04em;
+  line-height: 1.16;
+}
+.msub {
+  margin: 12px 0 0;
+  max-width: 52ch;
+  color: var(--muted);
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+
+.mact {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+.mbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 22px;
+  border-radius: 6px;
+  background: #0d2a4a;
+  color: #f7f6ef;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  text-decoration: none;
+  border: 1px solid #0d2a4a;
+  transition: background .16s, transform .16s, box-shadow .16s;
+}
+.mbtn:hover {
+  background: #17406b;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -12px rgba(13, 42, 74, .7);
+}
+.mbtn svg { width: 15px; height: 15px; fill: currentColor; }
+.mbtn[aria-disabled="true"] {
+  background: var(--line-soft);
+  border-color: var(--line);
+  color: var(--muted);
+  pointer-events: none;
+}
+.mmeta {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--muted);
+  letter-spacing: .02em;
+}
+
+/* ---------- 特性 ---------- */
+.mfeat {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--line);
+}
+.mf {
+  padding: 18px 18px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+}
+.mf h3 {
+  margin: 0 0 7px;
+  font-family: var(--serif);
+  font-size: 15.5px;
+  letter-spacing: .02em;
+}
+.mf p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.66; }
+
+/* ---------- 安装 ---------- */
+.msec { padding: 34px 0 30px; border-bottom: 1px solid var(--line); }
+.msec h2 {
+  margin: 0 0 18px;
+  font-family: var(--serif);
+  font-size: 20px;
+  letter-spacing: .03em;
+}
+.msteps { margin: 0; padding: 0; list-style: none; counter-reset: s; }
+.msteps li {
+  position: relative;
+  padding: 0 0 16px 42px;
+  counter-increment: s;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--ink);
+}
+.msteps li:last-child { padding-bottom: 0; }
+.msteps li::before {
+  content: counter(s);
+  position: absolute;
+  left: 0; top: 1px;
+  width: 24px; height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.msteps b { font-weight: 600; }
+.msteps code, .mtip code {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: var(--line-soft);
+  border-radius: 3px;
+  padding: 1.5px 5px;
+}
+.mtip {
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  background: var(--accent-soft);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.mtip b { color: var(--ink); font-weight: 600; }
+
+/* ---------- 版本记录 ---------- */
+.mnotes { padding: 32px 0 0; }
+.mnotes h2 {
+  margin: 0 0 16px;
+  font-family: var(--serif);
+  font-size: 20px;
+  letter-spacing: .03em;
+}
+.nlist { margin: 0; padding: 0; list-style: none; }
+.nlist li {
+  display: flex;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px dotted var(--line);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.nlist li:last-child { border-bottom: 0; }
+.nv {
+  flex: none;
+  min-width: 62px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+}
+.nd { flex: none; min-width: 88px; font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+.nt { color: var(--muted); }
+.nempty { color: var(--muted); font-size: 13px; }
+
+/* ---------- 页脚 ---------- */
+.mfoot {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 22px 20px 40px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+}
+.mfoot a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
+.mfoot a:hover { color: var(--accent); border-color: var(--accent); }
+
+@media (max-width: 720px) {
+  .mhero { flex-direction: column; align-items: flex-start; gap: 20px; padding: 30px 0 26px; }
+  .micon { width: 96px; height: 96px; }
+  .mact { gap: 12px; }
+  .mbtn { width: 100%; justify-content: center; }
+  .nlist li { flex-wrap: wrap; gap: 6px 12px; }
+  .nd { min-width: 0; }
+}
+
+@media (prefers-color-scheme: dark) {
+  .mbtn { background: #1e4a76; border-color: #1e4a76; color: #f2f4f0; }
+  .mbtn:hover { background: #2a5d8f; }
+  .micon { filter: drop-shadow(0 14px 26px rgba(0, 0, 0, .5)); }
+}
