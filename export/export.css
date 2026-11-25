@@ -96,6 +96,54 @@ h1 {
 }
 .sub { margin: 10px 0 0; color: var(--muted); font-size: 14.5px; max-width: 62ch; }
 
+/* 板块切换：数据备份 / macOS 桌面版 */
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding-bottom: 14px;
+  margin-bottom: 26px;
+  border-bottom: 1px solid var(--line);
+}
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 15px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.tab:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tab.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+@media (prefers-color-scheme: dark) {
+  .tab.on { color: var(--paper); }
+}
+.tabs-link {
+  margin-left: auto;
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.tabs-link:hover { color: var(--accent); }
+
+.pane[hidden] { display: none !important; }
+
 /* 备份面板 */
 .board {
   margin-bottom: 46px;
@@ -301,6 +349,183 @@ h1 {
 }
 .notes b { color: var(--ink); font-weight: 600; }
 
+/* ---------- macOS 桌面版 ---------- */
+.appcard {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 4px 0 30px;
+  border-bottom: 1px solid var(--line);
+}
+.appicon {
+  width: 112px;
+  height: 112px;
+  flex: none;
+  display: block;
+  filter: drop-shadow(0 14px 26px rgba(13, 42, 74, .22));
+}
+.apptxt { min-width: 0; }
+.apptxt .kicker { color: var(--gold); }
+.apptxt h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(26px, 4vw, 34px);
+  font-weight: 700;
+  letter-spacing: .04em;
+  line-height: 1.18;
+}
+.appsub {
+  margin: 10px 0 0;
+  max-width: 54ch;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.72;
+}
+.appact {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.dlbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 22px;
+  border-radius: 6px;
+  background: #0d2a4a;
+  border: 1px solid #0d2a4a;
+  color: #f7f6ef;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  transition: background .16s, transform .16s, box-shadow .16s;
+}
+.dlbtn:hover {
+  background: #17406b;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -12px rgba(13, 42, 74, .7);
+}
+.dlbtn svg { width: 15px; height: 15px; fill: currentColor; }
+.dlbtn[aria-disabled="true"] {
+  background: var(--line-soft);
+  border-color: var(--line);
+  color: var(--muted);
+  pointer-events: none;
+}
+.dlmeta {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--muted);
+  letter-spacing: .02em;
+}
+@media (prefers-color-scheme: dark) {
+  .dlbtn { background: #1e4a76; border-color: #1e4a76; color: #f2f4f0; }
+  .dlbtn:hover { background: #2a5d8f; }
+  .appicon { filter: drop-shadow(0 14px 26px rgba(0, 0, 0, .5)); }
+}
+
+.appfeat {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--line);
+}
+.af {
+  padding: 16px 17px 15px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+.af h3 {
+  margin: 0 0 6px;
+  font-family: var(--serif);
+  font-size: 15px;
+  letter-spacing: .02em;
+}
+.af p { margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.66; }
+
+.asteps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: st;
+}
+.asteps li {
+  position: relative;
+  padding: 0 0 15px 40px;
+  counter-increment: st;
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+.asteps li:last-child { padding-bottom: 0; }
+.asteps li::before {
+  content: counter(st);
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 23px;
+  height: 23px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.asteps b { font-weight: 600; }
+.asteps code, .atip code {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: var(--line-soft);
+  border-radius: 3px;
+  padding: 1.5px 5px;
+}
+.atip {
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  background: var(--accent-soft);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+  font-size: 12.5px;
+  line-height: 1.72;
+  color: var(--muted);
+}
+.atip b { color: var(--ink); font-weight: 600; }
+
+.pane#pane-mac .section-head { margin-top: 26px; }
+
+.vlist { margin: 0; padding: 0; list-style: none; }
+.vlist li {
+  display: flex;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px dotted var(--line);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.vlist li:last-child { border-bottom: 0; }
+.vv {
+  flex: none;
+  min-width: 62px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+}
+.vd {
+  flex: none;
+  min-width: 88px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.vt { color: var(--muted); }
+.nempty { color: var(--muted); font-size: 13px; }
+
 footer {
   margin-top: 40px; padding-top: 18px;
   border-top: 1px solid var(--line);
@@ -420,8 +645,18 @@ footer a:hover { color: var(--accent); }
     font-family: var(--mono);
     font-size: 11px;
   }
+  .appcard { flex-direction: column; align-items: flex-start; gap: 18px; padding-bottom: 24px; }
+  .appicon { width: 88px; height: 88px; }
+  .appact { gap: 10px; margin-top: 16px; }
+  .dlbtn { width: 100%; justify-content: center; }
+  .vlist li { flex-wrap: wrap; gap: 4px 12px; }
+  .vd { min-width: 0; }
 }
 @media (max-width: 480px) {
+  .tab { padding: 6px 12px; font-size: 12.5px; }
+  .tabs { gap: 5px; margin-bottom: 20px; }
+  .tabs-link { font-size: 12px; }
+
   .topbar { align-items: center; gap: 10px; padding: 10px 0 9px; }
   .topbar nav {
     flex: 1 1 auto; min-width: 0; margin-left: auto;

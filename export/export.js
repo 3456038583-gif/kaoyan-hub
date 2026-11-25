@@ -33,7 +33,7 @@
       }
     },
     {
-      id: 'english', code: '速', label: '英语速查', href: '/english/',
+      id: 'english', code: '速', label: '英语一刷 / 二刷', href: '/exam/',
       desc: '一刷 / 二刷的完形、阅读、新题型得分与计时',
       match: function (k) {
         return /^(kaoyan-eng1-|kaoyanEnglish\.|kaoyan-set$|kaoyan-y1-year$|kaoyan-y2-year$)/.test(k);

@@ -7,14 +7,14 @@
 <link rel="apple-touch-icon" href="/img/icons/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#0d2a4a">
-<title>数据备份 · 考研资料总库</title>
+<title>备份与桌面版 · 考研资料总库</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="导出本机保存的全部学习记录，换设备后导回来接着用。">
+<meta name="description" content="导出本机保存的全部学习记录换设备接着用；也可下载 macOS 桌面版，把整个总库装进 Mac，断网也能刷题背词。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet"></noscript>
-<link rel="stylesheet" href="export.css?v=20261119a">
+<link rel="stylesheet" href="export.css?v=20261126a">
 <script src="/countdown.js" defer></script>
 </head>
 <body>
@@ -28,72 +28,137 @@
       <a href="/politics/">政治真题</a>
       <a href="/vocab/">英语词汇</a>
       <a href="/library/">知识库</a>
-      <a href="/mac/">macOS 版</a>
-      <a class="on" href="/export/" aria-current="page">数据备份</a>
+      <a class="on" href="/export/" aria-current="page">备份 · 桌面版</a>
     </nav>
   </header>
 
   <header class="masthead">
-    <div class="seal" aria-hidden="true">备</div>
+    <div class="seal" aria-hidden="true">存</div>
     <div>
-      <p class="kicker">Backup &amp; Restore</p>
-      <h1>数据备份</h1>
-      <p class="sub">把本机记下的做题记录、分数、错题、自测进度导成一份文件，换设备时导回去接着用。</p>
+      <p class="kicker">Backup &amp; Desktop App</p>
+      <h1>备份与桌面版</h1>
+      <p class="sub">做题记录、分数、生词本导成一份文件，换设备接着用；也可以把整个总库装进 Mac，断网照样刷题背词。</p>
     </div>
   </header>
 
+  <nav class="tabs" aria-label="板块">
+    <button type="button" class="tab on" data-pane="backup" aria-pressed="true">数据备份</button>
+    <button type="button" class="tab" data-pane="mac" aria-pressed="false">macOS 桌面版</button>
+    <a class="tabs-link" href="https://github.com/3456038583-gif/kaoyan-hub/releases" target="_blank" rel="noopener">全部版本 →</a>
+  </nav>
+
   <main>
-    <section class="board" aria-labelledby="boardTitle">
-      <h2 class="sr-only" id="boardTitle">全站备份</h2>
+    <!-- ─────────── 数据备份 ─────────── -->
+    <section class="pane" id="pane-backup" aria-labelledby="boardTitle">
+      <div class="board">
+        <h2 class="sr-only" id="boardTitle">全站备份</h2>
 
-      <div class="board-stats">
-        <div class="bs"><span>板块</span><b id="stSec">—</b></div>
-        <div class="bs"><span>记录</span><b id="stRec">—</b></div>
-        <div class="bs"><span>占用</span><b id="stSize">—</b></div>
-        <div class="bs"><span>最近更新</span><b id="stLast">—</b></div>
+        <div class="board-stats">
+          <div class="bs"><span>板块</span><b id="stSec">—</b></div>
+          <div class="bs"><span>记录</span><b id="stRec">—</b></div>
+          <div class="bs"><span>占用</span><b id="stSize">—</b></div>
+          <div class="bs"><span>最近更新</span><b id="stLast">—</b></div>
+        </div>
+
+        <div class="board-actions">
+          <button type="button" class="act act-primary" id="btnAll">
+            <span class="act-t">导出全站数据</span>
+            <span class="act-d">单个 JSON · 含全部板块 · 可完整恢复</span>
+          </button>
+          <button type="button" class="act" id="btnCsv">
+            <span class="act-t">导出全站 CSV</span>
+            <span class="act-d">一张总表 · Excel 直接打开</span>
+          </button>
+          <button type="button" class="act act-ghost" id="btnImport">
+            <span class="act-t">从备份恢复</span>
+            <span class="act-d">选择之前导出的 JSON 文件</span>
+          </button>
+        </div>
+
+        <div class="board-foot">
+          <label class="chk">
+            <input type="checkbox" id="optPref">
+            <span>同时导出界面偏好（面板折叠、上次浏览位置）</span>
+          </label>
+          <p class="board-hint" id="boardHint">数据只存在这台设备的浏览器里，导出之前不会上传到任何地方。</p>
+        </div>
+
+        <input type="file" id="fileIn" accept=".json,application/json" hidden>
       </div>
 
-      <div class="board-actions">
-        <button type="button" class="act act-primary" id="btnAll">
-          <span class="act-t">导出全站数据</span>
-          <span class="act-d">单个 JSON · 含全部板块 · 可完整恢复</span>
-        </button>
-        <button type="button" class="act" id="btnCsv">
-          <span class="act-t">导出全站 CSV</span>
-          <span class="act-d">一张总表 · Excel 直接打开</span>
-        </button>
-        <button type="button" class="act act-ghost" id="btnImport">
-          <span class="act-t">从备份恢复</span>
-          <span class="act-d">选择之前导出的 JSON 文件</span>
-        </button>
+      <div class="section-head">
+        <h2>按板块导出</h2>
+        <span class="sh-note">每块可单独备份，文件更小，恢复时也只影响这一块</span>
       </div>
 
-      <div class="board-foot">
-        <label class="chk">
-          <input type="checkbox" id="optPref">
-          <span>同时导出界面偏好（面板折叠、上次浏览位置）</span>
-        </label>
-        <p class="board-hint" id="boardHint">数据只存在这台设备的浏览器里，导出之前不会上传到任何地方。</p>
-      </div>
+      <div class="sec-list" id="secList"></div>
 
-      <input type="file" id="fileIn" accept=".json,application/json" hidden>
+      <section class="notes">
+        <h2>说明</h2>
+        <ul>
+          <li><b>换设备怎么用</b>：在旧设备点「导出全站数据」得到一份 JSON，把文件传到新设备，在新设备打开本页点「从备份恢复」，选中这个文件即可。</li>
+          <li><b>恢复是合并的</b>：默认只补本机缺的记录，不会覆盖已有的。想让文件完全取代本机数据，在恢复时勾选「覆盖同名数据」。</li>
+          <li><b>CSV 只用来查看</b>：总表方便丢进 Excel 排分数、画曲线，但不含完整结构，不能用来恢复。</li>
+          <li><b>不含界面偏好</b>：折叠状态、上次看到哪一年这类设置默认不导出，勾选上面的选项可以一并带上。</li>
+          <li><b>换了浏览器或清了缓存</b>：浏览器把数据存在本机，清缓存会一并清掉，建议隔一段时间备份一次。</li>
+          <li><b>桌面版同样适用</b>：macOS 版把记录存在 App 自己的沙盒里，导出的 JSON 结构与网页版一致，两边可以互相恢复。</li>
+        </ul>
+      </section>
     </section>
 
-    <div class="section-head">
-      <h2>按板块导出</h2>
-      <span class="sh-note">每块可单独备份，文件更小，恢复时也只影响这一块</span>
-    </div>
+    <!-- ─────────── macOS 桌面版 ─────────── -->
+    <section class="pane" id="pane-mac" aria-labelledby="macTitle" hidden>
+      <div class="appcard">
+        <img class="appicon" src="/img/icons/app.png" alt="考研资料总库 App 图标" width="112" height="112">
+        <div class="apptxt">
+          <p class="kicker">macOS App · Apple 芯片</p>
+          <h2 id="macTitle">考研资料总库</h2>
+          <p class="appsub">数学、英语、政治真题与 6,529 个单词全装进一个 App，断网也能刷题、背词、查笔记。做题记录留在本机，可以随时导出备份。</p>
+          <div class="appact">
+            <a class="dlbtn" id="dlBtn" href="https://github.com/3456038583-gif/kaoyan-hub/releases" aria-disabled="true">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.6a.9.9 0 0 1 .9.9v6.3l2.2-2.2a.9.9 0 1 1 1.3 1.3L8.6 11.7a.9.9 0 0 1-1.2 0L3.6 7.9a.9.9 0 0 1 1.3-1.3l2.2 2.2V2.5a.9.9 0 0 1 .9-.9ZM2.6 12a.9.9 0 0 1 .9.9v.3h9v-.3a.9.9 0 1 1 1.8 0v.6c0 .9-.7 1.6-1.6 1.6H2.4c-.9 0-1.6-.7-1.6-1.6v-.6a.9.9 0 0 1 .9-.9Z"/></svg>
+              下载 macOS 版
+            </a>
+            <span class="dlmeta" id="dlMeta">正在获取版本信息…</span>
+          </div>
+        </div>
+      </div>
 
-    <div class="sec-list" id="secList"></div>
+      <div class="appfeat">
+        <div class="af">
+          <h3>离线可用</h3>
+          <p>真题、词汇、知识库全部打包在 App 里，地铁上、图书馆没网也能照常刷题背单词。</p>
+        </div>
+        <div class="af">
+          <h3>和网页同源</h3>
+          <p>用的是同一套内容与同一套记录格式。网页更新后下载新版本即可同步，做题记录仍在本地。</p>
+        </div>
+        <div class="af">
+          <h3>原生窗口</h3>
+          <p>独立应用，不占浏览器标签页，Cmd+Q 干净退出，全屏刷题时界面更安静。</p>
+        </div>
+      </div>
 
-    <section class="notes">
-      <h2>说明</h2>
-      <ul>
-        <li><b>换设备怎么用</b>：在旧设备点「导出全站数据」得到一份 JSON，把文件传到新设备，在新设备打开本页点「从备份恢复」，选中这个文件即可。</li>
-        <li><b>恢复是合并的</b>：默认只补本机缺的记录，不会覆盖已有的。想让文件完全取代本机数据，在恢复时勾选「覆盖同名数据」。</li>
-        <li><b>CSV 只用来查看</b>：总表方便丢进 Excel 排分数、画曲线，但不含完整结构，不能用来恢复。</li>
-        <li><b>不含界面偏好</b>：折叠状态、上次看到哪一年这类设置默认不导出，勾选上面的选项可以一并带上。</li>
-        <li><b>换了浏览器或清了缓存</b>：浏览器把数据存在本机，清缓存会一并清掉，建议隔一段时间备份一次。</li>
+      <div class="section-head">
+        <h2>安装</h2>
+        <span class="sh-note">个人自用版本，未做苹果开发者签名</span>
+      </div>
+      <ol class="asteps">
+        <li>下载 <b>.dmg</b> 文件，双击打开，把「考研资料总库」拖进「应用程序」文件夹。</li>
+        <li>第一次打开时，在「应用程序」里<b>右键点图标 → 打开 → 再点“打开”</b>。直接双击会被系统拦住。</li>
+        <li>之后再启动就正常双击即可。做题记录、生词本存在 App 本地，重装不会丢。</li>
+      </ol>
+      <p class="atip">
+        <b>如果提示「已损坏，无法打开」</b>，在终端执行 <code>xattr -dr com.apple.quarantine /Applications/KaoyanHub.app</code> 后重开即可。<br>
+        系统要求：macOS 11 Big Sur 及以上，Apple 芯片（M1 / M2 / M3 / M4）。
+      </p>
+
+      <div class="section-head">
+        <h2>版本记录</h2>
+        <a href="https://github.com/3456038583-gif/kaoyan-hub/releases" target="_blank" rel="noopener">GitHub 全部版本 →</a>
+      </div>
+      <ul class="vlist" id="noteList">
+        <li><span class="nempty">正在读取…</span></li>
       </ul>
     </section>
   </main>
@@ -109,6 +174,98 @@
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script src="export.js?v=20261119a" defer></script>
+
+<script>
+/* 板块切换：数据备份 / macOS 桌面版。地址栏带 #mac 时直接打开桌面版。 */
+(function () {
+  var tabs = [].slice.call(document.querySelectorAll('.tab[data-pane]'));
+  var panes = {
+    backup: document.getElementById('pane-backup'),
+    mac: document.getElementById('pane-mac')
+  };
+  var macLoaded = false;
+
+  function paint(key) {
+    tabs.forEach(function (t) {
+      var on = t.getAttribute('data-pane') === key;
+      t.classList.toggle('on', on);
+      t.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    Object.keys(panes).forEach(function (k) {
+      if (k === key) panes[k].removeAttribute('hidden');
+      else panes[k].setAttribute('hidden', '');
+    });
+    if (key === 'mac' && !macLoaded) {
+      macLoaded = true;
+      loadMacInfo();
+    }
+  }
+
+  function go(key, keepHash) {
+    if (!panes[key]) key = 'backup';
+    paint(key);
+    if (!keepHash) {
+      try { history.replaceState(null, '', key === 'mac' ? '#mac' : location.pathname); } catch (e) {}
+    }
+  }
+
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      go(t.getAttribute('data-pane'), false);
+      window.scrollTo({ top: 0 });
+    });
+  });
+
+  function fromHash() {
+    var h = String(location.hash || '').replace('#', '');
+    return h === 'mac' ? 'mac' : 'backup';
+  }
+
+  window.addEventListener('hashchange', function () { go(fromHash(), true); });
+
+  /* 版本号与更新记录，只在第一次打开桌面版时读取 */
+  function loadMacInfo() {
+    var btn = document.getElementById('dlBtn');
+    var meta = document.getElementById('dlMeta');
+    var list = document.getElementById('noteList');
+    if (!btn || !meta || !list) return;
+
+    function mb(n) { return (n / 1048576).toFixed(0) + ' MB'; }
+
+    fetch('/mac/latest.json', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !d.version) {
+          meta.textContent = '版本信息暂缺，可前往 GitHub 下载';
+          btn.href = 'https://github.com/3456038583-gif/kaoyan-hub/releases';
+          btn.removeAttribute('aria-disabled');
+          return;
+        }
+        btn.href = d.url || 'https://github.com/3456038583-gif/kaoyan-hub/releases';
+        btn.removeAttribute('aria-disabled');
+        meta.textContent = 'v' + d.version + ' · ' + mb(d.size || 0) + ' · ' + d.date;
+
+        if (Array.isArray(d.notes) && d.notes.length) {
+          list.innerHTML = d.notes.map(function (n) {
+            return '<li><span class="vv">v' + n.version + '</span>' +
+                   '<span class="vd">' + (n.date || '') + '</span>' +
+                   '<span class="vt">' + (n.note || '常规更新') + '</span></li>';
+          }).join('');
+        } else {
+          list.innerHTML = '<li><span class="nempty">暂无更新记录</span></li>';
+        }
+      })
+      .catch(function () {
+        meta.textContent = '版本信息读取失败，可前往 GitHub 下载';
+        btn.href = 'https://github.com/3456038583-gif/kaoyan-hub/releases';
+        btn.removeAttribute('aria-disabled');
+        list.innerHTML = '<li><span class="nempty">暂无更新记录</span></li>';
+      });
+  }
+
+  go(fromHash(), true);
+})();
+</script>
+<script src="export.js?v=20261126a" defer></script>
 </body>
 </html>
