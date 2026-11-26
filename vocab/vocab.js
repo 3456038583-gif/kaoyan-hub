@@ -430,68 +430,392 @@
     });
   }
 
-  /* ------------------------------------------------------------ 背单词 */
-  var study = { list: [], i: 0, revealed: false };
+  /* ------------------------------------------------------------ 背单词 · 艾宾浩斯
+     词表顺序即红宝书顺序（必考词 → 基础词 → 超纲词）。
+     复习节点 IV：认识一次往后推一格；模糊回到 1 天；不认识清零并在本轮稍后重现。 */
+  var IV = [1, 2, 4, 7, 15, 30, 60, 120, 240];
+  var srs = store('srs.v2', {});      // 词 -> { l:等级, d:到期日, i:间隔, r:遍数, x:忘次, f:首学日, dc:统计日 }
+  var plan = store('plan.v2', { size: 50 });
+  if (!(plan.size > 0)) plan.size = 50;
+  var days = store('days.v2', {});    // 'YYYY-MM-DD' -> { new, rev, know, fuzzy, again, sec, done }
+  var perf = store('perf.v2', { sec: 0, n: 0 });
+
+  var S = { q: [], i: 0, reveal: false, t0: 0, req: {}, scope: null };
+
+  function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+  function dayStr(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+  function today() { return dayStr(new Date()); }
+  function addDays(s, n) {
+    var p = s.split('-');
+    var d = new Date(+p[0], +p[1] - 1, +p[2]);
+    d.setDate(d.getDate() + n);
+    return dayStr(d);
+  }
+  function dayLog(t) {
+    return days[t] || (days[t] = { new: 0, rev: 0, know: 0, fuzzy: 0, again: 0, sec: 0 });
+  }
+  function avgSec() { return perf.n ? perf.sec / perf.n : 8; }
+  /* all=true 时忽略「只背当前筛选」的范围，用于列表页的计划条 */
+  function scopeRows(all) {
+    if (all || !S.scope) return ROWS;
+    return ROWS.filter(function (r) { return S.scope[r[0]]; });
+  }
+  function freshPool(all) {
+    return scopeRows(all).filter(function (r) { return !srs[r[0]] && !known[r[0]]; });
+  }
+  function duePool(all) {
+    var t = today();
+    var out = scopeRows(all).filter(function (r) { var s = srs[r[0]]; return s && s.d <= t; });
+    out.sort(function (a, b) {
+      var da = srs[a[0]].d, db = srs[b[0]].d;
+      return da === db ? a[4] - b[4] : (da < db ? -1 : 1);
+    });
+    return out;
+  }
+  function todayQuota() { return Math.max(0, plan.size - dayLog(today()).new); }
+  function dueTomorrow() {
+    var t = addDays(today(), 1);
+    return ROWS.filter(function (r) { var s = srs[r[0]]; return s && s.d <= t; }).length;
+  }
+  function planStats(all) {
+    var due = duePool(all).length;
+    var fresh = freshPool(all).length;
+    var quota = Math.min(todayQuota(), fresh);
+    var size = Math.max(1, plan.size | 0);
+    var left = Math.ceil(fresh / size);
+    var cards = due + quota;
+    return {
+      due: due, fresh: fresh, quota: quota, days: left,
+      finish: addDays(today(), left),
+      mins: Math.max(1, Math.round(cards * avgSec() / 60))
+    };
+  }
+  function streakDays() {
+    var n = 0, d = today();
+    while (days[d] && days[d].done) { n++; d = addDays(d, -1); }
+    return n;
+  }
+  function persistStudy() {
+    persist('srs.v2', srs);
+    persist('days.v2', days);
+    persist('perf.v2', perf);
+    persist('plan.v2', plan);
+  }
+
+  /* ---- 顶部计划条（列表页） ---- */
+  function renderPlanBar() {
+    var el = $('#planBar');
+    if (!el) return;
+    if (!ROWS.length) { el.hidden = true; return; }
+    var st = planStats(true), l = dayLog(today());
+    el.hidden = false;
+    el.innerHTML =
+      '<span class="vp-tag">背诵计划</span>' +
+      '<span class="vp-n"><b>' + st.due + '</b> 待复习</span>' +
+      '<span class="vp-n"><b>' + st.quota + '</b> 新词</span>' +
+      '<span class="vp-n vp-d">每天 <b>' + plan.size + '</b> 词</span>' +
+      '<span class="vp-est">还剩 <b>' + st.fresh + '</b> 词 · 预计 <b>' + st.days + '</b> 天背完（' +
+        esc(st.finish.slice(5).replace('-', '/')) + '）</span>' +
+      (l.done ? '<span class="vp-ok">今日已打卡 ✓</span>' : '') +
+      '<button class="vp-go" type="button" id="planGo">' + (l.done ? '再背一组' : '开始背诵') + '</button>';
+    el.querySelector('#planGo').addEventListener('click', function () { openStudy(); });
+  }
+
+  /* ---- 打开 / 切换视图 ---- */
+  function showView(which) {
+    $('#vsPlan').hidden = which !== 'plan';
+    $('#vsMain').hidden = which !== 'main';
+    $('#vsDone').hidden = which !== 'done';
+  }
   function openStudy() {
-    var pool = VIEW.length ? VIEW : ROWS;
-    study.list = pool.filter(function (r) { return !known[r[0]]; });
-    if (!study.list.length) study.list = pool.slice();
-    study.list = study.list.slice(0, 400);
-    study.i = 0;
-    study.revealed = false;
+    if (filtered()) {
+      S.scope = {};
+      VIEW.forEach(function (r) { S.scope[r[0]] = 1; });
+    } else {
+      S.scope = null;
+    }
     $('#study').hidden = false;
     $('#mask').hidden = false;
     document.body.style.overflow = 'hidden';
-    $('#vsScope').textContent = (state.group === '@star' ? '生词本'
-      : state.group === '@known' ? '已掌握'
-      : state.group ? state.group : '全部词')
-      + (state.unit ? ' Unit ' + state.unit : '')
-      + ' · 本轮 ' + study.list.length + ' 词';
-    renderStudy();
+    renderPlanView();
+    showView('plan');
   }
   function closeStudy() {
     $('#study').hidden = true;
     $('#mask').hidden = true;
     document.body.style.overflow = '';
+    S.scope = null;
+    renderPlanBar();
+    renderGroups();
   }
-  function renderStudy() {
-    var r = study.list[study.i];
-    if (!r) { closeStudy(); return; }
-    $('#vsProg').textContent = (study.i + 1) + ' / ' + study.list.length;
-    $('#vsBar').style.width = ((study.i + 1) / study.list.length * 100).toFixed(1) + '%';
-    var w = r[0], ch = letterOf(w);
-    var d = letters[ch] && letters[ch][w];
+
+  /* ---- 计划 / 设置 ---- */
+  var PRESETS = [20, 30, 50, 80, 100, 150];
+  function filtered() {
+    return !!(state.group || state.unit || state.letter || state.freq || state.q);
+  }
+  function renderPlanView() {
+    var st = planStats(), l = dayLog(today());
+    var total = st.due + st.quota;
+    var knownN = Object.keys(srs).length;
+    var html = '<div class="vp-kick">TODAY · EBBINGHAUS</div>'
+      + '<h2 class="vp-h">' + (st.due + st.quota ? '今天的背诵计划' : '今天的词已经背完了') + '</h2>'
+      + (filtered() ? '<label class="vp-scope"><input type="checkbox" id="vpScope"' + (S.scope ? ' checked' : '') + '> 只背当前筛选（' + VIEW.length.toLocaleString() + ' 词）</label>' : '')
+      + '<div class="vp-cards">'
+      + '<div class="vp-card"><b>' + st.due + '</b><span>待复习</span><i>遗忘曲线到期</i></div>'
+      + '<div class="vp-card"><b>' + st.quota + '</b><span>新词</span><i>每日上限 ' + plan.size + '</i></div>'
+      + '<div class="vp-card"><b>' + st.days + '</b><span>天背完</span><i>' + (st.fresh ? esc(st.finish.slice(5).replace('-', '/')) : '已全部学过') + '</i></div>'
+      + '</div>'
+      + '<div class="vp-sec"><span class="vp-lb">每天新词</span><div class="vp-step">'
+      + '<button type="button" data-size="-10" aria-label="减少">−</button>'
+      + '<input id="planSize" type="number" min="5" max="300" step="5" value="' + plan.size + '" aria-label="每天新词数">'
+      + '<button type="button" data-size="10" aria-label="增加">＋</button>'
+      + '</div></div>'
+      + '<div class="vp-presets">' + PRESETS.map(function (n) {
+          return '<button type="button" class="vp-ps' + (n === plan.size ? ' on' : '') + '" data-set="' + n + '">' + n + '</button>';
+        }).join('') + '</div>'
+      + '<p class="vp-est2">按每天 <b>' + plan.size + '</b> 词：还剩 <b>' + st.fresh + '</b> 词，预计 <b>' + st.days + '</b> 天背完；'
+      + '今天这组约 <b>' + st.mins + ' 分钟</b>（按你平均 ' + Math.round(avgSec()) + ' 秒/词）。</p>'
+      + '<p class="vp-tip">不认识的词会在本轮隔几张后再次出现；认识后按 <b>1 / 2 / 4 / 7 / 15 / 30 / 60</b> 天的曲线安排复习。</p>'
+      + '<div class="vp-round">今日已学 <b>' + l.new + '</b> 新词 · 复习 <b>' + l.rev + '</b> 词 · 累计学过 <b>' + knownN + '</b> 词</div>'
+      + '<div class="vp-acts">'
+      + '<button class="vbtn primary vp-start" type="button" id="vpStart"' + (total ? '' : ' disabled') + '>'
+      + (total ? '开始背诵（' + total + ' 词）' : '今天没有待背的词') + '</button>'
+      + '</div>'
+      + '<button class="vp-reset" type="button" id="vpReset">清空背诵进度</button>';
+
+    var box = $('#vsPlan');
+    box.innerHTML = html;
+    box.querySelectorAll('[data-size]').forEach(function (b) {
+      b.addEventListener('click', function () { setSize(plan.size + (+b.dataset.size)); });
+    });
+    box.querySelectorAll('[data-set]').forEach(function (b) {
+      b.addEventListener('click', function () { setSize(+b.dataset.set); });
+    });
+    $('#planSize').addEventListener('change', function () { setSize(+this.value); });
+    var sc = box.querySelector('#vpScope');
+    if (sc) sc.addEventListener('change', function () {
+      if (this.checked) {
+        S.scope = {};
+        VIEW.forEach(function (r) { S.scope[r[0]] = 1; });
+      } else {
+        S.scope = null;
+      }
+      renderPlanView();
+    });
+    $('#vpStart').addEventListener('click', function () { if (total) startSession(); });
+    $('#vpReset').addEventListener('click', function () {
+      if (!confirm('清空后所有背诵进度、复习计划、打卡记录都会删除，确定吗？')) return;
+      srs = {}; days = {}; perf = { sec: 0, n: 0 };
+      persistStudy();
+      renderPlanView(); renderPlanBar();
+    });
+  }
+  function setSize(n) {
+    n = Math.max(5, Math.min(300, Math.round(n || 50)));
+    plan.size = n;
+    persist('plan.v2', plan);
+    renderPlanView();
+    renderPlanBar();
+  }
+
+  /* ---- 一轮 ---- */
+  function startSession(extra) {
+    var due = duePool(), fresh = freshPool().slice(0, todayQuota() + (extra || 0));
+    var q = [], di = 0, fi = 0;
+    while (di < due.length || fi < fresh.length) {
+      for (var k = 0; k < 2 && di < due.length; k++) q.push({ r: due[di++], isNew: false });
+      if (fi < fresh.length) q.push({ r: fresh[fi++], isNew: true });
+    }
+    S.q = q; S.i = 0; S.reveal = false; S.req = {};
+    if (!q.length) { showView('plan'); renderPlanView(); return; }
+    showView('main');
+    renderCard();
+  }
+
+  function meaningHtml(r, d) {
+    if (d && d[4] && d[4].length) return senseHtml(d[4]);
+    var ms = String(r[8] || '').split(/[；;]/).filter(function (x) { return x.trim(); });
+    if (!ms.length) return '<p class="vempty-s">（释义见词条详情）</p>';
+    return '<ul class="senses">' + ms.slice(0, 6).map(function (m) {
+      return '<li><span class="pos none">—</span><span class="mean">' + esc(m.trim()) + '</span><span class="hits z">0</span></li>';
+    }).join('') + '</ul>';
+  }
+
+  function renderCard() {
+    var item = S.q[S.i];
+    if (!item) { finishSession(); return; }
+    var r = item.r, w = r[0], s = srs[w], t = today();
+    var ch = letterOf(w), d = letters[ch] && letters[ch][w];
     var phon = d ? d[0] : [r[1], ''];
-    var head = '<div class="vs-word"><h2>' + esc(w) + '</h2>'
-      + '<div class="dphon">' + (phon[0] ? '<span><b>英</b>/' + esc(phon[0]) + '/</span>' : '')
+
+    var tags = '<span class="vt g">' + esc(r[2] === '超纲词' ? '超纲词' : r[2] + ' Unit ' + r[3]) + '</span>';
+    if (r[6]) tags += '<span class="vt hot">真题 ' + r[6] + ' 次</span>';
+    if (s && s.f === t) tags += '<span class="vt new">新词</span>';
+    else if (s && s.r) tags += '<span class="vt">复习 · 第 ' + s.r + ' 遍 · 间隔 ' + (s.i || 1) + ' 天</span>';
+    if (s && s.d < t) tags += '<span class="vt late">已逾期 ' + Math.abs(Math.round((new Date(t) - new Date(s.d)) / 86400000)) + ' 天</span>';
+
+    var head = '<div class="vc-tags">' + tags + '</div>'
+      + '<div class="vs-word"><h2>' + esc(w) + '</h2><div class="dphon">'
+      + (phon[0] ? '<span><b>英</b>/' + esc(phon[0]) + '/</span>' : '')
+      + (phon[1] ? '<span><b>美</b>/' + esc(phon[1]) + '/</span>' : '')
       + (d && d[6] ? '<button class="play" type="button" data-play="' + esc(d[6]) + '">🔊 发音</button>' : '')
       + '</div></div>';
-    var body = '';
-    if (study.revealed) {
+
+    var body;
+    if (S.reveal) {
       body = '<div class="vs-reveal">'
-        + '<section class="dsec" style="padding:0;border:0"><h3>释义</h3>' + senseHtml(d ? d[4] : []) + '</section>'
-        + (d && d[5] && d[5].length ? '<section class="dsec" style="padding:0;border:0"><h3>例句</h3>' + exHtml(d[5].slice(0, 2), w) + '</section>' : '')
+        + '<section class="dsec vs-dsec"><h3>释义</h3>' + meaningHtml(r, d) + '</section>'
+        + (d && d[5] && d[5].length ? '<section class="dsec vs-dsec"><h3>真题例句</h3>' + exHtml(d[5].slice(0, 1), w) + '</section>' : '')
         + '</div>';
     } else {
-      body = '<p class="vs-hint">想一下意思，再按空格或「显示释义」</p>';
+      body = '<p class="vs-hint">先想意思，再按空格 / 点下方按钮看释义</p>';
     }
+
     $('#vsCard').innerHTML = head + body;
-    if (!d) {
-      loadLetter(ch).then(function () { if (study.list[study.i] === r) renderStudy(); });
-    }
+    S.reveal = !!S.reveal;
+    $('#vsReveal').hidden = S.reveal;
+    $('#vsActs').hidden = !S.reveal;
+    S.t0 = Date.now();
+    updateHud();
+    if (!d) loadLetter(ch).then(function () { if (S.q[S.i] === item) renderCard(); }).catch(function () {});
   }
-  function next(knowIt) {
-    var r = study.list[study.i];
-    if (r) {
-      if (knowIt) { known[r[0]] = 1; delete star[r[0]]; }
-      else { star[r[0]] = 1; delete known[r[0]]; }
-      persist('known.v1', known);
-      persist('star.v1', star);
+
+  function updateHud() {
+    var l = dayLog(today());
+    $('#vsProg').textContent = '剩余 ' + Math.max(0, S.q.length - S.i);
+    $('#vsScope').textContent = '今日新词 ' + l.new + '/' + plan.size + ' · 复习 ' + l.rev;
+    $('#vsBar').style.width = (S.i / Math.max(1, S.q.length) * 100).toFixed(1) + '%';
+  }
+
+  function reveal() {
+    if (S.reveal || !S.q[S.i]) return;
+    S.reveal = true;
+    renderCard();
+  }
+
+  function requeue(gap, key, max) {
+    var n = (S.req[key] = (S.req[key] || 0) + 1);
+    if (n > max) return;
+    var at = Math.min(S.i + 1 + gap, S.q.length);
+    S.q.splice(at, 0, { r: S.q[S.i].r, isNew: false });
+  }
+
+  function answer(kind) {
+    if (!S.reveal) return;
+    var item = S.q[S.i];
+    if (!item) return;
+    var r = item.r, w = r[0], t = today();
+    var s = srs[w];
+    if (!s) s = srs[w] = { l: 0, i: 0, d: t, r: 0, x: 0, f: t };
+    var l = dayLog(t);
+    if (s.dc !== t) { s.dc = t; if (s.f === t) l.new++; else l.rev++; }
+
+    var dt = (Date.now() - S.t0) / 1000;
+    if (dt > 0.3 && dt < 180) { perf.sec += dt; perf.n++; l.sec += dt; }
+
+    s.r++;
+    if (kind === 'know') {
+      s.l = Math.min(s.l + 1, IV.length);
+      s.i = IV[Math.min(s.l - 1, IV.length - 1)];
+      s.d = addDays(t, s.i);
+      l.know++;
+    } else if (kind === 'fuzzy') {
+      s.l = Math.max(1, s.l);
+      s.i = 1;
+      s.d = addDays(t, 1);
+      l.fuzzy++;
+      requeue(8, 'f' + w, 1);
+    } else {
+      s.l = 0; s.i = 1; s.d = addDays(t, 1); s.x++;
+      l.again++;
+      star[w] = 1; persist('star.v1', star);
+      requeue(5, 'a' + w, 6);
     }
-    study.i++;
-    study.revealed = false;
-    renderStudy();
-    renderGroups();
+    persistStudy();
+    S.i++;
+    S.reveal = false;
+    renderCard();
+  }
+
+  function finishSession() {
+    var l = dayLog(today());
+    l.done = 1;
+    persistStudy();
+    var st = planStats();
+    var ans = l.know + l.fuzzy + l.again;
+    var rate = ans ? Math.round(l.know / ans * 100) : 0;
+    var learned = Object.keys(srs).length;
+    $('#vsDone').innerHTML = '<div class="vd-inner">'
+      + '<p class="vd-kick">TODAY DONE</p>'
+      + '<h2 class="vd-h">今日 <b>' + l.new + '</b> 词 · 打卡</h2>'
+      + '<div class="vd-grid">'
+      + '<div><b>' + l.new + '</b><span>新学</span></div>'
+      + '<div><b>' + l.rev + '</b><span>复习</span></div>'
+      + '<div><b>' + rate + '%</b><span>认识率</span></div>'
+      + '</div>'
+      + '<p class="vd-line">连续打卡 <b>' + streakDays() + '</b> 天 · 累计学过 <b>' + learned + '</b> 词</p>'
+      + '<p class="vd-line vd-dim">明天有 <b>' + dueTomorrow() + '</b> 词到期复习 · 按每天 ' + plan.size + ' 词，预计 <b>'
+        + st.days + '</b> 天后背完（' + esc(st.finish.slice(5).replace('-', '/')) + '）</p>'
+      + '<div class="vd-acts">'
+      + '<button class="vbtn" type="button" id="vdMore">再背一组</button>'
+      + '<button class="vbtn primary" type="button" id="vdBack">完成</button>'
+      + '</div></div>';
+    showView('done');
+    $('#vsProg').textContent = '今日完成';
+    $('#vsScope').textContent = '新词 ' + l.new + ' · 复习 ' + l.rev;
+    $('#vsBar').style.width = '100%';
+    $('#vdMore').addEventListener('click', function () {
+      startSession(plan.size);          // 已超额也能继续，多背一组
+    });
+    $('#vdBack').addEventListener('click', closeStudy);
+    fireworks();
+    renderPlanBar();
+  }
+
+  /* ---- 小烟花 ---- */
+  function fireworks() {
+    var cv = $('#vsFire');
+    if (!cv) return;
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var W = cv.clientWidth || window.innerWidth, H = cv.clientHeight || window.innerHeight;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var ps = [], t0 = performance.now(), bursts = 0;
+    var HUES = [41, 208, 340, 156];
+    function burst() {
+      var x = W * (0.22 + Math.random() * 0.56), y = H * (0.16 + Math.random() * 0.3);
+      var hue = HUES[bursts % HUES.length], n = 44;
+      for (var i = 0; i < n; i++) {
+        var a = Math.PI * 2 * i / n + Math.random() * 0.12;
+        var v = 2.1 + Math.random() * 3.2;
+        ps.push({
+          x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v,
+          life: 1, hue: hue + (Math.random() * 20 - 10), r: 1.5 + Math.random() * 1.7
+        });
+      }
+      bursts++;
+    }
+    function frame(now) {
+      var el = (now - t0) / 1000;
+      ctx.clearRect(0, 0, W, H);
+      if (bursts < 5 && el > bursts * 0.33) burst();
+      for (var i = ps.length - 1; i >= 0; i--) {
+        var p = ps[i];
+        p.vy += 0.052; p.vx *= 0.986; p.vy *= 0.986;
+        p.x += p.vx; p.y += p.vy; p.life -= 0.01;
+        if (p.life <= 0) { ps.splice(i, 1); continue; }
+        ctx.globalAlpha = Math.max(0, p.life);
+        ctx.fillStyle = 'hsl(' + p.hue.toFixed(0) + ' 90% 62%)';
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r * p.life, 0, 6.2832); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      if (el < 4.2 && (ps.length || bursts < 5)) requestAnimationFrame(frame);
+      else ctx.clearRect(0, 0, W, H);
+    }
+    requestAnimationFrame(frame);
   }
 
   /* ------------------------------------------------------------ 深搜 */
@@ -588,13 +912,21 @@
     $('#studyBtn').addEventListener('click', openStudy);
     $('#vsClose').addEventListener('click', closeStudy);
     $('#mask').addEventListener('click', closeStudy);
-    $('#vsReveal').addEventListener('click', function () { study.revealed = true; renderStudy(); });
-    $('#vsKnow').addEventListener('click', function () { next(true); });
-    $('#vsAgain').addEventListener('click', function () { next(false); });
+    $('#vsReveal').addEventListener('click', reveal);
+    $('#vsKnow').addEventListener('click', function () { answer('know'); });
+    $('#vsFuzzy').addEventListener('click', function () { answer('fuzzy'); });
+    $('#vsAgain').addEventListener('click', function () { answer('again'); });
+    $('#vsGear').addEventListener('click', function () {
+      if (!$('#vsMain').hidden && S.q.length && S.i < S.q.length) {
+        if (!confirm('回到计划页？这一轮没背完的进度会保留，下次继续。')) return;
+      }
+      renderPlanView();
+      showView('plan');
+    });
     $('#vsCard').addEventListener('click', function (e) {
       var p = e.target.closest('[data-play]');
       if (p) { play(p.dataset.play, p); return; }
-      if (!study.revealed) { study.revealed = true; renderStudy(); }
+      if (!S.reveal) reveal();
     });
     $('#deepBtn').addEventListener('click', enableDeep);
 
@@ -611,9 +943,11 @@
     document.addEventListener('keydown', function (e) {
       if (!$('#study').hidden) {
         if (e.key === 'Escape') { closeStudy(); return; }
-        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); study.revealed = true; renderStudy(); }
-        else if (e.key === '1' || e.key === 'ArrowLeft') { e.preventDefault(); next(false); }
-        else if (e.key === '2' || e.key === 'ArrowRight') { e.preventDefault(); next(true); }
+        if ($('#vsMain').hidden) return;          // 计划页 / 完成页不响应背诵快捷键
+        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); if (!S.reveal) reveal(); }
+        else if (e.key === '1') { e.preventDefault(); answer('again'); }
+        else if (e.key === '2') { e.preventDefault(); answer('fuzzy'); }
+        else if (e.key === '3') { e.preventDefault(); answer('know'); }
         return;
       }
       var typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
@@ -638,6 +972,7 @@
   renderUnits();
   bind();
   apply();
+  renderPlanBar();
 
   (function restore() {
     if (/^#\/study$/.test(location.hash)) { openStudy(); return; }

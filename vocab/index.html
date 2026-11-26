@@ -15,7 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="/site.css">
-<link rel="stylesheet" href="/vocab/vocab.css?v=20261122a">
+<link rel="stylesheet" href="/vocab/vocab.css?v=20261126a">
 <script src="/countdown.js" defer></script>
 </head>
 <body class="vocab-page">
@@ -55,6 +55,8 @@
       <button class="vbtn" id="deepBtn" type="button" aria-pressed="false" title="连例句原文一起搜（首次需载入词库，约几秒）">深搜例句</button>
     </div>
   </div>
+
+  <div class="vplanbar" id="planBar" hidden></div>
 
   <div class="vfilters">
     <div class="vrow" id="groupRow" role="group" aria-label="分册"></div>
@@ -98,20 +100,34 @@
 
 <div class="vsheet-mask" id="mask" hidden></div>
 
-<!-- 背单词 -->
+<!-- 背单词：计划 → 卡片 → 打卡 -->
 <section class="vstudy" id="study" hidden aria-label="背单词">
   <header class="vs-head">
-    <span class="vs-prog" id="vsProg">0 / 0</span>
+    <span class="vs-prog" id="vsProg">剩余 0</span>
     <span class="vs-scope" id="vsScope"></span>
+    <button class="vs-gear" id="vsGear" type="button" aria-label="背诵设置" title="背诵设置">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.56V20a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1H4a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.56-1.1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H10a1.7 1.7 0 0 0 1-1.56V4a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V10a1.7 1.7 0 0 0 1.56 1H20a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
     <button class="vs-close" id="vsClose" type="button" aria-label="退出背单词">×</button>
   </header>
   <div class="vs-bar"><i id="vsBar"></i></div>
-  <div class="vs-card" id="vsCard"></div>
-  <div class="vs-acts" id="vsActs">
-    <button class="vbtn ghost" id="vsAgain" type="button">不认识 <small>1</small></button>
-    <button class="vbtn" id="vsReveal" type="button">显示释义 <small>空格</small></button>
-    <button class="vbtn primary" id="vsKnow" type="button">认识 <small>2</small></button>
+
+  <div class="vs-view vs-plan" id="vsPlan"></div>
+
+  <div class="vs-view vs-main" id="vsMain" hidden>
+    <div class="vs-card" id="vsCard"></div>
+    <div class="vs-foot">
+      <button class="vs-revealbtn" id="vsReveal" type="button">显示释义 <small>空格</small></button>
+      <div class="vs-acts" id="vsActs" hidden>
+        <button class="vs-act vs-act--again" id="vsAgain" type="button"><b>不认识</b><small>1</small></button>
+        <button class="vs-act vs-act--fuzzy" id="vsFuzzy" type="button"><b>模糊</b><small>2</small></button>
+        <button class="vs-act vs-act--know" id="vsKnow" type="button"><b>认识</b><small>3</small></button>
+      </div>
+    </div>
   </div>
+
+  <div class="vs-view vs-done" id="vsDone" hidden></div>
+  <canvas class="vs-fire" id="vsFire" aria-hidden="true"></canvas>
 </section>
 
 <dialog class="vabout" id="aboutDlg">
@@ -123,6 +139,6 @@
 <audio id="vaudio" preload="none" hidden></audio>
 
 <script src="/vocab/data/index.js?v=20261122a"></script>
-<script src="/vocab/vocab.js?v=20261122a"></script>
+<script src="/vocab/vocab.js?v=20261126a"></script>
 </body>
 </html>
