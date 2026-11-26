@@ -1,14 +1,19 @@
 {
-  "version": "1.0.4",
-  "build": 5,
+  "version": "1.0.5",
+  "build": 6,
   "date": "2026-11-26",
-  "file": "KaoyanHub-1.0.4-arm64.dmg",
-  "size": 202498554,
+  "file": "KaoyanHub-1.0.5-arm64.dmg",
+  "size": 202529734,
   "minMacOS": "11.0",
   "arch": "arm64",
-  "url": "https://github.com/3456038583-gif/kaoyan-hub/releases/download/v1.0.4/KaoyanHub-1.0.4-arm64.dmg",
-  "page": "https://github.com/3456038583-gif/kaoyan-hub/releases/tag/v1.0.4",
+  "url": "https://github.com/3456038583-gif/kaoyan-hub/releases/download/v1.0.5/KaoyanHub-1.0.5-arm64.dmg",
+  "page": "https://github.com/3456038583-gif/kaoyan-hub/releases/tag/v1.0.5",
   "notes": [
+    {
+      "version": "1.0.5",
+      "date": "2026-11-26",
+      "note": "数学 PDF 预览加「下载」按钮，颜色跟随当前板块主题色；政治真题 PDF 换成按年份原卷与答案详解（2010–2026）"
+    },
     {
       "version": "1.0.4",
       "date": "2026-11-26",
