@@ -384,6 +384,8 @@
   /* ------------------------------------------------------------ 发音 */
   var audio = $('#vaudio');
   function play(src, btn) {
+    if (!src) return;
+    try { audio.pause(); } catch (e) {}
     audio.src = '/vocab/audio/' + src;
     audio.play().then(function () {
       if (btn) {
@@ -391,6 +393,15 @@
         setTimeout(function () { btn.classList.remove('playing'); }, 1200);
       }
     }).catch(function () {});
+  }
+  /* 卡片出现时自动念一遍；同一个词重现（重新入队）会再念一次 */
+  function autoSpeak(item) {
+    if (!item || item.spoke) return;
+    if (!plan.au) { item.spoke = 1; return; }
+    var d = letters[letterOf(item.r[0])] && letters[letterOf(item.r[0])][item.r[0]];
+    if (!d) return;            // 词库还没加载完，等下面 loadLetter 回来后再念
+    item.spoke = 1;
+    if (d[6]) play(d[6], $('#vsCard .play'));
   }
 
   /* ------------------------------------------------------------ 复制 */
@@ -435,7 +446,7 @@
      复习节点 IV：认识一次往后推一格；模糊回到 1 天；不认识清零并在本轮稍后重现。 */
   var IV = [1, 2, 4, 7, 15, 30, 60, 120, 240];
   var srs = store('srs.v2', {});      // 词 -> { l:等级, d:到期日, i:间隔, r:遍数, x:忘次, f:首学日, dc:统计日 }
-  var plan = store('plan.v2', { size: 50 });
+  var plan = store('plan.v2', { size: 50, au: 1 });
   if (!(plan.size > 0)) plan.size = 50;
   var days = store('days.v2', {});    // 'YYYY-MM-DD' -> { new, rev, know, fuzzy, again, sec, done }
   var perf = store('perf.v2', { sec: 0, n: 0 });
@@ -522,6 +533,15 @@
   }
 
   /* ---- 打开 / 切换视图 ---- */
+  function paintVoice() {
+    var b = $('#vsVoice');
+    if (!b) return;
+    var on = !!plan.au;
+    b.classList.toggle('is-off', !on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    b.title = '自动发音：' + (on ? '开' : '关');
+    b.setAttribute('aria-label', '自动发音：' + (on ? '开' : '关'));
+  }
   function showView(which) {
     $('#vsPlan').hidden = which !== 'plan';
     $('#vsMain').hidden = which !== 'main';
@@ -537,6 +557,7 @@
     $('#study').hidden = false;
     $('#mask').hidden = false;
     document.body.style.overflow = 'hidden';
+    paintVoice();
     renderPlanView();
     showView('plan');
   }
@@ -576,7 +597,8 @@
         }).join('') + '</div>'
       + '<p class="vp-est2">按每天 <b>' + plan.size + '</b> 词：还剩 <b>' + st.fresh + '</b> 词，预计 <b>' + st.days + '</b> 天背完；'
       + '今天这组约 <b>' + st.mins + ' 分钟</b>（按你平均 ' + Math.round(avgSec()) + ' 秒/词）。</p>'
-      + '<p class="vp-tip">不认识的词会在本轮隔几张后再次出现；认识后按 <b>1 / 2 / 4 / 7 / 15 / 30 / 60</b> 天的曲线安排复习。</p>'
+      + '<p class="vp-tip">不认识的词会在本轮隔几张后再次出现；认识后按 <b>1 / 2 / 4 / 7 / 15 / 30 / 60</b> 天的曲线安排复习。<br>'
+      + '每轮词序都会打乱，不会连着背同一个首字母；单词出现时自动朗读（右上角 <b>🔊</b> 可关）。</p>'
       + '<div class="vp-round">今日已学 <b>' + l.new + '</b> 新词 · 复习 <b>' + l.rev + '</b> 词 · 累计学过 <b>' + knownN + '</b> 词</div>'
       + '<div class="vp-acts">'
       + '<button class="vbtn primary vp-start" type="button" id="vpStart"' + (total ? '' : ' disabled') + '>'
@@ -619,14 +641,42 @@
     renderPlanBar();
   }
 
+  /* ---- 顺序：随机打乱并避免相邻同首字母 ---- */
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function initialOf(item) {
+    var w = item && (item.r ? item.r[0] : item[0]) || '';
+    return w.charAt(0).toLowerCase();
+  }
+  function declump(list) {
+    for (var i = 1; i < list.length; i++) {
+      var prev = initialOf(list[i - 1]);
+      if (initialOf(list[i]) !== prev) continue;
+      for (var j = i + 1; j < list.length; j++) {
+        if (initialOf(list[j]) === prev) continue;
+        var t = list[i]; list[i] = list[j]; list[j] = t;
+        break;
+      }
+    }
+    return list;
+  }
+
   /* ---- 一轮 ---- */
   function startSession(extra) {
-    var due = duePool(), fresh = freshPool().slice(0, todayQuota() + (extra || 0));
+    var due = declump(duePool());
+    var fresh = shuffle(scopeRows().filter(function (r) { return !srs[r[0]] && !known[r[0]]; }))
+      .slice(0, todayQuota() + (extra || 0));
     var q = [], di = 0, fi = 0;
     while (di < due.length || fi < fresh.length) {
       for (var k = 0; k < 2 && di < due.length; k++) q.push({ r: due[di++], isNew: false });
       if (fi < fresh.length) q.push({ r: fresh[fi++], isNew: true });
     }
+    declump(q);
     S.q = q; S.i = 0; S.reveal = false; S.req = {};
     if (!q.length) { showView('plan'); renderPlanView(); return; }
     showView('main');
@@ -678,6 +728,7 @@
     $('#vsActs').hidden = !S.reveal;
     S.t0 = Date.now();
     updateHud();
+    autoSpeak(item);
     if (!d) loadLetter(ch).then(function () { if (S.q[S.i] === item) renderCard(); }).catch(function () {});
   }
 
@@ -916,6 +967,17 @@
     $('#vsKnow').addEventListener('click', function () { answer('know'); });
     $('#vsFuzzy').addEventListener('click', function () { answer('fuzzy'); });
     $('#vsAgain').addEventListener('click', function () { answer('again'); });
+    $('#vsVoice').addEventListener('click', function () {
+      plan.au = plan.au ? 0 : 1;
+      persist('plan.v2', plan);
+      paintVoice();
+      if (plan.au) {
+        var item = S.q[S.i];
+        if (item) { item.spoke = 0; autoSpeak(item); }
+      } else {
+        try { audio.pause(); } catch (e) {}
+      }
+    });
     $('#vsGear').addEventListener('click', function () {
       if (!$('#vsMain').hidden && S.q.length && S.i < S.q.length) {
         if (!confirm('回到计划页？这一轮没背完的进度会保留，下次继续。')) return;
@@ -972,6 +1034,7 @@
   renderUnits();
   bind();
   apply();
+  paintVoice();
   renderPlanBar();
 
   (function restore() {
