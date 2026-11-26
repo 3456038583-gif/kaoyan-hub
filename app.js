@@ -10,6 +10,7 @@
   const frameEl = document.getElementById('pdfFrame');
   const pdfTitleEl = document.getElementById('pdfTitle');
   const pdfOpenEl = document.getElementById('pdfOpen');
+  const pdfDlEl = document.getElementById('pdfDl');
 
   const SUBJ_VIEW = { m1: 1, m2: 2, m3: 3 };
   const LV_CLASS = { '常规': 'e', '中档': 'm', '难题': 'h' };
@@ -3060,6 +3061,16 @@
     pdfTitleEl.textContent = title || 'PDF';
     frameEl.src = path;
     pdfOpenEl.href = path;
+    if (pdfDlEl) {
+      pdfDlEl.href = path;
+      /* 下载名跟随标题：2021 年数学（一）真题试卷 → 2021-年数学（一）真题试卷.pdf */
+      const name = (title || '')
+        .replace(/[\\/:*?"<>|]+/g, '')
+        .replace(/[\s·]+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      pdfDlEl.setAttribute('download', (name || 'paper') + '.pdf');
+    }
     sheetEl.hidden = false;
     document.body.style.overflow = 'hidden';
   }
