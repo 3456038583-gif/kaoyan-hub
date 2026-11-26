@@ -8,11 +8,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  max-width: 1200px;
+  max-width: var(--max, 1200px);
   margin: 0 auto;
   padding: 11px 0 10px;
   border-bottom: 1px solid var(--line, #e0dfd4);
   background: var(--paper, #f5f4ee);
+  box-shadow: -50vw 0 0 var(--paper, #f5f4ee), 50vw 0 0 var(--paper, #f5f4ee);
   font-family: var(--sans, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif);
   font-size: 13px;
   line-height: 1.4;
