@@ -32,6 +32,19 @@
   try {
     localStorage.setItem('kaoyanPolitics.position.v1', JSON.stringify({ y: Number(P.id) || Number(P.year) }));
   } catch (e) { /* 禁用存储时仅本次会话有效 */ }
+
+  /* 肖八：记住上次做的那一套，左侧「肖八模拟」入口下次直接回到那一套 */
+  try {
+    const SX = 'kaoyanPolitics.xiao8.v1';
+    const isX8 = String(P.id).indexOf('xiao8-') === 0;
+    if (isX8) {
+      localStorage.setItem(SX, String(P.id));
+    } else {
+      const last = localStorage.getItem(SX);
+      const a = document.querySelector('.pmodgroup a[href^="/politics/xiao8-"]');
+      if (last && a) a.setAttribute('href', '/politics/' + last);
+    }
+  } catch (e) { /* 忽略 */ }
   const isSub = (n) => !!submitted[n];
 
   /* ---------- 计分规则：单选 1 分/题，多选 2 分/题（全对才得分） ---------- */

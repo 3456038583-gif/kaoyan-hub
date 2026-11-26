@@ -111,6 +111,21 @@ html[data-view="pol"] { --accent: #2f6f6a; --accent-soft: #e2efec; --accent-ink:
   font-variant-numeric: tabular-nums;
 }
 
+/* ---------- 手机：板块标签行压缩，保证入口不被横向滚动藏住 ---------- */
+/* 政治板块左有两个标签 + 三个工具，窄屏一行放不下，去掉套数小字并收紧内边距 */
+@media (max-width: 560px) {
+  html[data-view="pol"] .pmod { padding-inline: 8px; font-size: 12.5px; }
+  html[data-view="pol"] .pmod .cnt { display: none; }
+  html[data-view="pol"] .pmodgroup--tools::before { margin: 0 2px; }
+  html[data-view="pol"] .pmod--tool { padding-inline: 5px; }
+}
+
+/* 更窄的屏（≤400px）：「政治一页纸」省去前缀，保证一行放下 */
+@media (max-width: 400px) {
+  html[data-view="pol"] .pmod--tool .t-lg { display: none; }
+  html[data-view="pol"] .pmod--tool { padding-inline: 4px; }
+}
+
 /* ---------- 年份行 ---------- */
 .pbar-years {
   display: flex;
