@@ -8,8 +8,8 @@ window.__PPAPER__ = {
   "满分 100 分",
   "建议 180 分钟"
  ],
- "paper": "/pdfs/politics/2023.pdf",
- "sol": "/pdfs/politics/2023-sol.pdf",
+ "paper": "/pdfs/politics/2023.pdf?v=20261126",
+ "sol": "/pdfs/politics/2023-sol.pdf?v=20261126",
  "sections": [
   {
    "id": "single",
