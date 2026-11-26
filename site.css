@@ -53,6 +53,40 @@
   border-bottom-color: currentColor;
   font-weight: 600;
 }
+/* 站名右边的 GitHub 入口（全站统一，插在 .sb-brand / .brand 之后） */
+.sb-gh, .sitebar .ghbtn, .topbar .ghbtn { flex: none; }
+.sitebar .ghbtn, .topbar .ghbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 9px;
+  border: 1px solid var(--line, #e0dfd4);
+  border-radius: 999px;
+  background: var(--surface, #fffdf8);
+  color: var(--muted, #6d746c);
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  text-decoration: none;
+  /* 紧挨站名，同时把右侧导航挤到最右 */
+  margin-left: -5px;
+  margin-right: auto;
+  align-self: center;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.sitebar .ghbtn svg, .topbar .ghbtn svg { width: 13px; height: 13px; display: block; }
+.sitebar .ghbtn:hover, .topbar .ghbtn:hover {
+  color: var(--ink, #1b211d);
+  border-color: var(--ink, #1b211d);
+}
+@media (max-width: 620px) {
+  .sitebar .ghbtn, .topbar .ghbtn { width: 24px; padding: 0; gap: 0; }
+  .sitebar .ghbtn span, .topbar .ghbtn span { display: none; }
+}
+
 /* 窄屏：单行不换行，链接区可横向滑动，高度恒定（--sb-h 才能对得上） */
 @media (max-width: 720px) {
   :root { --sb-h: 44px; }
