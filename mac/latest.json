@@ -1,14 +1,19 @@
 {
-  "version": "1.0.5",
-  "build": 6,
+  "version": "1.0.6",
+  "build": 7,
   "date": "2026-11-26",
-  "file": "KaoyanHub-1.0.5-arm64.dmg",
-  "size": 202529734,
+  "file": "KaoyanHub-1.0.6-arm64.dmg",
+  "size": 203158890,
   "minMacOS": "11.0",
   "arch": "arm64",
-  "url": "https://github.com/3456038583-gif/kaoyan-hub/releases/download/v1.0.5/KaoyanHub-1.0.5-arm64.dmg",
-  "page": "https://github.com/3456038583-gif/kaoyan-hub/releases/tag/v1.0.5",
+  "url": "https://github.com/3456038583-gif/kaoyan-hub/releases/download/v1.0.6/KaoyanHub-1.0.6-arm64.dmg",
+  "page": "https://github.com/3456038583-gif/kaoyan-hub/releases/tag/v1.0.6",
   "notes": [
+    {
+      "version": "1.0.6",
+      "date": "2026-11-26",
+      "note": "新增 27 张宇四套卷（数二/数三）与 27 李林四套卷（数一/数二）共 16 套模拟卷（累计 61 套 1,342 题）；全站新增 6 套外观主题（含 Liquid Glass 液态玻璃亮/暗）、⌘K 命令面板、跨页专注番茄钟、首页备考看板及数学考场防剧透/单题笔记；统一修复解析方法分段、跨页主题零闪烁与顶栏对齐"
+    },
     {
       "version": "1.0.5",
       "date": "2026-11-26",
