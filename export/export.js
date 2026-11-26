@@ -14,7 +14,7 @@
       id: 'math', code: '数', label: '数学真题', href: '/math/',
       desc: '数一 / 数二 / 数三 逐卷记分、错题本、模拟卷、计时',
       match: function (k) { return k.indexOf('kaoyanMath.') === 0; },
-      data: function (k) { return /^kaoyanMath\.(scores|wrong|mocks|timers|yearDone)\.v1$/.test(k); }
+      data: function (k) { return /^kaoyanMath\.(scores|wrong|mocks|timers|yearDone|notes)\.v1$/.test(k); }
     },
     {
       id: 'exam', code: '英', label: '英语真题', href: '/exam/',

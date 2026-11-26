@@ -14,6 +14,7 @@
 <noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet"></noscript>
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#0d2a4a">
+<link rel="stylesheet" href="/theme.css?v=20261127a">
 <script>
 /* 旧书签（/?year=2024&subj=1、/#q-2024-1-3 等）直接转到数学站 */
 (function () {
@@ -59,6 +60,8 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   background: var(--paper);
+  background-image: radial-gradient(color-mix(in srgb, var(--line) 65%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
   color: var(--ink);
   font-family: var(--sans);
   font-size: 15px;
@@ -125,15 +128,81 @@ a { color: inherit; text-decoration: none; }
   display: grid;
   place-items: center;
   border: 2px solid var(--red);
-  border-radius: 10px;
+  border-radius: 12px;
   color: var(--red);
   font-family: var(--serif);
   font-size: 30px;
   font-weight: 700;
   line-height: 1;
   box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 4px var(--red);
-  opacity: .9;
+  opacity: .92;
+  transition: transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s;
 }
+.masthead:hover .seal { transform: rotate(-4deg) scale(1.04); }
+
+/* 个人备考看板条 */
+.dash-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  padding: 13px 18px;
+  margin-bottom: 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 12.5px;
+}
+.dash-metrics {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+}
+.dash-m {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  color: var(--muted);
+  transition: color .15s;
+}
+.dash-m:hover { color: var(--accent); }
+.dash-m b {
+  font-family: var(--mono);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.dash-m.warn b { color: var(--red); }
+.dash-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+.dash-quote {
+  color: var(--muted);
+  font-family: var(--serif);
+  font-size: 12.5px;
+  letter-spacing: .02em;
+}
+.dash-resume {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink, #fff);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: filter .15s, transform .15s;
+}
+.dash-resume:hover { filter: brightness(1.08); transform: translateY(-1px); }
 .kicker {
   margin: 0 0 6px;
   font-family: var(--mono);
@@ -165,14 +234,35 @@ h1 {
 }
 .card {
   position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 22px 22px 20px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 4px;
-  transition: border-color .18s, transform .18s, box-shadow .18s;
+  border-radius: 12px;
+  transition: border-color .2s, transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s;
+  animation: cardRise .38s cubic-bezier(.22,1,.36,1) both;
+}
+.card:nth-child(2) { animation-delay: 40ms; }
+.card:nth-child(3) { animation-delay: 80ms; }
+.card:nth-child(4) { animation-delay: 120ms; }
+.card:nth-child(5) { animation-delay: 160ms; }
+.card:nth-child(6) { animation-delay: 200ms; }
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 0%), color-mix(in srgb, var(--accent) 11%, transparent), transparent 65%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s;
+}
+.card:hover::before { opacity: 1; }
+@keyframes cardRise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .card::after {
   content: "→";
@@ -355,12 +445,26 @@ footer .fl { display: flex; flex-wrap: wrap; gap: 16px; }
   </header>
 
   <main>
+    <section class="dash-strip" id="dashStrip" aria-label="备考进度看板">
+      <div class="dash-metrics">
+        <a class="dash-m" href="/math/" title="数学已记分题数"><b id="dsMathQ">0</b> <span>道数学已记分</span></a>
+        <a class="dash-m warn" href="/math/?view=wrong" title="查看数学错题本"><b id="dsWrong">0</b> <span>道错题待清</span></a>
+        <a class="dash-m" href="/exam/" title="英语已作答套数"><b id="dsEng">0</b> <span>套英语</span></a>
+        <a class="dash-m" href="/politics/" title="政治已作答套数"><b id="dsPol">0</b> <span>套政治</span></a>
+        <a class="dash-m" href="/vocab/" title="红宝书生词本"><b id="dsVocab">0</b> <span>个生词</span></a>
+      </div>
+      <div class="dash-right">
+        <span class="dash-quote" id="dsQuote"></span>
+        <a class="dash-resume" id="dsResume" href="/math/?view=mock">刷 61 套模拟卷 →</a>
+      </div>
+    </section>
+
     <div class="cards">
       <a class="card" href="/math/">
         <div class="ctop"><img class="cico" src="/img/icons/s/math.png" alt="" width="46" height="46" loading="lazy" decoding="async"><span class="tag">Mathematics</span></div>
-        <h2>数学真题</h2>
-        <p>2010—2026 年数一 / 数二 / 数三原卷与解析，逐题 LaTeX 还原，按年份、题型、难度筛选，PDF 在线翻阅。</p>
-        <div class="meta"><span>17 年</span><span>121 份 PDF</span><span>逐题还原</span></div>
+        <h2>数学真题 · 模拟卷</h2>
+        <p>2010—2026 年数一 / 数二 / 数三真题 + 61 套 2027 预测模拟卷（李林 / 张宇 / 崔命），逐题 LaTeX 还原、考场沉浸模式、单题笔记与 PDF 翻阅。</p>
+        <div class="meta"><span>17 年真题</span><span>61 套模拟卷</span><span>1,342 模拟题</span></div>
       </a>
       <a class="card" href="/library/">
         <div class="ctop"><img class="cico" src="/img/icons/s/search.png" alt="" width="46" height="46" loading="lazy" decoding="async"><span class="tag">Knowledge Base</span></div>
@@ -478,5 +582,76 @@ footer .fl { display: flex; flex-wrap: wrap; gap: 16px; }
   </footer>
 
 </div>
+<script>
+(function () {
+  // 卡片光标跟随微高光
+  document.querySelectorAll('.card').forEach(function (c) {
+    c.addEventListener('pointermove', function (e) {
+      var r = c.getBoundingClientRect();
+      c.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+
+  // 实时读取 localStorage 渲染备考看板（只读，不改动任何用户数据）
+  function jget(k, fb) {
+    try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch (e) { return fb; }
+  }
+  var scores = jget('kaoyanMath.scores.v1', {});
+  var wrong = jget('kaoyanMath.wrong.v1', []);
+  var mathQ = 0;
+  if (scores && typeof scores === 'object') {
+    Object.keys(scores).forEach(function (k) {
+      var v = scores[k];
+      if (v && typeof v === 'object') mathQ += Object.keys(v).length;
+    });
+  }
+  var wrongN = Array.isArray(wrong) ? wrong.length : (wrong && typeof wrong === 'object' ? Object.keys(wrong).length : 0);
+  var engN = 0, polN = 0, vocabN = 0;
+  try {
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i) || '';
+      if (k.indexOf('kaoyan-exam:') === 0 && k.indexOf('summary') < 0) engN++;
+      else if (k.indexOf('kaoyan-politics:') === 0) polN++;
+    }
+    var vb = jget('kaoyan-vocab-book', null) || jget('kaoyanVocab.book.v1', null) || jget('vocab.favorites', null);
+    if (Array.isArray(vb)) vocabN = vb.length;
+    else if (vb && typeof vb === 'object') vocabN = Object.keys(vb).length;
+  } catch (e) {}
+
+  var set = function (id, val) { var el = document.getElementById(id); if (el) el.textContent = val; };
+  set('dsMathQ', mathQ);
+  set('dsWrong', wrongN);
+  set('dsEng', engN);
+  set('dsPol', polN);
+  set('dsVocab', vocabN);
+
+  // 继续上次进度
+  var pos = jget('kaoyanMath.position.v1', null);
+  var resEl = document.getElementById('dsResume');
+  if (resEl && pos && typeof pos === 'object' && pos.view) {
+    var map = { m1: '数一', m2: '数二', m3: '数三', mock: '模拟卷', key: '重点题', supp: '补充真题', wrong: '错题本' };
+    var lbl = map[pos.view] || '数学';
+    var url = '/math/?view=' + encodeURIComponent(pos.view);
+    if (pos.year && pos.view !== 'mock') { url += '&year=' + encodeURIComponent(pos.year); lbl += ' ' + pos.year; }
+    if (pos.paper && pos.view === 'mock') { url += '&paper=' + encodeURIComponent(pos.paper); }
+    resEl.href = url;
+    resEl.textContent = '继续：' + lbl + ' →';
+  }
+
+  // 每日备考笺言（按日期轮换）
+  var quotes = [
+    '把每一道错题弄透，就是最快提分。',
+    '慢就是快，真题每刷一遍都有新收获。',
+    '稳住基础选填，大题步骤写满不丢分。',
+    '考场如平时，平时如考场。',
+    '今日事今日毕，每天清掉 5 道错题。',
+    '公式记在手上，更要记在推导里。',
+    '坚持到最后一天的人，已经赢了一半。'
+  ];
+  var dayIdx = Math.floor(Date.now() / 86400000) % quotes.length;
+  set('dsQuote', '「' + quotes[dayIdx] + '」');
+})();
+</script>
 </body>
 </html>
