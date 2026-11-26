@@ -395,6 +395,21 @@
     }).catch(function () {});
   }
   /* 卡片出现时自动念一遍；同一个词重现（重新入队）会再念一次 */
+  var SILENT = 'data:audio/wav;base64,UklGRuwAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YcgAAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==';
+  var unlocked = false;
+  /* iOS / Safari 只允许「用户手势里」触发播放；先放一段静音把手势用掉，
+     后面词库分片异步加载完再播放也不会被拦 */
+  function unlockAudio() {
+    if (unlocked) return;
+    unlocked = true;
+    try {
+      audio.src = SILENT;
+      var pr = audio.play();
+      var release = function () { if (audio.getAttribute('src') === SILENT) audio.pause(); };
+      if (pr && pr.then) pr.then(release).catch(function () {});
+      else release();
+    } catch (e) {}
+  }
   function autoSpeak(item) {
     if (!item || item.spoke) return;
     if (!plan.au) { item.spoke = 1; return; }
@@ -679,6 +694,9 @@
     declump(q);
     S.q = q; S.i = 0; S.reveal = false; S.req = {};
     if (!q.length) { showView('plan'); renderPlanView(); return; }
+    /* 首词的词库分片还没加载时，先在手势里放一段静音解锁音频，
+       否则等分片回来再播放会被 iOS / Safari 拦掉 */
+    if (plan.au && !letters[letterOf(q[0].r[0])]) unlockAudio();
     showView('main');
     renderCard();
   }
