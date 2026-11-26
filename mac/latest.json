@@ -1,14 +1,19 @@
 {
-  "version": "1.0.3",
-  "build": 4,
+  "version": "1.0.4",
+  "build": 5,
   "date": "2026-11-26",
-  "file": "KaoyanHub-1.0.3-arm64.dmg",
-  "size": 202541381,
+  "file": "KaoyanHub-1.0.4-arm64.dmg",
+  "size": 202498554,
   "minMacOS": "11.0",
   "arch": "arm64",
-  "url": "https://github.com/3456038583-gif/kaoyan-hub/releases/download/v1.0.3/KaoyanHub-1.0.3-arm64.dmg",
-  "page": "https://github.com/3456038583-gif/kaoyan-hub/releases/tag/v1.0.3",
+  "url": "https://github.com/3456038583-gif/kaoyan-hub/releases/download/v1.0.4/KaoyanHub-1.0.4-arm64.dmg",
+  "page": "https://github.com/3456038583-gif/kaoyan-hub/releases/tag/v1.0.4",
   "notes": [
+    {
+      "version": "1.0.4",
+      "date": "2026-11-26",
+      "note": "修掉 2026 年真题点不进去：政治／英语首页不再自动跳回上次年份，年份胶囊不再自指"
+    },
     {
       "version": "1.0.3",
       "date": "2026-11-26",
