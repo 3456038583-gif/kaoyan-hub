@@ -1,14 +1,19 @@
 {
-  "version": "1.0.2",
-  "build": 3,
-  "date": "2026-11-25",
-  "file": "KaoyanHub-1.0.2-arm64.dmg",
-  "size": 202432178,
+  "version": "1.0.3",
+  "build": 4,
+  "date": "2026-11-26",
+  "file": "KaoyanHub-1.0.3-arm64.dmg",
+  "size": 202541381,
   "minMacOS": "11.0",
   "arch": "arm64",
-  "url": "https://github.com/3456038583-gif/kaoyan-hub/releases/download/v1.0.2/KaoyanHub-1.0.2-arm64.dmg",
-  "page": "https://github.com/3456038583-gif/kaoyan-hub/releases/tag/v1.0.2",
+  "url": "https://github.com/3456038583-gif/kaoyan-hub/releases/download/v1.0.3/KaoyanHub-1.0.3-arm64.dmg",
+  "page": "https://github.com/3456038583-gif/kaoyan-hub/releases/tag/v1.0.3",
   "notes": [
+    {
+      "version": "1.0.3",
+      "date": "2026-11-26",
+      "note": "政治板块：肖八模拟与政治真题并列为左侧标签，进入肖八后年份行改为卷一…卷八；App 内置服务支持无扩展名地址"
+    },
     {
       "version": "1.0.2",
       "date": "2026-11-25",
