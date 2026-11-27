@@ -2,8 +2,8 @@
 
 一个纯静态的考研资料站点，把**数学真题与 61 套模拟卷**、**英语真题与一/二刷速查**、**政治真题与肖八**、**2027 红宝书英语词汇**、**考研知识库**以及**数据备份 / macOS 桌面版**整合在同一个入口下。所有页面均为静态 HTML + CSS + JS，无后端、零账号依赖，用户做题记录全部保存在浏览器 `localStorage` 中。
 
-- **线上主站**：<https://kaoyan.feikntn111.us.ci>（短域 <https://k.feikntn111.us.ci>）
-- **独立数学站**：<https://math.feikntn111.us.ci>（源码仓库 [kaoyan-math-site](https://github.com/3456038583-gif/kaoyan-math-site)）
+- **线上主站**：<https://kaoyan.feikntn111.com>（短域 <https://k.feikntn111.com>；原旧域 `kaoyan.feikntn111.us.ci` / `k.feikntn111.us.ci` 同步保留）
+- **独立数学站**：<https://math.feikntn111.com>（源码仓库 [kaoyan-math-site](https://github.com/3456038583-gif/kaoyan-math-site)）
 - **macOS 桌面版**：见本仓库 [Releases](https://github.com/3456038583-gif/kaoyan-hub/releases/latest) 或站内 `/export/` 下载离线 `.dmg`
 - **源码仓库**：<https://github.com/3456038583-gif/kaoyan-hub>（只含网页、脚本与题目数据，不含大体积 PDF）
 
