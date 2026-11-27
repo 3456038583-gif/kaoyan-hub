@@ -5,43 +5,47 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/img/icons/f/app-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/img/icons/f/app-16.png">
 <link rel="apple-touch-icon" href="/img/icons/apple-touch-icon.png">
-<title>使用指南与反馈 · 考研资料总库</title>
+<title>使用指南 · 考研资料总库</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="考研资料总库使用指南：快速上手、六大板块说明、效率快捷键、云端账号同步、常见问题与意见反馈。">
+<meta name="description" content="考研资料总库小指南：认识总库、六大板块与云端同步、效率快捷键、常见问题与意见反馈。">
 <link rel="stylesheet" href="/site.css?v=20261127c">
 <link rel="stylesheet" href="/theme.css?v=20261127b">
 <script src="/countdown.js" defer></script>
 <script id="ky-theme-init">(function(){try{var t=localStorage.getItem('kaoyan.theme.v1'),f=localStorage.getItem('kaoyan.fontsize.v1'),r=document.documentElement;if(t&&t!=='classic'){r.setAttribute('data-style',t);r.setAttribute('data-theme',(t==='glass'||t==='sage'||t==='eink')?'light':'dark');}if(f&&f!=='md')r.setAttribute('data-fontsize',f);}catch(e){}})();</script>
 <style>
 :root {
-  --paper: #f5f4ee;
-  --surface: #fffdf8;
-  --surface-2: #f1efe6;
-  --ink: #1b211d;
-  --muted: #6d746c;
-  --line: #e0dfd4;
-  --accent: #2f5d8a;
-  --accent-soft: #e6edf4;
+  --paper: #f3f5f8;
+  --surface: #ffffff;
+  --surface-2: #f6f8fb;
+  --card-paper: #f7f8ef;
+  --ink: #182026;
+  --muted: #5c6670;
+  --line: #e4e8ee;
+  --accent: #2563eb;
+  --accent-2: #3b82f6;
+  --accent-soft: rgba(37, 99, 235, .1);
   --gold: #b5842f;
-  --red: #a33a2c;
-  --serif: "Noto Serif SC", "Songti SC", "STSong", serif;
+  --serif: "Noto Serif SC", "Songti SC", "STSong", Georgia, serif;
   --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
-  --max: 980px;
+  --max: 1020px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #161916;
-    --surface: #1d211d;
-    --surface-2: #242924;
-    --ink: #e9e8e1;
-    --muted: #9aa197;
-    --line: #2e332e;
-    --accent: #8fb4d6;
-    --accent-soft: #22303b;
-    --gold: #d2a453;
-    --red: #d98a7c;
+    --paper: #121614;
+    --surface: #191f1b;
+    --surface-2: #202723;
+    --card-paper: #232b24;
+    --ink: #ecefe9;
+    --muted: #98a29b;
+    --line: #2a332d;
+    --accent: #60a5fa;
+    --accent-2: #93c5fd;
+    --accent-soft: rgba(96, 165, 250, .14);
   }
+}
+:root[data-theme="dark"] {
+  --card-paper: #222925;
 }
 * { box-sizing: border-box; }
 body {
@@ -50,74 +54,318 @@ body {
   color: var(--ink);
   font-family: var(--sans);
   font-size: 15px;
-  line-height: 1.72;
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }
-.wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px 72px; }
-.hero {
-  padding: 36px 0 24px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 28px;
-}
-.kicker {
-  margin: 0 0 8px;
-  font-family: var(--mono);
-  font-size: 11.5px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-.hero h1 {
-  margin: 0 0 10px;
-  font-family: var(--serif);
-  font-size: 28px;
-  line-height: 1.3;
-}
-.hero p { margin: 0; color: var(--muted); max-width: 680px; }
-.toc {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 16px;
-}
-.toc a {
-  font-size: 12.5px;
-  padding: 5px 11px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  color: var(--ink);
-  text-decoration: none;
-  transition: border-color .15s, color .15s;
-}
-.toc a:hover { border-color: var(--accent); color: var(--accent); }
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 20px 56px; }
 
-section.block { margin: 0 0 34px; scroll-margin-top: 72px; }
-section.block h2 {
-  font-family: var(--serif);
-  font-size: 19px;
-  margin: 0 0 14px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--line);
+/* 主指南卡片容器（类 WordPaper 小指南清爽浮窗质感） */
+.guide-shell {
+  margin-top: 22px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 18px 48px -24px rgba(15, 23, 42, .18), 0 2px 8px -2px rgba(15, 23, 42, .05);
+  overflow: hidden;
+}
+
+/* 顶部标题与标签栏 */
+.gs-top {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  padding: 20px 30px 10px;
 }
-.steps {
+.gs-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.gs-brand svg { width: 20px; height: 20px; color: var(--accent); }
+.gs-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 18px;
+  line-height: 1;
+  transition: all .15s;
+}
+.gs-close:hover { color: var(--ink); border-color: var(--accent); }
+
+.gs-tabs {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  padding: 0 30px;
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.gs-tabs::-webkit-scrollbar { display: none; }
+.gs-tab {
+  position: relative;
+  border: 0;
+  background: none;
+  padding: 12px 2px 13px;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color .15s;
+}
+.gs-tab:hover { color: var(--ink); }
+.gs-tab.on {
+  color: var(--accent);
+  font-weight: 600;
+}
+.gs-tab.on::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2.5px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+/* 内容区 */
+.gs-body { padding: 36px 34px 32px; }
+.gs-panel[hidden] { display: none; }
+
+/* Tab 1: Hero 左文右斜放卡片 */
+.hero-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(260px, .95fr);
+  gap: 36px;
+  align-items: center;
+  padding-bottom: 34px;
+  border-bottom: 1px solid var(--line);
+}
+.hero-kicker {
+  margin: 0 0 14px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+}
+.hero-title {
+  margin: 0 0 18px;
+  font-family: var(--serif);
+  font-size: 40px;
+  line-height: 1.26;
+  font-weight: 700;
+  letter-spacing: .01em;
+  color: var(--ink);
+}
+.hero-title .hl {
+  background: linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero-desc {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.82;
+  color: var(--muted);
+  max-width: 470px;
+}
+
+/* 右侧斜放多层纸卡（可点击切换 3 张展示卡） */
+.card-stage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 10px 6px 14px;
+}
+.paper-stack {
+  position: relative;
+  width: 268px;
+  cursor: pointer;
+  user-select: none;
+  transform: rotate(2.6deg);
+  transition: transform .25s ease;
+}
+.paper-stack:hover { transform: rotate(1deg) translateY(-3px); }
+.paper-stack::before {
+  content: "";
+  position: absolute;
+  inset: 8px -8px -8px 8px;
+  border-radius: 14px;
+  background: var(--card-paper);
+  border: 1px solid var(--line);
+  opacity: .72;
+  z-index: 0;
+}
+.paper-card {
+  position: relative;
+  z-index: 1;
+  background: var(--card-paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 24px 22px 18px;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 16px 32px -18px rgba(15, 23, 42, .25);
+}
+.pc-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .12em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.pc-main { margin: 16px 0 14px; }
+.pc-word {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--ink);
+  margin: 0 0 6px;
+}
+.pc-sub {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 0 0 12px;
+}
+.pc-meaning {
+  font-size: 13.5px;
+  color: var(--ink);
+  margin: 0 0 16px;
+  line-height: 1.6;
+}
+.pc-rule {
+  width: 28px;
+  height: 1.5px;
+  background: var(--line);
+  margin-bottom: 14px;
+}
+.pc-quote {
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 0;
+}
+.pc-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .08em;
+  color: var(--muted);
+  padding-top: 12px;
+}
+.pc-hint {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+/* 三栏核心亮点（带竖向细分割线） */
+.tri-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 28px;
+}
+.tri-item {
+  padding: 4px 24px;
+  border-right: 1px solid var(--line);
+}
+.tri-item:first-child { padding-left: 0; }
+.tri-item:last-child { padding-right: 0; border-right: 0; }
+.tri-ico {
+  width: 24px;
+  height: 24px;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.tri-item h3 {
+  margin: 0 0 8px;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.tri-item p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.72;
+  color: var(--muted);
+}
+
+/* Tab 2: 板块图鉴 + 云同步流 */
+.sec-cap {
+  margin: 0 0 16px;
+  font-family: var(--serif);
+  font-size: 20px;
+  color: var(--ink);
+}
+.mod-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.mod-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color .15s, transform .15s;
+}
+.mod-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.mod-card img {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  flex: none;
+  object-fit: cover;
+}
+.mod-card b { display: block; font-size: 15px; margin-bottom: 4px; color: var(--ink); }
+.mod-card span { display: block; font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+.sync-flow {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
 }
-.step-card, .info-card, .fb-card {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 12px;
+.sf-step {
   padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
 }
-.step-num {
+.sf-tag {
   display: inline-block;
   font-family: var(--mono);
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--accent);
   background: var(--accent-soft);
@@ -125,154 +373,153 @@ section.block h2 {
   border-radius: 999px;
   margin-bottom: 8px;
 }
-.step-card h3, .info-card h3, .fb-card h3 {
-  margin: 0 0 6px;
-  font-size: 15.5px;
-  font-weight: 600;
-}
-.step-card p, .info-card p, .fb-card p {
-  margin: 0;
-  font-size: 13.5px;
-  color: var(--muted);
-}
+.sf-step h4 { margin: 0 0 6px; font-size: 14.5px; color: var(--ink); }
+.sf-step p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.65; }
 
-.grid-2 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-}
-.mod-list {
+/* Tab 3: 快捷键与效率技巧 */
+.kbd-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
+  margin-bottom: 24px;
 }
-.mod-item {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 10px;
+.kbd-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
   padding: 14px 16px;
-  text-decoration: none;
-  color: inherit;
-  display: block;
-  transition: border-color .15s, transform .15s;
-}
-.mod-item:hover { border-color: var(--accent); transform: translateY(-1px); }
-.mod-item b { display: block; font-size: 14.5px; margin-bottom: 4px; color: var(--ink); }
-.mod-item span { font-size: 13px; color: var(--muted); }
-
-.kbd-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: var(--surface);
-  border: 1px solid var(--line);
   border-radius: 12px;
-  overflow: hidden;
-  font-size: 13.5px;
-}
-.kbd-table th, .kbd-table td {
-  padding: 10px 14px;
-  text-align: left;
-  border-bottom: 1px solid var(--line);
-}
-.kbd-table tr:last-child td { border-bottom: 0; }
-.kbd-table th {
+  border: 1px solid var(--line);
   background: var(--surface-2);
-  color: var(--muted);
-  font-weight: 600;
-  font-size: 12.5px;
 }
+.kbd-card b { display: block; font-size: 14px; color: var(--ink); margin-bottom: 2px; }
+.kbd-card span { font-size: 12.5px; color: var(--muted); }
+.kbd-keys { display: flex; gap: 5px; flex: none; }
 kbd {
   display: inline-block;
-  padding: 2px 6px;
+  padding: 4px 8px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  background: var(--surface);
   font-family: var(--mono);
   font-size: 12px;
-  line-height: 1.3;
+  font-weight: 600;
+  color: var(--ink);
+  box-shadow: 0 1px 0 var(--line);
+}
+.theme-dots-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
   border: 1px solid var(--line);
-  border-radius: 5px;
   background: var(--surface-2);
+}
+.td-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-size: 12.5px;
   color: var(--ink);
 }
+.td-sw { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,.12); }
 
-.faq details {
-  background: var(--surface);
+/* Tab 4: 常见问题与意见反馈 */
+.faq-list details {
   border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  padding: 13px 16px;
   margin-bottom: 10px;
 }
-.faq summary {
+.faq-list summary {
   cursor: pointer;
   font-weight: 600;
   font-size: 14.5px;
   list-style: none;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 }
-.faq summary::after {
-  content: "+";
-  font-family: var(--mono);
-  color: var(--muted);
-  font-size: 16px;
-}
-.faq details[open] summary::after { content: "−"; }
-.faq details p {
-  margin: 10px 0 2px;
-  font-size: 13.5px;
-  color: var(--muted);
-}
+.faq-list summary::after { content: "+"; font-family: var(--mono); color: var(--muted); font-size: 16px; }
+.faq-list details[open] summary::after { content: "−"; }
+.faq-list p { margin: 10px 0 2px; font-size: 13.5px; color: var(--muted); line-height: 1.7; }
 
-.fb-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
+.fb-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 22px;
 }
-.btn {
+.fb-card {
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.fb-card h3 { margin: 0 0 6px; font-size: 15.5px; color: var(--ink); }
+.fb-card p { margin: 0 0 14px; font-size: 13px; color: var(--muted); line-height: 1.65; }
+.fb-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.copy-tip { margin-top: 8px; font-size: 12.5px; color: var(--accent); min-height: 18px; }
+
+/* 底部行动栏（类 WordPaper 底栏） */
+.gs-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 16px 34px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--line);
+}
+.gs-motto { font-size: 13.5px; color: var(--muted); }
+.gs-foot-btns { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.pill-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
+  padding: 9px 18px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
   text-decoration: none;
   cursor: pointer;
   border: 1px solid var(--line);
-  background: var(--surface-2);
+  background: var(--surface);
   color: var(--ink);
   transition: all .15s;
 }
-.btn:hover { border-color: var(--accent); color: var(--accent); }
-.btn.primary {
+.pill-btn:hover { border-color: var(--accent); color: var(--accent); }
+.pill-btn.primary {
   background: var(--accent);
   border-color: var(--accent);
   color: #fff;
+  box-shadow: 0 6px 16px -6px rgba(37, 99, 235, .55);
 }
-.btn.primary:hover { opacity: .92; color: #fff; }
-.copy-tip {
-  margin-top: 10px;
-  font-size: 12.5px;
-  color: var(--accent);
-  min-height: 18px;
-}
-footer {
-  margin-top: 40px;
-  padding-top: 18px;
-  border-top: 1px solid var(--line);
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-  font-size: 12.5px;
-  color: var(--muted);
-}
-footer a { color: var(--muted); text-decoration: none; }
-footer a:hover { color: var(--accent); }
-@media (max-width: 720px) {
-  .wrap { padding: 0 15px 56px; }
-  .steps, .grid-2, .mod-list { grid-template-columns: 1fr; }
-  .hero h1 { font-size: 23px; }
+.pill-btn.primary:hover { opacity: .92; color: #fff; }
+
+@media (max-width: 820px) {
+  .wrap { padding: 0 12px 44px; }
+  .guide-shell { margin-top: 14px; border-radius: 16px; }
+  .gs-top { padding: 16px 18px 8px; }
+  .gs-tabs { padding: 0 18px; gap: 18px; }
+  .gs-body { padding: 24px 18px 22px; }
+  .hero-split { grid-template-columns: 1fr; gap: 26px; padding-bottom: 24px; }
+  .hero-title { font-size: 30px; }
+  .tri-strip { grid-template-columns: 1fr; gap: 18px; margin-top: 22px; }
+  .tri-item { padding: 0 0 16px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .tri-item:last-child { padding-bottom: 0; border-bottom: 0; }
+  .mod-grid, .sync-flow, .kbd-grid, .fb-grid { grid-template-columns: 1fr; }
+  .gs-foot { padding: 14px 18px; }
+  .gs-foot-btns { width: 100%; }
+  .gs-foot-btns .pill-btn { flex: 1; justify-content: center; }
 }
 </style>
 </head>
@@ -292,164 +539,307 @@ footer a:hover { color: var(--accent); }
     </div>
   </nav>
 
-  <header class="hero">
-    <p class="kicker">User Guide &amp; Feedback</p>
-    <h1>使用指南与意见反馈</h1>
-    <p>把数学、英语、政治、词汇与知识库整合在一个清爽无干扰的复习工作台里。免登录即可直接使用，登录账号后自动开启多设备与跨站云端同步。</p>
-    <div class="toc">
-      <a href="#quickstart">3 步快速上手</a>
-      <a href="#modules">六大板块说明</a>
-      <a href="#sync">账号与云同步</a>
-      <a href="#shortcuts">效率与快捷键</a>
-      <a href="#faq">常见问题</a>
-      <a href="#feedback">意见与反馈</a>
+  <main class="guide-shell">
+    <div class="gs-top">
+      <div class="gs-brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/></svg>
+        <span>考研资料总库 · 小指南</span>
+      </div>
+      <a class="gs-close" href="/" title="返回首页" aria-label="返回首页">&times;</a>
     </div>
-  </header>
 
-  <section class="block" id="quickstart">
-    <h2>一、3 步快速上手</h2>
-    <div class="steps">
-      <div class="step-card">
-        <span class="step-num">STEP 01</span>
-        <h3>直接开刷，零门槛</h3>
-        <p>不用注册也能立即使用全部题库、真题解析、单词背诵和原卷 PDF。你的做题记录默认实时保存在本机浏览器中。</p>
-      </div>
-      <div class="step-card">
-        <span class="step-num">STEP 02</span>
-        <h3>登录开启自动云同步</h3>
-        <p>点击顶栏右上角「登录同步」，支持邮箱验证码注册/登录、Google 或 GitHub 一键登录。首次登录会自动把本机已有记录备份到云端。</p>
-      </div>
-      <div class="step-card">
-        <span class="step-num">STEP 03</span>
-        <h3>错题复盘 + 每日打卡</h3>
-        <p>用数学错题本、单题个人笔记、考场防剧透模式和首页每日打卡条，把零散刷题变成稳定推进的每日正反馈。</p>
-      </div>
+    <div class="gs-tabs" role="tablist" aria-label="指南导航">
+      <button type="button" class="gs-tab on" role="tab" aria-selected="true" data-tab="intro">认识总库</button>
+      <button type="button" class="gs-tab" role="tab" aria-selected="false" data-tab="modules">板块与云同步</button>
+      <button type="button" class="gs-tab" role="tab" aria-selected="false" data-tab="shortcuts">快捷键与技巧</button>
+      <button type="button" class="gs-tab" role="tab" aria-selected="false" data-tab="faq">常见问题与反馈</button>
     </div>
-  </section>
 
-  <section class="block" id="modules">
-    <h2>二、六大核心板块</h2>
-    <div class="mod-list">
-      <a class="mod-item" href="/math/">
-        <b>数学真题 · 61 套模拟卷</b>
-        <span>2010–2026 数一/二/三历年真题 + 李林/张宇/崔命 2027 模拟卷，支持 LaTeX 逐题还原、考场防剧透、单题笔记、计时判分与原卷 PDF 翻阅。</span>
-      </a>
-      <a class="mod-item" href="/exam/">
-        <b>英语真题（含一刷 / 二刷速查）</b>
-        <span>英语一 2006–2026、英语二 2010–2026 逐题练习，配全文逐段精翻、原卷解析 PDF 与客观题一刷/二刷速查计分。</span>
-      </a>
-      <a class="mod-item" href="/politics/">
-        <b>政治真题与 2027 肖八</b>
-        <span>2010–2026 真题 + 肖秀荣八套卷，单选/多选点选即判并自动算分，分析题参考答案一键折叠对照。</span>
-      </a>
-      <a class="mod-item" href="/vocab/">
-        <b>2027 红宝书英语词汇</b>
-        <span>6,531 词条全收录（必考/基础/超纲），含真题词频、2 万+ 真题例句、真人发音、卡片背诵与生词本。</span>
-      </a>
-      <a class="mod-item" href="/library/">
-        <b>考研知识库（259 篇笔记）</b>
-        <span>高数、线代、概率框架与方法总结，附英语作文模板、政治一页纸与解题手册，支持全文模糊搜索。</span>
-      </a>
-      <a class="mod-item" href="/export/">
-        <b>数据备份与 macOS 桌面版</b>
-        <span>支持将全站学习记录一键导出/恢复 JSON 文件，也可下载 macOS Apple Silicon 离线桌面 App 断网刷题。</span>
-      </a>
-    </div>
-  </section>
-
-  <section class="block" id="sync">
-    <h2>三、账号登录与云端同步</h2>
-    <div class="grid-2">
-      <div class="info-card">
-        <h3>全自动后台同步，无需手动保存</h3>
-        <p>登录账号后，你在任意页面的记分、错题、单题笔记、词汇生词本和打卡记录都会在停手 2.5 秒后自动同步至 Cloudflare 云端数据库；关闭网页前也会自动兜底补发。换电脑、换手机登录同一个账号即可自动拉取。</p>
-      </div>
-      <div class="info-card">
-        <h3>主站与独立数学站自动互通</h3>
-        <p>在 <code>kaoyan.feikntn111.com</code>、短域 <code>k.feikntn111.com</code> 与独立数学站 <code>math.feikntn111.com</code> 之间登录态完全共享，只需登录一次即可跨站同步做题记录；也支持在账号面板里把同一邮箱与 Google / GitHub 身份关联。</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="block" id="shortcuts">
-    <h2>四、效率工具与快捷键</h2>
-    <table class="kbd-table">
-      <thead>
-        <tr><th style="width:28%">快捷键 / 入口</th><th>作用说明</th></tr>
-      </thead>
-      <tbody>
-        <tr><td><kbd>⌘K</kbd> / <kbd>Ctrl+K</kbd></td><td>全站快捷命令面板：模糊搜索直达任意科目、模拟卷、错题本、知识库或切换主题</td></tr>
-        <tr><td><kbd>J</kbd> / <kbd>K</kbd></td><td>数学刷题页快速切换到下一题 / 上一题</td></tr>
-        <tr><td><kbd>E</kbd></td><td>数学刷题页一键开关「考场防剧透模式」（隐藏考点、难度星级与同题提示）</td></tr>
-        <tr><td>顶栏 <b>⏱ 专注</b></td><td>跨页专注番茄钟：内置 25 / 45 / 60 分钟及 180 分钟全真模考倒计时，切换页面不中断</td></tr>
-        <tr><td>顶栏 <b>外观</b></td><td>6 套主题风格（经典纸感 / 液态玻璃 / 暗夜玻璃 / 静谧深色 / 护眼青笺 / 水墨宣纸）与 3 档字号</td></tr>
-      </tbody>
-    </table>
-  </section>
-
-  <section class="block faq" id="faq">
-    <h2>五、常见问题</h2>
-    <details>
-      <summary>我以前在旧域名 feikntn111.us.ci 上做过题，数据怎么搬到新域名？</summary>
-      <p>旧域名依然保留可访问。你只需打开旧域名进入 <code>/export/</code> 导出 JSON 备份文件，再回到 <code>kaoyan.feikntn111.com/export/</code> 导入即可；导入后再登录云端账号，就会自动同步到服务器。</p>
-    </details>
-    <details>
-      <summary>登录之后，我之前在本机做过的题目记录会被清空吗？</summary>
-      <p>不会。首次登录时系统会自动比对本机和云端数据，把本机独有的学习记录合并上传到云端；如果你需要以某一边为准，也可以在右上角账号面板里手动选择「本机覆盖云端」或「云端恢复本机」。</p>
-    </details>
-    <details>
-      <summary>手机端或微信里点 Google 登录打不开怎么办？</summary>
-      <p>Google 官方禁止在微信 / QQ 内置浏览器中进行 OAuth 授权，请点击右上角选择「在 Safari / 系统浏览器中打开」；若当前网络无法直连 Google，可直接使用「邮箱验证码」或「GitHub」登录，同一邮箱会自动归入同一个账号。</p>
-    </details>
-    <details>
-      <summary>退出登录后，本机的学习记录还在吗？</summary>
-      <p>在。退出登录只会清除当前浏览器的登录态并暂停云同步，本机已有的学习记录会完整保留。</p>
-    </details>
-  </section>
-
-  <section class="block" id="feedback">
-    <h2>六、意见与反馈</h2>
-    <div class="grid-2">
-      <div class="fb-card">
-        <h3>写信反馈（题目勘误 / 功能建议）</h3>
-        <p>发现题目或解析有错漏、遇到页面 Bug、或有顺手的小功能想法，都欢迎直接发邮件告诉我，看到后会尽快修。</p>
-        <div class="fb-actions">
-          <a class="btn primary" href="mailto:feikntn111@gmail.com?subject=%E8%80%83%E7%A0%94%E8%B5%84%E6%96%99%E6%80%BB%E5%BA%93%20%E5%8F%8D%E9%A6%88">写封邮件 ↗</a>
-          <button type="button" class="btn" id="copyEmailBtn" data-copy="feikntn111@gmail.com">复制邮箱 feikntn111@gmail.com</button>
+    <div class="gs-body">
+      <!-- Tab 1: 认识总库 -->
+      <section class="gs-panel" data-panel="intro">
+        <div class="hero-split">
+          <div>
+            <p class="hero-kicker">A LITTLE, EVERY DAY.</p>
+            <h1 class="hero-title">每一次刷题，<br>都是向目标<span class="hl">靠近一步。</span></h1>
+            <p class="hero-desc">考研资料总库把数学真题与 61 套模拟卷、英语真题与红宝书词汇、政治真题与肖八、259 篇知识库笔记整合在同一个清爽无广告的工作台里。免登录即可直接使用，登录账号后自动在电脑、手机与跨站间同步你的全部复习记录。</p>
+          </div>
+          <div>
+            <div class="card-stage">
+              <div class="paper-stack" id="previewDeck" title="点击切换卡片预览">
+                <div class="paper-card" id="previewCard"></div>
+              </div>
+            </div>
+            <div class="pc-hint">轻点卡片切换预览 · 数学 / 词汇 / 打卡</div>
+          </div>
         </div>
-        <div class="copy-tip" id="copyTip" role="status" aria-live="polite"></div>
-      </div>
-      <div class="fb-card">
-        <h3>开源仓库与 Issue</h3>
-        <p>站点源码与更新记录托管在 GitHub；如果你习惯用 GitHub，也可以直接提交 Issue 追踪修复进度，或下载最新离线桌面版。</p>
-        <div class="fb-actions">
-          <a class="btn primary" href="https://github.com/3456038583-gif/kaoyan-hub/issues/new" target="_blank" rel="noopener noreferrer">提交 Issue ↗</a>
-          <a class="btn" href="https://github.com/3456038583-gif/kaoyan-hub" target="_blank" rel="noopener noreferrer">GitHub 仓库 ↗</a>
+
+        <div class="tri-strip">
+          <div class="tri-item">
+            <svg class="tri-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/></svg>
+            <h3>全科真题与模拟卷</h3>
+            <p>涵盖 2010–2026 数学真题 + 61 套 2027 模拟卷、英语一/二 38 套精翻、政治真题与肖八、红宝书 6,531 词与 259 篇知识库。</p>
+          </div>
+          <div class="tri-item">
+            <svg class="tri-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+            <h3>全自动多端云同步</h3>
+            <p>支持邮箱验证码、Google、GitHub 一键登录。做题记分、错题本、单题笔记与打卡记录自动同步，主站与独立数学站无缝互通。</p>
+          </div>
+          <div class="tri-item">
+            <svg class="tri-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+            <h3>专注沉浸与离线桌面版</h3>
+            <p>内置考场防剧透模式、6 套护眼主题、180 分钟模考计时器与 ⌘K 全局直达；另提供 macOS 离线桌面版与 JSON 备份。</p>
+          </div>
         </div>
+      </section>
+
+      <!-- Tab 2: 板块与云同步 -->
+      <section class="gs-panel" data-panel="modules" hidden>
+        <h2 class="sec-cap">六大核心学习板块</h2>
+        <div class="mod-grid">
+          <a class="mod-card" href="/math/">
+            <img src="/img/icons/s/math.png" alt="数学真题" loading="lazy">
+            <div>
+              <b>数学真题 · 61 套模拟卷</b>
+              <span>数一 / 数二 / 数三 17 年真题 + 李林/张宇/崔命模拟卷，逐题 LaTeX 还原、单题笔记、错题本与原卷 PDF 对照。</span>
+            </div>
+          </a>
+          <a class="mod-card" href="/exam/">
+            <img src="/img/icons/s/english-exam.png" alt="英语真题" loading="lazy">
+            <div>
+              <b>英语真题（含一刷 / 二刷速查）</b>
+              <span>英语一 2006–2026、英语二 2010–2026 共 38 套逐题练习，配逐段精翻、原卷解析 PDF 与客观题速查计分。</span>
+            </div>
+          </a>
+          <a class="mod-card" href="/politics/">
+            <img src="/img/icons/s/politics.png" alt="政治真题" loading="lazy">
+            <div>
+              <b>政治真题与 2027 肖八</b>
+              <span>2010–2026 真题 + 肖秀荣八套卷，单选/多选点选即判并自动算分，分析题参考答案一键展开。</span>
+            </div>
+          </a>
+          <a class="mod-card" href="/vocab/">
+            <img src="/img/icons/s/vocab.png" alt="英语词汇" loading="lazy">
+            <div>
+              <b>2027 红宝书英语词汇</b>
+              <span>6,531 词条全收录（必考/基础/超纲），含真题词频、2 万+ 例句、真人发音、卡片背诵与生词本。</span>
+            </div>
+          </a>
+          <a class="mod-card" href="/library/">
+            <img src="/img/icons/s/search.png" alt="知识库" loading="lazy">
+            <div>
+              <b>考研知识库（259 篇笔记）</b>
+              <span>高数、线代、概率论体系笔记，旁及英语作文模板与政治一页纸手册，支持全文模糊搜索。</span>
+            </div>
+          </a>
+          <a class="mod-card" href="/export/">
+            <img src="/img/icons/s/app.png" alt="备份与桌面版" loading="lazy">
+            <div>
+              <b>数据备份与 macOS 桌面版</b>
+              <span>支持全站记录一键导出/恢复 JSON，也可下载 Apple Silicon 离线桌面 App，断网照样刷题背词。</span>
+            </div>
+          </a>
+        </div>
+
+        <h2 class="sec-cap">云端同步如何工作？</h2>
+        <div class="sync-flow">
+          <div class="sf-step">
+            <span class="sf-tag">01 · 登录</span>
+            <h4>一次登录，全站互通</h4>
+            <p>点右上角「登录同步」，用邮箱验证码、Google 或 GitHub 登录。主站 <code>kaoyan.feikntn111.com</code> 与 <code>math.feikntn111.com</code> 自动共享账号。</p>
+          </div>
+          <div class="sf-step">
+            <span class="sf-tag">02 · 自动备份</span>
+            <h4>停手 2.5 秒自动上传</h4>
+            <p>平时刷题依然秒读本地缓存，修改后会在后台自动同步到 Cloudflare D1 数据库；关闭网页前也会自动兜底补传。</p>
+          </div>
+          <div class="sf-step">
+            <span class="sf-tag">03 · 换端无缝接力</span>
+            <h4>多设备自动拉取合并</h4>
+            <p>电脑刷数学、手机背单词、iPad 看解析，登录同一账号自动拉取最新记录；首次登录会自动保留并上传你本机原有数据。</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 3: 快捷键与技巧 -->
+      <section class="gs-panel" data-panel="shortcuts" hidden>
+        <h2 class="sec-cap">效率快捷键一览</h2>
+        <div class="kbd-grid">
+          <div class="kbd-card">
+            <div><b>全站快捷命令面板</b><span>模糊搜索直达任意科目、模拟卷、错题本或切换主题</span></div>
+            <div class="kbd-keys"><kbd>⌘K</kbd><kbd>Ctrl+K</kbd></div>
+          </div>
+          <div class="kbd-card">
+            <div><b>考场防剧透模式</b><span>数学页一键隐藏考点、难度星级与同题提示，盲刷更像真考场</span></div>
+            <div class="kbd-keys"><kbd>E</kbd></div>
+          </div>
+          <div class="kbd-card">
+            <div><b>快速切题</b><span>数学页上下题无缝跳转，不用频繁滚鼠标</span></div>
+            <div class="kbd-keys"><kbd>J</kbd><kbd>K</kbd></div>
+          </div>
+          <div class="kbd-card">
+            <div><b>跨页专注计时器</b><span>顶栏点击「⏱ 专注」，支持 25 / 45 / 60 / 180 分钟全真模考</span></div>
+            <div class="kbd-keys"><kbd>⏱ 专注</kbd></div>
+          </div>
+        </div>
+
+        <h2 class="sec-cap">6 套护眼主题与阅读字号</h2>
+        <p style="margin:-8px 0 12px;font-size:13.5px;color:var(--muted)">点击右上角「外观」按钮即可一键切换，全站 336+ 页面实时同步，支持标准 / 舒适 / 大字三档字号：</p>
+        <div class="theme-dots-row">
+          <span class="td-pill"><span class="td-sw" style="background:linear-gradient(135deg,#f5f4ee 50%,#2f5d8a 50%)"></span>经典纸感</span>
+          <span class="td-pill"><span class="td-sw" style="background:linear-gradient(135deg,#bae6fd,#e9d5ff,#a7f3d0)"></span>液态玻璃</span>
+          <span class="td-pill"><span class="td-sw" style="background:linear-gradient(135deg,#0f172a,#1e3a8a,#4c1d95)"></span>暗夜玻璃</span>
+          <span class="td-pill"><span class="td-sw" style="background:linear-gradient(135deg,#121614 50%,#7ab0df 50%)"></span>静谧深色</span>
+          <span class="td-pill"><span class="td-sw" style="background:linear-gradient(135deg,#e6efe8 50%,#22664b 50%)"></span>护眼青笺</span>
+          <span class="td-pill"><span class="td-sw" style="background:linear-gradient(135deg,#ffffff 50%,#111111 50%)"></span>水墨宣纸</span>
+        </div>
+      </section>
+
+      <!-- Tab 4: 常见问题与反馈 -->
+      <section class="gs-panel" data-panel="faq" hidden>
+        <h2 class="sec-cap">常见问题</h2>
+        <div class="faq-list">
+          <details open>
+            <summary>登录之后，我之前在本地做过的题会被覆盖清空吗？</summary>
+            <p>不会。首次登录时系统会自动把你本机独有的学习记录合并上传到云端，同时把云端已有记录同步下来；你也可以随时在右上角账号面板里手动选择「本机覆盖云端」或「云端恢复本机」。</p>
+          </details>
+          <details>
+            <summary>以前在旧域名 feikntn111.us.ci 记过数据，怎么迁移过来？</summary>
+            <p>旧域名依然保留可访问。先在旧域名的 <code>/export/</code> 导出 JSON 备份文件，再到 <code>kaoyan.feikntn111.com/export/</code> 导入即可；登录账号后会自动备份到云端。</p>
+          </details>
+          <details>
+            <summary>微信或手机里点 Google 登录打不开怎么办？</summary>
+            <p>Google 禁止在微信 / QQ 内置浏览器中进行 OAuth 授权，请点右上角选择「在 Safari / 系统浏览器中打开」；如果当前网络不方便连 Google，直接用「邮箱验证码」或「GitHub」登录即可，同一邮箱会自动归入同一个账号。</p>
+          </details>
+          <details>
+            <summary>退出登录后，本机的学习记录还在吗？</summary>
+            <p>在。退出登录只清除登录态并暂停云同步，本机已保存的做题记录与笔记不会丢失。</p>
+          </details>
+        </div>
+
+        <div class="fb-grid" id="feedback">
+          <div class="fb-card">
+            <h3>意见与反馈（题目勘误 / 功能建议）</h3>
+            <p>发现题目或解析有错漏、遇到任何 Bug、或者有顺手的小功能想法，都可以直接写信告诉我。</p>
+            <div class="fb-acts">
+              <a class="pill-btn primary" href="mailto:feikntn111@gmail.com?subject=%E8%80%83%E7%A0%94%E8%B5%84%E6%96%99%E6%80%BB%E5%BA%93%20%E5%8F%8D%E9%A6%88">写封邮件 ↗</a>
+              <button type="button" class="pill-btn" id="copyEmailBtn" data-copy="feikntn111@gmail.com">复制邮箱</button>
+            </div>
+            <div class="copy-tip" id="copyTip" role="status" aria-live="polite"></div>
+          </div>
+          <div class="fb-card">
+            <h3>GitHub 开源与 Issue 追踪</h3>
+            <p>站点代码在 GitHub 开源，也欢迎直接提 Issue 记录题目勘误与功能需求，或下载最新离线版。</p>
+            <div class="fb-acts">
+              <a class="pill-btn primary" href="https://github.com/3456038583-gif/kaoyan-hub/issues/new" target="_blank" rel="noopener noreferrer">提交 Issue ↗</a>
+              <a class="pill-btn" href="https://github.com/3456038583-gif/kaoyan-hub" target="_blank" rel="noopener noreferrer">GitHub 仓库 ↗</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="gs-foot">
+      <span class="gs-motto">每天一点，稳步上岸。</span>
+      <div class="gs-foot-btns">
+        <a class="pill-btn" href="/export/">下载 Mac App ↓</a>
+        <a class="pill-btn primary" href="/math/">开始刷题 ↗</a>
       </div>
     </div>
-  </section>
-
-  <footer>
-    <span>考研资料总库 · 愿每一天踏实刷题都有回响。</span>
-    <span><a href="/">← 返回首页</a></span>
-  </footer>
+  </main>
 </div>
+
 <script>
 (function () {
+  // 1. 标签页切换（支持 URL #hash 直达对应标签）
+  var tabs = document.querySelectorAll('.gs-tab');
+  var panels = document.querySelectorAll('.gs-panel');
+  function switchTab(id) {
+    tabs.forEach(function (t) {
+      var on = t.getAttribute('data-tab') === id;
+      t.classList.toggle('on', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    panels.forEach(function (p) {
+      p.hidden = p.getAttribute('data-panel') !== id;
+    });
+  }
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () { switchTab(t.getAttribute('data-tab')); });
+  });
+  var hash = (location.hash || '').replace('#', '');
+  if (hash === 'shortcuts') switchTab('shortcuts');
+  else if (hash === 'faq' || hash === 'feedback') switchTab('faq');
+  else if (hash === 'modules' || hash === 'sync') switchTab('modules');
+
+  // 2. 右侧斜放纸卡轮播预览
+  var CARDS = [
+    {
+      top: 'DAILY PRACTICE',
+      word: '泰勒展开 · 中值定理',
+      sub: '数学一 · 2025 真题 · 重点题',
+      meaning: '逐题 LaTeX 还原，支持 E 键开启考场防剧透、单题笔记与错题本自动收录。',
+      quote: '把每一道错题弄透，<br>就是最快提分。',
+      footL: 'KAOYAN HUB',
+      footR: '01 / 03'
+    },
+    {
+      top: 'WORD OF THE DAY',
+      word: 'serendipity',
+      sub: '/ˌserənˈdɪpəti/',
+      meaning: 'n. 不期而遇的美好；意外发现珍奇事物的运气（27 红宝书收录）',
+      quote: '把微小的坚持，<br>变成上岸的底气。',
+      footL: 'VOCAB · 6,531',
+      footR: '02 / 03'
+    },
+    {
+      top: 'CLOUD SYNC · STREAK',
+      word: '今日已打卡 ✓',
+      sub: 'kaoyan.feikntn111.com ↔ math',
+      meaning: '登录后自动后台同步做题记分、错题、词汇与连续打卡天数，换设备无缝接着刷。',
+      quote: '每天一点，<br>稳步靠近理想院校。',
+      footL: 'AUTO SYNC',
+      footR: '03 / 03'
+    }
+  ];
+  var cardIdx = 0;
+  var cardEl = document.getElementById('previewCard');
+  var deckEl = document.getElementById('previewDeck');
+  function renderCard() {
+    if (!cardEl) return;
+    var c = CARDS[cardIdx];
+    cardEl.innerHTML = ''
+      + '<div class="pc-top"><span>' + c.top + '</span></div>'
+      + '<div class="pc-main">'
+      + '  <div class="pc-word">' + c.word + '</div>'
+      + '  <div class="pc-sub">' + c.sub + '</div>'
+      + '  <p class="pc-meaning">' + c.meaning + '</p>'
+      + '  <div class="pc-rule"></div>'
+      + '  <p class="pc-quote">' + c.quote + '</p>'
+      + '</div>'
+      + '<div class="pc-foot"><span>' + c.footL + '</span><span>' + c.footR + '</span></div>';
+  }
+  renderCard();
+  if (deckEl) {
+    deckEl.addEventListener('click', function () {
+      cardIdx = (cardIdx + 1) % CARDS.length;
+      renderCard();
+    });
+  }
+
+  // 3. 复制反馈邮箱
   var btn = document.getElementById('copyEmailBtn');
   var tip = document.getElementById('copyTip');
-  if (!btn) return;
-  btn.addEventListener('click', function () {
-    var val = btn.getAttribute('data-copy');
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(val).then(function () {
-        if (tip) tip.textContent = '✓ 已复制邮箱：' + val;
-      }).catch(function () { window.prompt('请复制邮箱：', val); });
-    } else {
-      window.prompt('请复制邮箱：', val);
-    }
-  });
+  if (btn) {
+    btn.addEventListener('click', function () {
+      var val = btn.getAttribute('data-copy');
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(val).then(function () {
+          if (tip) tip.textContent = '✓ 已复制邮箱：' + val;
+        }).catch(function () { window.prompt('反馈邮箱：', val); });
+      } else { window.prompt('反馈邮箱：', val); }
+    });
+  }
 })();
 </script>
 </body>
