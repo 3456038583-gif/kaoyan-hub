@@ -416,6 +416,111 @@ footer .fl { display: flex; flex-wrap: wrap; gap: 16px; }
   .topbar nav a { flex: none; white-space: nowrap; }
   .topbar nav::-webkit-scrollbar { display: none; }
 }
+
+/* 今日备考打卡条（参考 WordPaper 连续打卡 Streak，数据存 kaoyan.checkin.v1 并自动云同步） */
+.checkin-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin: -10px 0 22px;
+  padding: 11px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 13px;
+}
+.ck-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ck-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity .15s, background .15s;
+}
+.ck-btn:hover { opacity: .9; }
+.ck-btn.done {
+  background: color-mix(in srgb, #16a34a 14%, var(--surface));
+  border-color: color-mix(in srgb, #16a34a 45%, var(--line));
+  color: #15803d;
+}
+.ck-streak {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink);
+  font-weight: 600;
+}
+.ck-sub { font-size: 12px; color: var(--muted); }
+.ck-days { display: inline-flex; align-items: center; gap: 4px; }
+.ck-cell {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  background: var(--line-soft);
+  border: 1px solid var(--line);
+  transition: transform .12s;
+}
+.ck-cell.on { background: var(--accent); border-color: var(--accent); }
+.ck-cell.today { outline: 1.5px solid var(--gold); outline-offset: 1px; }
+
+/* 底部使用指南与反馈区（无打赏） */
+.guide-fb-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin: 28px 0 10px;
+}
+.gfb-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+}
+.gfb-card h3 {
+  margin: 0 0 5px;
+  font-family: var(--serif);
+  font-size: 16px;
+  color: var(--ink);
+}
+.gfb-card p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.6; }
+.gfb-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.gfb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 500;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.gfb-btn:hover { border-color: var(--accent); color: var(--accent); }
+.gfb-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.gfb-btn.primary:hover { opacity: .92; color: #fff; }
+.gfb-tip { font-size: 12px; color: var(--accent); }
+@media (max-width: 720px) {
+  .guide-fb-grid { grid-template-columns: 1fr; }
+}
 </style>
 <script src="/countdown.js" defer></script>
 <script id="ky-theme-init">(function(){try{var t=localStorage.getItem('kaoyan.theme.v1'),f=localStorage.getItem('kaoyan.fontsize.v1'),r=document.documentElement;if(t&&t!=='classic'){r.setAttribute('data-style',t);r.setAttribute('data-theme',(t==='glass'||t==='sage'||t==='eink')?'light':'dark');}if(f&&f!=='md')r.setAttribute('data-fontsize',f);}catch(e){}})();</script>
@@ -433,6 +538,7 @@ footer .fl { display: flex; flex-wrap: wrap; gap: 16px; }
       <a href="/vocab/">英语词汇</a>
       <a href="/library/">知识库</a>
       <a href="/export/">备份 · 桌面版</a>
+      <a href="/guide/">使用指南</a>
     </nav>
   </header>
 
@@ -458,6 +564,15 @@ footer .fl { display: flex; flex-wrap: wrap; gap: 16px; }
         <span class="dash-quote" id="dsQuote"></span>
         <a class="dash-resume" id="dsResume" href="/math/?view=mock">刷 61 套模拟卷 →</a>
       </div>
+    </section>
+
+    <section class="checkin-strip" id="checkinStrip" aria-label="今日学习打卡">
+      <div class="ck-left">
+        <button type="button" class="ck-btn" id="ckBtn">今日学习打卡</button>
+        <span class="ck-streak" id="ckStreak">连续 0 天</span>
+        <span class="ck-sub" id="ckTotal">累计 0 天 · 登录后自动同步云端</span>
+      </div>
+      <div class="ck-days" id="ckDays" title="最近 14 天学习打卡记录"></div>
     </section>
 
     <div class="cards">
@@ -570,15 +685,46 @@ footer .fl { display: flex; flex-wrap: wrap; gap: 16px; }
         </ul>
       </section>
     </div>
+    <div class="section-head">
+      <h2>使用指南与反馈</h2>
+      <a href="/guide/">查看完整指南 →</a>
+    </div>
+
+    <div class="guide-fb-grid">
+      <article class="gfb-card">
+        <div>
+          <h3>使用指南与快捷键</h3>
+          <p>第一次来？3 分钟了解六大板块、考场防剧透模式、<code>⌘K</code> 全局搜索、跨站账号云同步与常见问题。</p>
+        </div>
+        <div class="gfb-actions">
+          <a class="gfb-btn primary" href="/guide/">打开使用指南 →</a>
+          <a class="gfb-btn" href="/guide/#shortcuts">快捷键速查</a>
+          <a class="gfb-btn" href="/guide/#faq">常见问题</a>
+        </div>
+      </article>
+      <article class="gfb-card">
+        <div>
+          <h3>意见与反馈</h3>
+          <p>遇到题目/解析勘误、页面问题，或有好用的复习功能建议，欢迎直接写信或提 Issue 告诉我。</p>
+        </div>
+        <div class="gfb-actions">
+          <a class="gfb-btn primary" href="mailto:feikntn111@gmail.com?subject=%E8%80%83%E7%A0%94%E8%B5%84%E6%96%99%E6%80%BB%E5%BA%93%20%E5%8F%8D%E9%A6%88">写封邮件 ↗</a>
+          <button type="button" class="gfb-btn" id="homeCopyEmail" data-copy="feikntn111@gmail.com">复制邮箱</button>
+          <a class="gfb-btn" href="https://github.com/3456038583-gif/kaoyan-hub/issues/new" target="_blank" rel="noopener noreferrer">GitHub Issue ↗</a>
+          <span class="gfb-tip" id="homeCopyTip" role="status" aria-live="polite"></span>
+        </div>
+      </article>
+    </div>
   </main>
 
   <footer>
     <span>内容为个人复习整理，仅供学习参考。</span>
     <span class="fl">
+      <a href="/guide/">使用指南</a>
       <a href="/export/">备份与桌面版</a>
+      <a href="mailto:feikntn111@gmail.com?subject=%E8%80%83%E7%A0%94%E8%B5%84%E6%96%99%E6%80%BB%E5%BA%93%20%E5%8F%8D%E9%A6%88">反馈邮箱</a>
       <a href="https://github.com/3456038583-gif/kaoyan-hub">GitHub 仓库</a>
       <a href="https://github.com/3456038583-gif/kaoyan-math-site-hd">高清原卷</a>
-      <a href="https://github.com/3456038583-gif/kaoyan-math-site-hd/releases/latest">打包下载</a>
     </span>
   </footer>
 
@@ -652,6 +798,74 @@ footer .fl { display: flex; flex-wrap: wrap; gap: 16px; }
   ];
   var dayIdx = Math.floor(Date.now() / 86400000) % quotes.length;
   set('dsQuote', '「' + quotes[dayIdx] + '」');
+
+  // 今日学习打卡 & 近 14 天热力条（键名以 kaoyan 开头，登录后自动同步云端）
+  var CK_KEY = 'kaoyan.checkin.v1';
+  function dayStr(offset) {
+    var d = new Date();
+    d.setDate(d.getDate() + (offset || 0));
+    var p = function (n) { return (n < 10 ? '0' : '') + n; };
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+  }
+  function loadCk() {
+    var obj = jget(CK_KEY, {});
+    return (obj && typeof obj === 'object' && !Array.isArray(obj)) ? obj : {};
+  }
+  function renderCk() {
+    var ck = loadCk();
+    var today = dayStr(0);
+    var isDone = Boolean(ck[today]);
+    var streak = 0;
+    for (var i = isDone ? 0 : -1; i > -400; i--) {
+      if (ck[dayStr(i)]) streak++;
+      else break;
+    }
+    var total = Object.keys(ck).filter(function (k) { return ck[k]; }).length;
+    var btn = document.getElementById('ckBtn');
+    if (btn) {
+      btn.classList.toggle('done', isDone);
+      btn.textContent = isDone ? '✓ 今日已打卡' : '今日学习打卡';
+    }
+    set('ckStreak', '连续 ' + streak + ' 天');
+    set('ckTotal', '累计 ' + total + ' 天 · 登录后自动云端同步');
+    var box = document.getElementById('ckDays');
+    if (box) {
+      var html = '';
+      for (var j = -13; j <= 0; j++) {
+        var ds = dayStr(j);
+        var cls = 'ck-cell' + (ck[ds] ? ' on' : '') + (j === 0 ? ' today' : '');
+        html += '<span class="' + cls + '" title="' + ds + (ck[ds] ? ' · 已打卡' : ' · 未打卡') + '"></span>';
+      }
+      box.innerHTML = html;
+    }
+  }
+  var ckBtn = document.getElementById('ckBtn');
+  if (ckBtn) {
+    ckBtn.addEventListener('click', function () {
+      var ck = loadCk();
+      var today = dayStr(0);
+      if (ck[today]) delete ck[today];
+      else ck[today] = Date.now();
+      try { localStorage.setItem(CK_KEY, JSON.stringify(ck)); } catch (e) {}
+      renderCk();
+    });
+  }
+  renderCk();
+
+  // 一键复制反馈邮箱
+  var cpBtn = document.getElementById('homeCopyEmail');
+  var cpTip = document.getElementById('homeCopyTip');
+  if (cpBtn) {
+    cpBtn.addEventListener('click', function () {
+      var val = cpBtn.getAttribute('data-copy');
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(val).then(function () {
+          if (cpTip) cpTip.textContent = '✓ 邮箱已复制';
+          setTimeout(function () { if (cpTip) cpTip.textContent = ''; }, 2400);
+        }).catch(function () { window.prompt('反馈邮箱：', val); });
+      } else { window.prompt('反馈邮箱：', val); }
+    });
+  }
 })();
 </script>
 </body>
