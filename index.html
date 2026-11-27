@@ -402,18 +402,34 @@ footer .fl { display: flex; flex-wrap: wrap; gap: 16px; }
   .topbar .ghbtn span { display: none; }
 }
 @media (max-width: 480px) {
-  .topbar { align-items: center; gap: 10px; padding: 10px 0 9px; }
-  .topbar nav {
-    flex: 1 1 auto; min-width: 0; margin-left: auto;
-    flex-wrap: nowrap; justify-content: flex-start;
-    gap: 12px; font-size: 12.5px;
-    overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
-    /* 尾部留白 + 右缘渐隐：提示导航可横向滑动 */
-    padding-right: 18px;
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 18px), transparent 100%);
-    mask-image: linear-gradient(to right, #000 calc(100% - 18px), transparent 100%);
+  .topbar {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    padding: 9px 0 6px;
   }
-  .topbar nav a { flex: none; white-space: nowrap; }
+  .topbar .brand { order: 1; }
+  .topbar .ghbtn { order: 2; }
+  .topbar .ky-tools { order: 3; margin-left: auto; }
+  .topbar nav {
+    order: 4;
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 0;
+    margin-left: 0;
+    padding: 6px 20px 2px 0;
+    border-top: 1px solid color-mix(in srgb, var(--line) 65%, transparent);
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 16px;
+    font-size: 13.5px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent 100%);
+  }
+  .topbar nav a { flex: none; white-space: nowrap; padding: 3px 0; }
   .topbar nav::-webkit-scrollbar { display: none; }
 }
 

@@ -88,33 +88,39 @@
   .sitebar .ghbtn span, .topbar .ghbtn span { display: none; }
 }
 
-/* 窄屏：单行不换行，链接区可横向滑动，高度恒定（--sb-h 才能对得上） */
+/* 窄屏：拆成两行——第一行「站名 + GitHub + 右侧工具按钮」，第二行「100% 宽度的横向导航条」，彻底避免导航被挤扁 */
 @media (max-width: 720px) {
-  :root { --sb-h: 44px; }
+  :root { --sb-h: 82px; }
   .sitebar {
     box-sizing: border-box;
-    flex-wrap: nowrap;
-    height: var(--sb-h);
-    padding: 0 15px;
-    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    height: auto;
+    min-height: var(--sb-h);
+    padding: 8px 15px 6px;
+    gap: 6px 10px;
   }
-  .sb-brand { font-size: 12.5px; letter-spacing: .02em; }
+  .sb-brand { font-size: 13.5px; letter-spacing: .04em; order: 1; }
+  .sitebar .ghbtn { order: 2; }
+  .sitebar .ky-tools { order: 3; margin-left: auto; }
   .sb-links {
-    flex: 0 1 auto;
+    order: 4;
+    flex: 0 0 100%;
+    width: 100%;
     min-width: 0;
-    margin-left: auto;
-    gap: 12px;
-    font-size: 12px;
+    margin-left: 0;
+    padding: 6px 20px 2px 0;
+    border-top: 1px solid color-mix(in srgb, var(--line, #e0dfd4) 65%, transparent);
+    gap: 16px;
+    font-size: 13.5px;
     justify-content: flex-start;
     overflow-x: auto;
     overflow-y: hidden;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
-    /* 尾部留白 + 右缘渐隐：提示可横向滑动，滚到底时最后一项不被渐隐 */
-    padding-right: 18px;
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 18px), transparent 100%);
-    mask-image: linear-gradient(to right, #000 calc(100% - 18px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent 100%);
   }
   .sb-links::-webkit-scrollbar { display: none; }
-  .sb-links a { flex: none; padding: 2px 0; }
+  .sb-links a { flex: none; padding: 3px 0; }
 }
