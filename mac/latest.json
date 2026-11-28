@@ -1,14 +1,19 @@
 {
-  "version": "1.0.6",
-  "build": 7,
-  "date": "2026-11-26",
-  "file": "KaoyanHub-1.0.6-arm64.dmg",
-  "size": 203158890,
+  "version": "1.0.7",
+  "build": 8,
+  "date": "2026-11-28",
+  "file": "KaoyanHub-1.0.7-arm64.dmg",
+  "size": 203355028,
   "minMacOS": "11.0",
   "arch": "arm64",
-  "url": "https://github.com/3456038583-gif/kaoyan-hub/releases/download/v1.0.6/KaoyanHub-1.0.6-arm64.dmg",
-  "page": "https://github.com/3456038583-gif/kaoyan-hub/releases/tag/v1.0.6",
+  "url": "https://github.com/3456038583-gif/kaoyan-hub/releases/download/v1.0.7/KaoyanHub-1.0.7-arm64.dmg",
+  "page": "https://github.com/3456038583-gif/kaoyan-hub/releases/tag/v1.0.7",
   "notes": [
+    {
+      "version": "1.0.7",
+      "date": "2026-11-28",
+      "note": "新增使用指南页、意见反馈与首页每日打卡；数学模拟卷新增吸顶返回条、底部切卷器与返回键支持；政治一页纸与解题手册新增互动桌宠；升级新主域与导航排版优化"
+    },
     {
       "version": "1.0.6",
       "date": "2026-11-26",
